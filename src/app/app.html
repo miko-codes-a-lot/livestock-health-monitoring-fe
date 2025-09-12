@@ -1,16 +1,17 @@
-<div>
+@if (isLoggedIn) {
   <nav>
     <ul>
-      <li><a routerLink="/">Dashboard</a></li>
-      <li><a routerLink="/user">Users</a></li>
-      <li><a routerLink="/livestock">Livestock</a></li>
-      <li><a routerLink="/health-record">Health Record</a></li>
-      <li><a routerLink="/treatment">Treatment</a></li>
-      <li><a routerLink="/vaccination">Vaccination</a></li>
-      <li><a routerLink="/schedule">Schedule</a></li>
+      <li><a [routerLink]="isLoading ? null : `/dashboard/${user?.role}`">Dashboard</a></li>
+      <li><a [routerLink]="isLoading ? null : '/user'">Users</a></li>
+      <li><a [routerLink]="isLoading ? null : '/livestock'">Livestock</a></li>
+      <li><a [routerLink]="isLoading ? null : '/health-record'">Health Record</a></li>
+      <li><a [routerLink]="isLoading ? null : '/treatment'">Treatment</a></li>
+      <li><a [routerLink]="isLoading ? null : '/vaccination'">Vaccination</a></li>
+      <li><a [routerLink]="isLoading ? null : '/schedule'">Schedule</a></li>
+      <li><button (click)="onLogout()" [disabled]="isLoading">Logout</button></li>
     </ul>
   </nav>
-  <div>
+}
+<div>
     <router-outlet />
-  </div>
 </div>

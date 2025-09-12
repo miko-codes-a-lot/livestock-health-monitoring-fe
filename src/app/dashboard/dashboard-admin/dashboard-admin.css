@@ -1,0 +1,75 @@
+/* --- Global Styles & Variables --- */
+:host {
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+/* --- Toolbar --- */
+.toolbar {
+  background-color: #3f51b5;
+  color: white;
+  padding: 16px 24px;
+  font-size: 1.25rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Dashboard Grid Layout --- */
+.dashboard-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+/* --- Card Base Styles --- */
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card h2 {
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+}
+
+/* --- Specific Card Types --- */
+.stat-card {
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  min-height: 180px;
+}
+
+.stat-number {
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: #3f51b5;
+  margin: 0;
+}
+
+/* Make certain cards span more columns */
+@media (min-width: 960px) {
+  .large-card {
+    grid-column: span 2;
+  }
+  .full-width-card {
+    grid-column: 1 / -1; /* Span all columns */
+  }
+}
+
+/* --- Chart Wrapper --- */
+.chart-card {
+  height: 400px; /* Give charts a fixed height */
+}
+
+.chart-wrapper {
+  position: relative;
+  flex-grow: 1;
+}

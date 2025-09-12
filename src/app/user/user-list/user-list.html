@@ -1,1 +1,31 @@
-<p>user-list works!</p>
+<button>Create</button> <br>
+
+@if (isLoading) {
+  <p>fetching data...</p>
+}
+<table>
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Mobile Number</th>
+      <th>Address</th>
+      <th>Gender</th>
+      <th>Role</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (user of users; track user._id) {
+      <tr>
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.mobileNumber }}</td>
+        <td>{{ user.address }}</td>
+        <td>{{ user.gender }}</td>
+        <td>{{ user.role }}</td>
+        <td><button>Details</button> <button>Update</button></td>
+      </tr>
+    }
+  </tbody>
+</table>

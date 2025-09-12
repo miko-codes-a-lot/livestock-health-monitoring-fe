@@ -1,0 +1,11 @@
+@if (isLoading) {
+  <p>Loading...</p>
+}
+
+<form [formGroup]="rxform" (ngSubmit)="onSubmit()">
+  <label for="username">Username:</label>
+  <input id="username" type="text" formControlName="username"> <br>
+  <label for="password">Password</label>
+  <input id="password" type="password" formControlName="password"> <br>
+  <button [disabled]="!rxform.valid && !isLoading">Login</button>
+</form>

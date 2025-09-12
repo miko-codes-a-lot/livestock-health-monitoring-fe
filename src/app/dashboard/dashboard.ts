@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [RouterOutlet],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
@@ -13,6 +13,8 @@ export class Dashboard {
   ngOnInit(): void {
     const roles = ['admin', 'farmer', 'vet']
     const userRole = roles[0]
+
+    console.log('wtf')
 
     this.router.navigate([`dashboard/${userRole}`])
   }

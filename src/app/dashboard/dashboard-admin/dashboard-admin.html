@@ -1,1 +1,36 @@
-<p>dashboard-admin works!</p>
+<header class="toolbar">
+  <span class="toolbar-title">Livestock Health Dashboard - Occidental Mindoro</span>
+</header>
+
+<main class="dashboard-container">
+  <div class="card stat-card">
+    <h2>Total Livestock</h2>
+    <p class="stat-number">{{ reportData.totalLivestock }}</p>
+  </div>
+
+  <div class="card stat-card">
+    <h2>Vaccination Rate</h2>
+    <p class="stat-number">{{ reportData.vaccinationRate }}%</p>
+  </div>
+
+  <div class="card chart-card large-card">
+    <h2>Livestock by Type</h2>
+    <div class="chart-wrapper">
+      <canvas id="livestockByTypeChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card chart-card large-card">
+    <h2>Current Health Status</h2>
+    <div class="chart-wrapper">
+      <canvas id="healthStatusChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card chart-card full-width-card">
+    <h2>Distribution by Barangay</h2>
+    <div class="chart-wrapper">
+      <canvas id="barangayDistChart"></canvas>
+    </div>
+  </div>
+</main>
