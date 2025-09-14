@@ -34,7 +34,7 @@ export class UserCreate {
 
   onSubmit(user: UserDto) {
     this.userService.create(user).subscribe({
-      next: data => this.router.navigate(['/user/details', data._id]),
+      next: data => this.router.navigate(['/user/details', data._id], { replaceUrl: true }),
       error: err => console.log(`Something went wrong: ${err}`)
     })
   }
