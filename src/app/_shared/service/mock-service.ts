@@ -13,7 +13,10 @@ export class MockService {
       gender: 'male',
       mobileNumber: '+9394111011',
       role: 'admin',
-      address: 'address'
+      address: {
+        city: 'Looc',
+        barangay: 'Agkawayan',
+      }
     }
   }
 }

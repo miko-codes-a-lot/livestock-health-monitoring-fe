@@ -1,1 +1,75 @@
-<p>user-form works!</p>
+@if (isLoading) {
+  <p>Preparing the form...</p>
+}
+
+<form [formGroup]="rxform" (ngSubmit)="onSave()">
+  <div>
+    <label for="username">Username</label>
+    <input id="username" type="text" formControlName="username" />
+  </div>
+
+  <div>
+    <label for="password">Password</label>
+    <input id="password" type="password" formControlName="password" />
+  </div>
+
+  <div>
+    <label for="passwordConfirm">Confirm Password</label>
+    <input
+      id="passwordConfirm"
+      type="password"
+      formControlName="passwordConfirm"
+    />
+  </div>
+
+  <div>
+    <label for="email">Email</label>
+    <input id="email" type="email" formControlName="email" />
+  </div>
+
+  <div>
+    <label for="mobileNumber">Mobile Number</label>
+    <input id="mobileNumber" type="tel" formControlName="mobileNumber" />
+  </div>
+
+  <div formGroupName="address">
+    <h4>Address</h4>
+    <div>
+      <label for="city">City</label>
+      <select id="city" formControlName="city">
+        <option value="">-- Select City --</option>
+        @for (address of addresses; track address.name) {
+          <option value="{{ address.name }}">{{ address.name }}</option>
+        }
+      </select>
+    </div>
+    <div>
+      <label for="barangay">Barangay</label>
+      <select id="barangay" formControlName="barangay">
+        <option value="">-- Select Barangay --</option>
+        @for (barangay of barangays; track barangay.name) {
+          <option value="{{ barangay.name }}">{{ barangay.name }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div>
+    <label for="gender">Gender</label>
+    <select id="gender" formControlName="gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="role">Role</label>
+    <select id="role" formControlName="role">
+      <option value="admin">Admin</option>
+      <option value="user">User</option>
+    </select>
+  </div>
+
+  <button type="submit" [disabled]="!rxform.valid || isLoading">Submit</button>
+</form>

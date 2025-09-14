@@ -1,1 +1,5 @@
-<p>user-create works!</p>
+<app-user-form
+  [isLoading]="isLoading"
+  [addresses]="addresses"
+  (onSubmit)="onSubmit($event)"
+></app-user-form>
