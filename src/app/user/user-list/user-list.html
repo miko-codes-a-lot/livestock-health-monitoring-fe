@@ -1,4 +1,4 @@
-<button>Create</button> <br>
+<button (click)="onCreate()">Create</button> <br>
 
 @if (isLoading) {
   <p>fetching data...</p>
@@ -24,7 +24,10 @@
         <td>{{ user.address }}</td>
         <td>{{ user.gender }}</td>
         <td>{{ user.role }}</td>
-        <td><button>Details</button> <button>Update</button></td>
+        <td>
+          <button (click)="onDetails(user._id!)">Details</button> 
+          <button (click)="onUpdate(user._id!)">Update</button>
+        </td>
       </tr>
     }
   </tbody>

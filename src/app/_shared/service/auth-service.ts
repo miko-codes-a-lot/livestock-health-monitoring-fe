@@ -11,7 +11,9 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<UserDto | null>(null)
   currentUser$: Observable<UserDto | null> = this.currentUserSubject.asObservable()
 
-  constructor(private readonly mockService: MockService) {}
+  constructor(private readonly mockService: MockService) {
+    this.checkAuthStatus()
+  }
 
   login(username: string, password: string): Observable<LoginResponse> {
     return new Observable<LoginResponse>((s) => {
@@ -39,7 +41,6 @@ export class AuthService {
       tap(() => this.currentUserSubject.next(null))
     )
   }
-
 
   getProfile(): Observable<UserDto> {
     return new Observable<UserDto>((s) => {
