@@ -1,1 +1,11 @@
-<p>user-update works!</p>
+<h1>User Update</h1>
+@if (user) {
+  <app-user-form
+  [user]="user"
+  [isLoading]="isLoading"
+  [addresses]="addresses"
+  (onSubmit)="onSubmit($event)"
+  ></app-user-form>
+} @else {
+  <p>Fetching user...</p>
+}

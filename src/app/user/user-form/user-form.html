@@ -8,19 +8,21 @@
     <input id="username" type="text" formControlName="username" />
   </div>
 
-  <div>
-    <label for="password">Password</label>
-    <input id="password" type="password" formControlName="password" />
-  </div>
+  @if (!user._id) {
+    <div>
+      <label for="password">Password</label>
+      <input id="password" type="password" formControlName="password" />
+    </div>
 
-  <div>
-    <label for="passwordConfirm">Confirm Password</label>
-    <input
-      id="passwordConfirm"
-      type="password"
-      formControlName="passwordConfirm"
-    />
-  </div>
+    <div>
+      <label for="passwordConfirm">Confirm Password</label>
+      <input
+        id="passwordConfirm"
+        type="password"
+        formControlName="passwordConfirm"
+      />
+    </div>
+  }
 
   <div>
     <label for="email">Email</label>
@@ -33,7 +35,7 @@
   </div>
 
   <div formGroupName="address">
-    <h4>Address</h4>
+    <span>Address:</span>
     <div>
       <label for="city">City</label>
       <select id="city" formControlName="city">
@@ -67,7 +69,8 @@
     <label for="role">Role</label>
     <select id="role" formControlName="role">
       <option value="admin">Admin</option>
-      <option value="user">User</option>
+      <option value="vet">Veterinarian</option>
+      <option value="farmer">Farmer</option>
     </select>
   </div>
 

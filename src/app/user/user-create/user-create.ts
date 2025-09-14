@@ -27,17 +27,14 @@ export class UserCreate {
     this.isLoading = true
 
     this.addressService.getAll().subscribe({
-      next: data => {
-        this.addresses = data
-        console.log(this.addresses, 'd')
-      },
+      next: data => this.addresses = data,
       error: err => console.log(`Something went wrong: ${err}`),
     }).add(() => this.isLoading = false)
   }
 
   onSubmit(user: UserDto) {
     this.userService.create(user).subscribe({
-      next: data => console.log(data),
+      next: data => this.router.navigate(['/user/details', data._id]),
       error: err => console.log(`Something went wrong: ${err}`)
     })
   }

@@ -97,4 +97,19 @@ export class UserService {
       }, 500);
     })
   }
+
+  update(id: string, user: UserDto): Observable<UserDto> {
+    return new Observable<UserDto>((s) => {
+      setTimeout(() => {
+        const index = USERS.findIndex(user => user._id === id)
+        if (index !== -1) {
+          USERS[index] = { ...user, _id: id }
+          s.next(USERS[index])
+        } else {
+          s.error(new Error(`User to update not found: ${id}`))
+        }
+        s.complete()
+      }, 500);
+    })
+  }
 }

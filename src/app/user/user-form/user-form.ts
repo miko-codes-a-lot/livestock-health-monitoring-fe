@@ -75,6 +75,7 @@ export class UserForm {
       gender: this.gender.value as any,
       role: this.role.value as any,
     }
+    console.log('fuck')
     this.onSubmit.emit(output)
   }
 
