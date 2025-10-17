@@ -1,7 +1,10 @@
-/* --- Global Styles & Variables --- */
+/* --- Global Styles --- */
 :host {
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', Arial, sans-serif;
   color: #333;
+  display: block;
+  background-color: #f4f6f8;
+  min-height: 100vh;
 }
 
 /* --- Toolbar --- */
@@ -10,25 +13,39 @@
   color: white;
   padding: 16px 24px;
   font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toolbar-title {
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 /* --- Dashboard Grid Layout --- */
 .dashboard-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  padding: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  padding: 24px;
 }
 
 /* --- Card Base Styles --- */
 .card {
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   padding: 20px;
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .card h2 {
@@ -37,39 +54,42 @@
   font-weight: 600;
   color: #555;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* --- Specific Card Types --- */
+/* --- Statistic Cards --- */
 .stat-card {
   align-items: center;
   justify-content: center;
-  background-color: #f8f9fa;
+  background: linear-gradient(135deg, #e8eaf6, #f3f4fb);
   min-height: 180px;
+  text-align: center;
 }
 
 .stat-number {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: bold;
   color: #3f51b5;
   margin: 0;
 }
 
-/* Make certain cards span more columns */
-@media (min-width: 960px) {
-  .large-card {
-    grid-column: span 2;
-  }
-  .full-width-card {
-    grid-column: 1 / -1; /* Span all columns */
-  }
-}
-
-/* --- Chart Wrapper --- */
+/* --- Chart Cards --- */
 .chart-card {
-  height: 400px; /* Give charts a fixed height */
+  height: 400px;
 }
 
 .chart-wrapper {
   position: relative;
   flex-grow: 1;
+}
+
+/* --- Responsive Grid Spans --- */
+@media (min-width: 960px) {
+  .large-card {
+    grid-column: span 2;
+  }
+
+  .full-width-card {
+    grid-column: 1 / -1; /* Span all columns */
+  }
 }

@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+
 
 @Component({
   selector: 'app-livestock',
-  imports: [],
+  imports: [RouterOutlet],
   templateUrl: './livestock.html',
   styleUrl: './livestock.css'
 })

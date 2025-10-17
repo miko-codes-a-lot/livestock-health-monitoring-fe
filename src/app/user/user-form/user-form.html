@@ -1,78 +1,105 @@
-@if (isLoading) {
-  <p>Preparing the form...</p>
-}
-
-<form [formGroup]="rxform" (ngSubmit)="onSave()">
-  <div>
-    <label for="username">Username</label>
-    <input id="username" type="text" formControlName="username" />
-  </div>
-
-  @if (!user._id) {
-    <div>
-      <label for="password">Password</label>
-      <input id="password" type="password" formControlName="password" />
+<div class="form-container">
+  @if (isLoading) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Preparing the form...</p>
     </div>
+  } @else {
+    <form [formGroup]="rxform" (ngSubmit)="onSave()" class="user-form">
 
-    <div>
-      <label for="passwordConfirm">Confirm Password</label>
-      <input
-        id="passwordConfirm"
-        type="password"
-        formControlName="passwordConfirm"
-      />
-    </div>
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>User Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+
+          <!-- Username -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Username</mat-label>
+            <input matInput type="text" formControlName="username">
+          </mat-form-field>
+
+          <!-- Password Fields -->
+          @if (!user._id) {
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Password</mat-label>
+              <input matInput type="password" formControlName="password">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirm Password</mat-label>
+              <input matInput type="password" formControlName="passwordConfirm">
+            </mat-form-field>
+          }
+
+          <!-- Email -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email">
+          </mat-form-field>
+
+          <!-- Mobile -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Mobile Number</mat-label>
+            <input matInput type="tel" formControlName="mobileNumber">
+          </mat-form-field>
+
+          <!-- Address -->
+          <div formGroupName="address" class="address-group">
+            <h3>Address</h3>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>City</mat-label>
+              <mat-select formControlName="city">
+                <mat-option value="">-- Select City --</mat-option>
+                @for (address of addresses; track address.name) {
+                  <mat-option [value]="address.name">{{ address.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Barangay</mat-label>
+              <mat-select formControlName="barangay">
+                <mat-option value="">-- Select Barangay --</mat-option>
+                @for (barangay of barangays; track barangay.name) {
+                  <mat-option [value]="barangay.name">{{ barangay.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Gender -->
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Gender</mat-label>
+            <mat-select formControlName="gender">
+              <mat-option value="male">Male</mat-option>
+              <mat-option value="female">Female</mat-option>
+              <mat-option value="other">Other</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Role -->
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role">
+              <mat-option value="admin">Admin</mat-option>
+              <mat-option value="vet">Veterinarian</mat-option>
+              <mat-option value="farmer">Farmer</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="!rxform.valid || isLoading">
+            Submit
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </form>
   }
-
-  <div>
-    <label for="email">Email</label>
-    <input id="email" type="email" formControlName="email" />
-  </div>
-
-  <div>
-    <label for="mobileNumber">Mobile Number</label>
-    <input id="mobileNumber" type="tel" formControlName="mobileNumber" />
-  </div>
-
-  <div formGroupName="address">
-    <span>Address:</span>
-    <div>
-      <label for="city">City</label>
-      <select id="city" formControlName="city">
-        <option value="">-- Select City --</option>
-        @for (address of addresses; track address.name) {
-          <option value="{{ address.name }}">{{ address.name }}</option>
-        }
-      </select>
-    </div>
-    <div>
-      <label for="barangay">Barangay</label>
-      <select id="barangay" formControlName="barangay">
-        <option value="">-- Select Barangay --</option>
-        @for (barangay of barangays; track barangay.name) {
-          <option value="{{ barangay.name }}">{{ barangay.name }}</option>
-        }
-      </select>
-    </div>
-  </div>
-
-  <div>
-    <label for="gender">Gender</label>
-    <select id="gender" formControlName="gender">
-      <option value="male">Male</option>
-      <option value="female">Female</option>
-      <option value="other">Other</option>
-    </select>
-  </div>
-
-  <div>
-    <label for="role">Role</label>
-    <select id="role" formControlName="role">
-      <option value="admin">Admin</option>
-      <option value="vet">Veterinarian</option>
-      <option value="farmer">Farmer</option>
-    </select>
-  </div>
-
-  <button type="submit" [disabled]="!rxform.valid || isLoading">Submit</button>
-</form>
+</div>

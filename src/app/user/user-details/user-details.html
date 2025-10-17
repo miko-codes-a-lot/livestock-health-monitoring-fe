@@ -1,17 +1,63 @@
-<div>
-  <h2>User Details</h2>
+<div class="details-container">
   @if (user) {
-    <button (click)="onUpdate()">Update</button>
-    <p><strong>Username:</strong> {{ user.username }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Mobile Number:</strong> {{ user.mobileNumber }}</p>
-    <p><strong>Gender:</strong> {{ user.gender }}</p>
-    <p><strong>Role:</strong> {{ user.role }}</p>
+    <mat-card class="user-card">
+      <mat-card-header>
+        <mat-card-title>User Details</mat-card-title>
+        <mat-card-actions align="end">
+          <button mat-raised-button color="primary" (click)="onUpdate()">Update</button>
+        </mat-card-actions>
+      </mat-card-header>
 
-    <h3>Address</h3>
-    <p><strong>City:</strong> {{ user.address.city }}</p>
-    <p><strong>Barangay:</strong> {{ user.address.barangay }}</p>
+      <mat-divider></mat-divider>
+
+      <mat-card-content>
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="label">Username:</span>
+            <span class="value">{{ user.username }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Email:</span>
+            <span class="value">{{ user.email }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Mobile Number:</span>
+            <span class="value">{{ user.mobileNumber }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Gender:</span>
+            <span class="value text-capitalize">{{ user.gender }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Role:</span>
+            <span class="value text-capitalize">{{ user.role }}</span>
+          </div>
+        </div>
+
+        <mat-divider class="divider-space"></mat-divider>
+
+        <h3>Address</h3>
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="label">City:</span>
+            <span class="value">{{ user.address.city }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Barangay:</span>
+            <span class="value">{{ user.address.barangay }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
   } @else {
-    <p>Fetching user...</p>
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Fetching user...</p>
+    </div>
   }
 </div>

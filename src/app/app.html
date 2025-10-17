@@ -1,19 +1,46 @@
-@if (isLoggedIn) {
-  <nav>
-    <ul>
-      <li><a [routerLink]="isLoading ? null : `/dashboard/${user?.role}`">Dashboard</a></li>
-      <li><a [routerLink]="isLoading ? null : '/user'">Users</a></li>
-      <li>Livestock Categories</li>
-      <li>Livestock Classification</li>
-      <li><a [routerLink]="isLoading ? null : '/livestock'">Livestock</a></li>
-      <li><a [routerLink]="isLoading ? null : '/health-record'">Health Record</a></li>
-      <li><a [routerLink]="isLoading ? null : '/treatment'">Treatment</a></li>
-      <li><a [routerLink]="isLoading ? null : '/vaccination'">Vaccination</a></li>
-      <li><a [routerLink]="isLoading ? null : '/schedule'">Schedule</a></li>
-      <li><button (click)="onLogout()" [disabled]="isLoading">Logout</button></li>
-    </ul>
-  </nav>
-}
-<div>
-    <router-outlet />
-</div>
+<mat-drawer-container class="main-container" autosize>
+
+  @if (isLoggedIn) {
+    <!-- ✅ added template reference variable -->
+    <mat-drawer #drawer mode="side" opened class="sidebar">
+      <mat-nav-list>
+        <a mat-list-item [routerLink]="isLoading ? null : `/dashboard/${user?.role}`">Dashboard</a>
+        <a mat-list-item [routerLink]="isLoading ? null : '/user'">Users</a>
+        <a mat-list-item>Livestock Categories</a>
+        <a mat-list-item>Livestock Classification</a>
+        <a mat-list-item [routerLink]="isLoading ? null : '/livestock'">Livestock</a>
+        <a mat-list-item [routerLink]="isLoading ? null : '/health-record'">Health Record</a>
+        <a mat-list-item [routerLink]="isLoading ? null : '/treatment'">Treatment</a>
+        <a mat-list-item [routerLink]="isLoading ? null : '/vaccination'">Vaccination</a>
+        <a mat-list-item [routerLink]="isLoading ? null : '/schedule'">Schedule</a>
+
+        <button
+          mat-raised-button
+          color="warn"
+          (click)="onLogout()"
+          [disabled]="isLoading"
+          class="logout-btn"
+        >
+          Logout
+        </button>
+      </mat-nav-list>
+    </mat-drawer>
+  }
+
+  <mat-drawer-content>
+    <mat-toolbar color="primary">
+      <!-- ✅ call the toggle function -->
+       @if (!isLoggedIn) {
+        <button mat-icon-button (click)="toggleDrawer()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      }
+      <span>Livestock Management</span>
+    </mat-toolbar>
+
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-drawer-content>
+
+</mat-drawer-container>

@@ -1,11 +1,45 @@
-@if (isLoading) {
-  <p>Loading...</p>
-}
+<div class="login-container">
+  @if (isLoading) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading...</p>
+    </div>
+  } @else {
+    <mat-card class="login-card">
+      <mat-card-header>
+        <mat-card-title>Welcome Back</mat-card-title>
+        <mat-card-subtitle>Sign in to continue</mat-card-subtitle>
+      </mat-card-header>
 
-<form [formGroup]="rxform" (ngSubmit)="onSubmit()">
-  <label for="username">Username:</label>
-  <input id="username" type="text" formControlName="username"> <br>
-  <label for="password">Password</label>
-  <input id="password" type="password" formControlName="password"> <br>
-  <button [disabled]="!rxform.valid && !isLoading">Login</button>
-</form>
+      <mat-card-content>
+        <form [formGroup]="rxform" (ngSubmit)="onSubmit()" class="login-form">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Username</mat-label>
+            <input matInput type="text" formControlName="username" required>
+            <mat-error *ngIf="rxform.get('username')?.invalid && rxform.get('username')?.touched">
+              Username is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password" required>
+            <mat-error *ngIf="rxform.get('password')?.invalid && rxform.get('password')?.touched">
+              Password is required
+            </mat-error>
+          </mat-form-field>
+
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit" 
+            class="login-button"
+            [disabled]="rxform.invalid || isLoading"
+          >
+            Login
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

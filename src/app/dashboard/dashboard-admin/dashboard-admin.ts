@@ -1,9 +1,11 @@
 import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
 import { Chart } from 'chart.js/auto';
 
 @Component({
   selector: 'app-dashboard-admin',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './dashboard-admin.html',
   styleUrl: './dashboard-admin.css'
 })

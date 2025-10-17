@@ -1,18 +1,38 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RxLogin } from '../_shared/model/reactive/rx-login';
 import { AuthService } from '../_shared/service/auth-service';
 import { Router } from '@angular/router';
 
+// Angular Material modules
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
+  ],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrls: ['./login.css']
 })
 export class Login {
-  rxform!: FormGroup<RxLogin>
-  isLoading = false
+  rxform!: FormGroup<RxLogin>;
+  isLoading = false;
+  hidePassword = true;
 
   constructor(
     private readonly authService: AuthService,
@@ -24,33 +44,30 @@ export class Login {
     this.rxform = this.fb.nonNullable.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
-    })
+    });
 
     this.authService.currentUser$.subscribe({
       next: (u) => {
-        if (u) {
-          this.router.navigate(['/dashboard'])
-        }
+        if (u) this.router.navigate(['/dashboard']);
       }
-    })
+    });
   }
-  
+
   onSubmit() {
-    this.isLoading = true
+    if (this.rxform.invalid) return;
+    this.isLoading = true;
 
     this.authService.login(this.username.value, this.password.value).subscribe({
-      next: (r) => {
-        this.router.navigate(['/dashboard'])
-      },
-      error: (err) => alert(`Something went wrong ${err}`)
-    }).add(() => this.isLoading = false)
+      next: () => this.router.navigate(['/dashboard']),
+      error: (err) => alert(`Something went wrong: ${err}`)
+    }).add(() => this.isLoading = false);
   }
 
-  get username () {
-    return this.rxform.controls.username
+  get username() {
+    return this.rxform.controls.username;
   }
 
   get password() {
-    return this.rxform.controls.password
+    return this.rxform.controls.password;
   }
 }
