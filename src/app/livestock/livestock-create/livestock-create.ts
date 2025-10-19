@@ -27,11 +27,38 @@ export class LivestockCreate {
 
   }
 
-  onSubmit(livestock: Livestock) {
-    this.livestockService.create(livestock).subscribe({
-      next: data => this.router.navigate(['/livestock/details', data._id], { replaceUrl: true }),
-      error: err => console.log(`Something went wrong: ${err}`)
-    })
+  onSubmit(payload: { livestockData: Livestock; files: File[] }) {
+    const { livestockData, files } = payload;
+    this.isLoading = true;
+    // Step 1: create livestock
+    this.livestockService.create(livestockData).subscribe({
+      next: (data) => {
+
+        const livestockId = data._id;
+
+        if (files && files.length > 0) {
+          // Step 2: upload photos
+          this.livestockService.uploadPhotos(livestockId, files).subscribe({
+            next: () => {
+              this.isLoading = false;
+              this.router.navigate(['/livestock/details', livestockId], { replaceUrl: true });
+            },
+            error: (err) => {
+              this.isLoading = false;
+              console.error('Photo upload failed', err);
+            },
+          });
+        } else {
+          this.isLoading = false;
+          this.router.navigate(['/livestock/details', livestockId], { replaceUrl: true });
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Livestock creation failed', err);
+      },
+    });
   }
+
 
 }

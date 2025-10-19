@@ -9,7 +9,26 @@
         <!-- Row 1: Tag Number, Species, Breed -->
 
         <div class="form-row">
-          <label for="animalPhotos">Animal Photos</label>
+          <label>Animal Photos</label>
+            <!-- Existing photos from DB -->
+            <div class="form-row" *ngIf="existingPhotos.length > 0">
+              <label>Existing Animal Photos</label>
+              <div class="animal-photos-preview">
+                <!-- <img
+                  *ngFor="let filename of existingPhotos"
+                  [src]="'/livestocks/' + filename + '/photo'"
+                  alt="Animal photo"
+                  class="animal-photo"
+                /> -->
+                <img
+                  *ngFor="let filename of existingPhotos"
+                  [src]="'/livestocks/' + filename"
+                  alt="Animal photo"
+                  class="animal-photo"
+                />
+              </div>
+            </div>
+
           <input id="animalPhotos" type="file" (change)="onFilesSelected($event)" multiple />
         </div>
         <div class="form-row">

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Livestock } from '../model/livestock';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+
 
 @Injectable({
   providedIn: 'root'
@@ -49,5 +50,21 @@ export class LivestockService {
   
     delete(id: string): Observable<void> {
       return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
+    }
+
+    uploadPhotos(livestockId: any, files: File[]): Observable<any> {
+      const formData = new FormData();
+      files.forEach(file => formData.append('photos', file));
+      return this.http.put(`${this.baseUrl}/${livestockId}/photos`, formData, { withCredentials: true });
+    }
+
+    // should get this in the ts
+    // make this transform the data to what is needed to be rendered
+    getProfilePicture(animalPhotos: string): Observable<string> {
+      const url = `${this.baseUrl}/${animalPhotos}/photo`;
+
+      return this.http.get(url, { responseType: 'blob', withCredentials: true }).pipe(
+        map(blob => URL.createObjectURL(blob))
+      );
     }
 }

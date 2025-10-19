@@ -11,6 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { UserService } from '../../_shared/service/user-service';
 import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
+import { LivestockService } from '../../_shared/service/livestock-service';
 import { LivestockGroup } from '../../_shared/model/livestock-group';
 
 @Component({
@@ -36,12 +37,18 @@ export class LivestockForm implements OnInit {
   @Output() onSubmitEvent = new EventEmitter<{ livestockData: Livestock; files: File[] }>();
   selectedFiles: File[] = [];
 
+  existingPhotos: string[] = []; // filenames from DB
+  previewPhotos: string[] = [];  // selected new files converted to preview URLs
+
   @Input()
   set initDoc(value: Livestock) {
     this._initDoc = value;
     if (this.rxform && value) {
       this.rxform.patchValue(value);
       this.onSpeciesChange(value.species);
+      // load existing photos
+      this.existingPhotos = value.animalPhotos || [];
+
     }
   }
 
@@ -79,7 +86,8 @@ export class LivestockForm implements OnInit {
   constructor(
     private readonly fb: FormBuilder,
     private readonly userService: UserService,
-    private readonly livestockGroupService: LivestockGroupService
+    private readonly livestockGroupService: LivestockGroupService,
+    private readonly livestockService: LivestockService,
   ) {}
 
   ngOnInit(): void {
@@ -157,8 +165,18 @@ export class LivestockForm implements OnInit {
     if (input.files && input.files.length > 0) {
       this.selectedFiles = Array.from(input.files);
       // this.rxform.get('animalPhotos')?.markAsTouched();
+
+      this.previewPhotos = this.selectedFiles.map(file => URL.createObjectURL(file));
     }
   }
+
+  // make this work tomorrow apply the multiple here
+  // loadProfilePicture(userId: string) {
+  //   this.livestockService.getProfilePicture(userId).subscribe({
+  //     next: (url) => this.avatarUrl = url,
+  //     error: () => this.avatarUrl = null
+  //   });
+  // }
 
   onSubmit() {
     if (this.rxform.invalid) return;
