@@ -17,11 +17,11 @@ export const LIVESTOCK_ROUTES: Routes = [
       },
       {
         path: 'create',
-        loadChildren: () => import('./livestock-create/livestock-create').then(m => m.LivestockCreate),
+        loadComponent: () => import('./livestock-create/livestock-create').then(m => m.LivestockCreate),
       },
       {
-        path: 'update',
-        loadChildren: () => import('./livestock-update/livestock-update').then(m => m.LivestockUpdate),
+        path: 'update/:id',
+        loadComponent: () => import('./livestock-update/livestock-update').then(m => m.LivestockUpdate),
       },
       {
         path: 'details',

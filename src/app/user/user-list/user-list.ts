@@ -45,7 +45,10 @@ export class UserList {
     this.isLoading = true
 
     this.userService.getAll().subscribe({
-      next: users => this.users = users,
+      next: users => {
+        this.users = users
+        console.log('user', users)
+      },
       error: err => alert(`Something went wrong: ${err}`)
     }).add(() => this.isLoading = false)
   }

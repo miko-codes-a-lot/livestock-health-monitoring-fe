@@ -1,11 +1,15 @@
 export interface UserDto {
   _id?: string
+  firstName: string
+  middleName: string
+  lastName: string
   username: string
   password?: string
-  email: string
+  emailAddress: string
   mobileNumber: string
   address: {
-    city: string,
+    province: string,
+    municipality: string,
     barangay: string,
   }
   gender: 'male' | 'female'

@@ -1,0 +1,46 @@
+.form-container {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.livestock-form {
+  width: 100%;
+  max-width: 700px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  width: 48%;
+  margin-right: 2%;
+}
+
+.third-width {
+  width: 31%;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+mat-card {
+  padding: 16px;
+}
+
+mat-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.loading-state {
+  text-align: center;
+  margin-top: 60px;
+  color: #555;
+}

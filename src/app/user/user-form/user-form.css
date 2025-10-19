@@ -18,6 +18,12 @@
   margin-right: 2%;
 }
 
+.third-width {
+  width: 31%;
+}
+
+.name-group,
+.gender-role-group,
 .address-group {
   display: flex;
   flex-wrap: wrap;
@@ -39,3 +45,7 @@ mat-card-title {
   font-size: 1.25rem;
   font-weight: 600;
 }
+
+
+
+

@@ -8,9 +8,9 @@ export interface Livestock {
   dateOfPurchase: string;
   farmer: string;
   livestockGroup: string;
-  animalPhotos: string[];
+  animalPhotos?: string[];
   isInsured: boolean;
   isDeceased: boolean;
   status: 'pending' | 'approved' | 'rejected' | string;
-  statusAt: string;
+  statusAt?: string;
 }

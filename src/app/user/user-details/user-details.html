@@ -13,13 +13,28 @@
       <mat-card-content>
         <div class="details-grid">
           <div class="detail-item">
+            <span class="label">First Name:</span>
+            <span class="value">{{ user.firstName || '—' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Middle Name:</span>
+            <span class="value">{{ user.middleName || '—' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Last Name:</span>
+            <span class="value">{{ user.lastName || '—' }}</span>
+          </div>
+
+          <div class="detail-item">
             <span class="label">Username:</span>
             <span class="value">{{ user.username }}</span>
           </div>
 
           <div class="detail-item">
             <span class="label">Email:</span>
-            <span class="value">{{ user.email }}</span>
+            <span class="value">{{ user.emailAddress }}</span>
           </div>
 
           <div class="detail-item">
@@ -43,13 +58,18 @@
         <h3>Address</h3>
         <div class="details-grid">
           <div class="detail-item">
-            <span class="label">City:</span>
-            <span class="value">{{ user.address.city }}</span>
+            <span class="label">Province:</span>
+            <span class="value">{{ user.address.province || '—' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Municipality / City:</span>
+            <span class="value">{{ user.address.municipality || '—' }}</span>
           </div>
 
           <div class="detail-item">
             <span class="label">Barangay:</span>
-            <span class="value">{{ user.address.barangay }}</span>
+            <span class="value">{{ user.address.barangay || '—' }}</span>
           </div>
         </div>
       </mat-card-content>

@@ -6,42 +6,90 @@
     </div>
   } @else {
     <form [formGroup]="rxform" (ngSubmit)="onSave()" class="user-form">
-
       <mat-card>
         <mat-card-header>
           <mat-card-title>User Information</mat-card-title>
         </mat-card-header>
+
         <mat-card-content>
+          <!-- Name Fields -->
+          <div class="name-group">
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>First Name</mat-label>
+              <input matInput formControlName="firstName" type="text" />
+              <mat-error *ngIf="rxform.get('firstName')?.hasError('required')">
+                First name is required.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>Middle Name</mat-label>
+              <input matInput formControlName="middleName" type="text" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>Last Name</mat-label>
+              <input matInput formControlName="lastName" type="text" />
+              <mat-error *ngIf="rxform.get('lastName')?.hasError('required')">
+                Last name is required.
+              </mat-error>
+            </mat-form-field>
+          </div>
 
           <!-- Username -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Username</mat-label>
-            <input matInput type="text" formControlName="username">
+            <input matInput formControlName="username" type="text" />
+            <mat-error *ngIf="rxform.get('username')?.hasError('required')">
+              Username is required.
+            </mat-error>
           </mat-form-field>
 
-          <!-- Password Fields -->
-          @if (!user._id) {
+          <!-- Password -->
+          @if (!user?._id) {
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Password</mat-label>
-              <input matInput type="password" formControlName="password">
+              <input matInput formControlName="password" type="password" />
+              <mat-error *ngIf="rxform.get('password')?.hasError('required')">
+                Password is required.
+              </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Confirm Password</mat-label>
-              <input matInput type="password" formControlName="passwordConfirm">
+              <input matInput formControlName="passwordConfirm" type="password" />
+              <mat-error
+                *ngIf="
+                  rxform.get('passwordConfirm')?.touched &&
+                  rxform.get('password')?.value !== rxform.get('passwordConfirm')?.value
+                ">
+                Passwords do not match.
+              </mat-error>
             </mat-form-field>
           }
 
           <!-- Email -->
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Email</mat-label>
-            <input matInput type="email" formControlName="email">
+            <mat-label>Email Address</mat-label>
+            <input matInput formControlName="emailAddress" type="email" />
+            <mat-error *ngIf="rxform.get('emailAddress')?.hasError('required')">
+              Email is required.
+            </mat-error>
+            <mat-error *ngIf="rxform.get('emailAddress')?.hasError('email')">
+              Please enter a valid email address.
+            </mat-error>
           </mat-form-field>
 
           <!-- Mobile -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Mobile Number</mat-label>
-            <input matInput type="tel" formControlName="mobileNumber">
+            <input matInput formControlName="mobileNumber" type="tel" />
+            <mat-error *ngIf="rxform.get('mobileNumber')?.hasError('required')">
+              Mobile number is required.
+            </mat-error>
+            <mat-error *ngIf="rxform.get('mobileNumber')?.hasError('pattern')">
+              Must be a valid Philippine number (e.g. +639XXXXXXXXX).
+            </mat-error>
           </mat-form-field>
 
           <!-- Address -->
@@ -49,13 +97,22 @@
             <h3>Address</h3>
 
             <mat-form-field appearance="outline" class="half-width">
-              <mat-label>City</mat-label>
-              <mat-select formControlName="city">
-                <mat-option value="">-- Select City --</mat-option>
+              <mat-label>Municipality</mat-label>
+              <mat-select
+                formControlName="municipality"
+                (selectionChange)="onMunicipalitySelected($event.value)"
+              >
+                <mat-option value="">-- Select Municipality --</mat-option>
                 @for (address of addresses; track address.name) {
                   <mat-option [value]="address.name">{{ address.name }}</mat-option>
                 }
               </mat-select>
+            </mat-form-field>
+
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Province</mat-label>
+              <input matInput formControlName="province" type="text" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="half-width">
@@ -69,33 +126,31 @@
             </mat-form-field>
           </div>
 
-          <!-- Gender -->
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Gender</mat-label>
-            <mat-select formControlName="gender">
-              <mat-option value="male">Male</mat-option>
-              <mat-option value="female">Female</mat-option>
-              <mat-option value="other">Other</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <!-- Gender & Role -->
+          <div class="gender-role-group">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Gender</mat-label>
+              <mat-select formControlName="gender">
+                <mat-option value="male">Male</mat-option>
+                <mat-option value="female">Female</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          <!-- Role -->
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Role</mat-label>
-            <mat-select formControlName="role">
-              <mat-option value="admin">Admin</mat-option>
-              <mat-option value="vet">Veterinarian</mat-option>
-              <mat-option value="farmer">Farmer</mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Role</mat-label>
+              <mat-select formControlName="role">
+                <mat-option value="admin">Admin</mat-option>
+                <mat-option value="vet">Veterinarian</mat-option>
+                <mat-option value="farmer">Farmer</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
         </mat-card-content>
 
         <mat-card-actions align="end">
-          <button
-            mat-raised-button
-            color="primary"
-            type="submit"
-            [disabled]="!rxform.valid || isLoading">
+          <!-- to check update only -->
+           <!-- [disabled]="!rxform.valid || isLoading" -->
+          <button mat-raised-button color="primary" type="submit" [disabled]="!rxform.valid || isLoading"  >
             Submit
           </button>
         </mat-card-actions>
@@ -103,3 +158,5 @@
     </form>
   }
 </div>
+
+
