@@ -1,1 +1,86 @@
-<p>health-record-details works!</p>
+<div class="details-container">
+  <mat-card *ngIf="healthRecord; else loading" class="livestock-card">
+    <mat-card-header>
+      <mat-card-title>Livestock Details</mat-card-title>
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary" (click)="onUpdate()">Update</button>
+      </mat-card-actions>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="label">Animal Breed:</span>
+          <span class="value">{{ healthRecord.animal || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Condition:</span>
+          <span class="value">{{ healthRecord.bodyCondition || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Deworming Date:</span>
+          <span class="value">{{ healthRecord.dewormingDate || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Diagnosis:</span>
+          <span class="value text-capitalize">{{ healthRecord.diagnosis || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Notes:</span>
+          <span class="value">{{ healthRecord.notes || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Symptoms Observed:</span>
+          <span class="value">{{ healthRecord.symptomsObserved || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Technician:</span>
+          <span class="value">{{ technicianName || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Treatment Given:</span>
+          <span class="value text-capitalize">{{ healthRecord.treatmentGiven || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Vaccination Date:</span>
+          <span class="value">{{ healthRecord.vaccinationDate || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Visit Date:</span>
+          <span class="value">{{ healthRecord.visitDate || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Vitamins Administered:</span>
+          <span class="value">{{ healthRecord.vitaminsAdministered || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Weight (Kg):</span>
+          <span class="value">{{ healthRecord.weightKg }}</span>
+        </div>
+      </div>
+
+      <mat-divider class="divider-space"></mat-divider>
+
+    </mat-card-content>
+  </mat-card>
+
+  <ng-template #loading>
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Fetching livestock details...</p>
+    </div>
+  </ng-template>
+</div>

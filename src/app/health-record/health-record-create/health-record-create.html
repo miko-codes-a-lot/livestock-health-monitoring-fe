@@ -1,1 +1,5 @@
-<p>health-record-create works!</p>
+<app-health-record-form
+  [isLoading]="isLoading"
+  [initDoc]="initDoc"
+  (onSubmitEvent)="onSubmit($event)"
+></app-health-record-form>

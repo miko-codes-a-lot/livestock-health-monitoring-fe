@@ -1,1 +1,110 @@
-<p>health-record-form works!</p>
+<div class="form-container">
+  <form [formGroup]="rxform" (ngSubmit)="onSubmit()" class="health-record-form">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Health Record</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <!-- Row 1: Animal, Body Condition, Weight -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Animal</mat-label>
+            <mat-select formControlName="animal">
+            <mat-option *ngFor="let a of animals" [value]="a._id">
+              {{ a.tagNumber }} - {{ a.species }}
+            </mat-option>
+            </mat-select>
+            <mat-error *ngIf="animal.hasError('required')">Animal is required.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Body Condition</mat-label>
+            <mat-select formControlName="bodyCondition">
+              <mat-option value="thin">Thin</mat-option>
+              <mat-option value="ideal">Ideal</mat-option>
+              <mat-option value="overweight">Overweight</mat-option>
+            </mat-select>
+            <mat-error *ngIf="bodyCondition.hasError('required')">Body Condition is required.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Weight (kg)</mat-label>
+            <input matInput type="number" formControlName="weightKg" min="0" />
+            <mat-error *ngIf="weightKg.hasError('required')">Weight is required.</mat-error>
+            <mat-error *ngIf="weightKg.hasError('min')">Weight cannot be negative.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Row 2: Visit Date, Diagnosis -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Visit Date</mat-label>
+            <input matInput type="date" formControlName="visitDate" />
+            <mat-error *ngIf="visitDate.hasError('required')">Visit Date is required.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Diagnosis</mat-label>
+            <input matInput formControlName="diagnosis" />
+          </mat-form-field>
+        </div>
+
+        <!-- Row 3: Symptoms Observed, Notes -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Symptoms Observed</mat-label>
+            <textarea matInput formControlName="symptomsObserved"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Notes</mat-label>
+            <textarea matInput formControlName="notes"></textarea>
+          </mat-form-field>
+        </div>
+
+        <!-- Row 4: Treatment, Technician -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Treatment Given</mat-label>
+            <textarea matInput formControlName="treatmentGiven"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Technician</mat-label>
+            <mat-select formControlName="technician">
+              <mat-option *ngFor="let f of technicians" [value]="f.id">{{ f.name }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="technician.hasError('required')">Technician is required.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Row 5: Vaccination Date, Deworming Date, Vitamins -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Vaccination Date</mat-label>
+            <input matInput type="date" formControlName="vaccinationDate" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Deworming Date</mat-label>
+            <input matInput type="date" formControlName="dewormingDate" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Vitamins Administered</mat-label>
+            <input matInput formControlName="vitaminsAdministered" />
+          </mat-form-field>
+        </div>
+
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary" type="submit" [disabled]="rxform.invalid || isLoading">
+          Submit
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>

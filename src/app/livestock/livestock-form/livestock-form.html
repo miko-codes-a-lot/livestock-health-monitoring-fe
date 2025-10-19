@@ -7,6 +7,11 @@
 
       <mat-card-content>
         <!-- Row 1: Tag Number, Species, Breed -->
+
+        <div class="form-row">
+          <label for="animalPhotos">Animal Photos</label>
+          <input id="animalPhotos" type="file" (change)="onFilesSelected($event)" multiple />
+        </div>
         <div class="form-row">
           <mat-form-field appearance="outline" class="third-width">
             <mat-label>Tag Number</mat-label>

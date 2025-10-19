@@ -16,6 +16,6 @@ export interface RxUserForm {
   emailAddress: FormControl<string>
   mobileNumber: FormControl<string>
   address: FormGroup<RxAddress>
-  gender: FormControl<'male' | 'female'>; // ✅ fixed here
-  role: FormControl<'admin' | 'farmer' | 'vet'>; // ✅ more specific too
+  gender: FormControl<'male' | 'female'>;
+  role: FormControl<'admin' | 'farmer' | 'vet' | 'technician'>;
 }

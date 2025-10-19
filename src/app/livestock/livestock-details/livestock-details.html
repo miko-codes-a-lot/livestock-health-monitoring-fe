@@ -1,1 +1,85 @@
-<p>livestock-details works!</p>
+<div class="details-container">
+  <mat-card *ngIf="livestock; else loading" class="livestock-card">
+    <mat-card-header>
+      <mat-card-title>Livestock Details</mat-card-title>
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary" (click)="onUpdate()">Update</button>
+      </mat-card-actions>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="label">Tag Number:</span>
+          <span class="value">{{ livestock.tagNumber || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Species:</span>
+          <span class="value">{{ livestock.species || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Breed:</span>
+          <span class="value">{{ livestock.breed || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Sex:</span>
+          <span class="value text-capitalize">{{ livestock.sex }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Age:</span>
+          <span class="value">{{ livestock.age }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Date of Purchase:</span>
+          <span class="value">{{ livestock.dateOfPurchase | date:'mediumDate' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Farmer:</span>
+          <span class="value">{{ farmerName || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Livestock Group:</span>
+          <span class="value">{{ livestockGroupName || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Status:</span>
+          <span class="value text-capitalize">{{ livestock.status }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Insured:</span>
+          <span class="value">{{ livestock.isInsured ? 'Yes' : 'No' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Deceased:</span>
+          <span class="value">{{ livestock.isDeceased ? 'Yes' : 'No' }}</span>
+        </div>
+      </div>
+
+      <mat-divider class="divider-space"></mat-divider>
+
+      <h3>Animal Photos</h3>
+      <div class="photo-gallery">
+        <img *ngFor="let photo of livestock.animalPhotos" [src]="getPhotoUrl(photo)" alt="Animal Photo" class="animal-photo">
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <ng-template #loading>
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Fetching livestock details...</p>
+    </div>
+  </ng-template>
+</div>

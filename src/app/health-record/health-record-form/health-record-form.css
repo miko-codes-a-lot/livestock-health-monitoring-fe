@@ -1,0 +1,49 @@
+.form-container {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.health-record-form {
+  width: 100%;
+  max-width: 900px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  width: 48%;
+}
+
+.third-width {
+  width: 31%;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+mat-card {
+  padding: 16px;
+}
+
+mat-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+mat-error {
+  font-size: 0.75rem;
+}
+
+.loading-state {
+  text-align: center;
+  margin-top: 60px;
+  color: #555;
+}

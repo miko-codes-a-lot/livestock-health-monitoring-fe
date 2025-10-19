@@ -54,14 +54,14 @@ healthRecords: HealthRecord[] = [];
   }
 
   onCreate() {
-    this.router.navigate(['/healthRecord/create']);
+    this.router.navigate(['/health-record/create']);
   }
 
   onDetails(id: string) {
-    this.router.navigate(['/healthRecord/details', id]);
+    this.router.navigate(['/health-record/details', id]);
   }
 
   onUpdate(id: string) {
-    this.router.navigate(['/healthRecord/update', id]);
+    this.router.navigate(['/health-record/update', id]);
   }
 }

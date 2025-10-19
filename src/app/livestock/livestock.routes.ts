@@ -24,8 +24,8 @@ export const LIVESTOCK_ROUTES: Routes = [
         loadComponent: () => import('./livestock-update/livestock-update').then(m => m.LivestockUpdate),
       },
       {
-        path: 'details',
-        loadChildren: () => import('./livestock-details/livestock-details').then(m => m.LivestockDetails),
+        path: 'details/:id',
+        loadComponent: () => import('./livestock-details/livestock-details').then(m => m.LivestockDetails),
       },
     ]
   }

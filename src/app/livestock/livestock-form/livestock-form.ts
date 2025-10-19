@@ -33,7 +33,8 @@ export class LivestockForm implements OnInit {
   @Input() isLoading = false;
   // @Input() initDoc!: Livestock;
   private _initDoc!: Livestock;
-  @Output() onSubmitEvent = new EventEmitter<Livestock>();
+  @Output() onSubmitEvent = new EventEmitter<{ livestockData: Livestock; files: File[] }>();
+  selectedFiles: File[] = [];
 
   @Input()
   set initDoc(value: Livestock) {
@@ -85,7 +86,6 @@ export class LivestockForm implements OnInit {
     this.initializeForm();
     this.loadFarmers();
     this.loadLivestockGroups();
-    console.log('initDoc', this.initDoc)
     // patch form if initDoc is already set
     if (this.initDoc) {
       this.rxform.patchValue(this.initDoc);
@@ -134,6 +134,7 @@ export class LivestockForm implements OnInit {
       this.farmers = users
         .filter(u => u.role === 'farmer' && u._id)
         .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+      console.log('farmers', this.farmers)
     });
   }
 
@@ -151,10 +152,21 @@ export class LivestockForm implements OnInit {
     }
   }
 
+  onFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFiles = Array.from(input.files);
+      // this.rxform.get('animalPhotos')?.markAsTouched();
+    }
+  }
+
   onSubmit() {
     if (this.rxform.invalid) return;
-    this.onSubmitEvent.emit(this.rxform.value as Livestock);
+    const livestockData: Livestock = this.rxform.value as Livestock;
+    this.onSubmitEvent.emit({livestockData, files: this.selectedFiles});
   }
+
+  
 
   // --- Getters ---
   get tagNumber() { return this.rxform.controls.tagNumber; }

@@ -74,7 +74,7 @@ export class UserForm implements OnInit {
         [Validators.required, Validators.pattern(/^\+639\d{9}$/)]
       ],
       gender: this.fb.nonNullable.control<'male' | 'female'>(u.gender),
-      role: this.fb.nonNullable.control<'admin' | 'farmer' | 'vet'>(u.role),
+      role: this.fb.nonNullable.control<'admin' | 'farmer' | 'vet' | 'technician'>(u.role),
       address: this.fb.nonNullable.group({
         province: [u.address.province ?? ''], // ✅ optional
         // city: [''], // ✅ add this,

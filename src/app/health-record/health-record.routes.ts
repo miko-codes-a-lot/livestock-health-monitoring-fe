@@ -17,15 +17,15 @@ export const HEALTH_RECORD_ROUTES: Routes = [
       },
       {
         path: 'create',
-        loadChildren: () => import('./health-record-create/health-record-create').then(m => m.HealthRecordCreate),
+        loadComponent: () => import('./health-record-create/health-record-create').then(m => m.HealthRecordCreate),
       },
       {
-        path: 'update',
-        loadChildren: () => import('./health-record-update/health-record-update').then(m => m.HealthRecordUpdate),
+        path: 'update/:id',
+        loadComponent: () => import('./health-record-update/health-record-update').then(m => m.HealthRecordUpdate),
       },
       {
-        path: 'details',
-        loadChildren: () => import('./health-record-details/health-record-details').then(m => m.HealthRecordDetails),
+        path: 'details/:id',
+        loadComponent: () => import('./health-record-details/health-record-details').then(m => m.HealthRecordDetails),
       },
     ]
   }
