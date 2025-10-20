@@ -69,9 +69,22 @@
 
       <mat-divider class="divider-space"></mat-divider>
 
+    <div class="livestock-photos" *ngIf="photoUrls.length > 0">
       <h3>Animal Photos</h3>
-      <div class="photo-gallery">
-        <img *ngFor="let photo of livestock.animalPhotos" [src]="getPhotoUrl(photo)" alt="Animal Photo" class="animal-photo">
+      <div class="photo-gallery animal-photos-preview">
+        <img
+          *ngFor="let url of photoUrls"
+          [src]="url"
+          alt="Animal Photo"
+          class="animal-photo"
+          (click)="openPhoto(url)"
+        />
+      </div>
+    </div>
+
+    <!-- Fullscreen overlay -->
+      <div class="photo-overlay" *ngIf="fullScreenPhotoUrl" (click)="closePhoto()">
+        <img [src]="fullScreenPhotoUrl" alt="Full Screen Photo" class="full-screen-photo">
       </div>
     </mat-card-content>
   </mat-card>

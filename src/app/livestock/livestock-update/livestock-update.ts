@@ -3,6 +3,8 @@ import { LivestockForm } from '../livestock-form/livestock-form';
 import { Livestock } from '../../_shared/model/livestock';
 import { LivestockService } from '../../_shared/service/livestock-service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { of } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-livestock-update',
@@ -37,14 +39,32 @@ export class LivestockUpdate implements OnInit {
     }).add(() => this.isLoading = false);
   }
 
-  onSubmit(updatedLivestock: Livestock) {
+  onSubmit(payload: { livestockData: Livestock; files: File[] }) {
+    const { livestockData, files } = payload;
+    const livestockId = this.id;
+
     this.isLoading = true;
-    this.livestockService.update(this.id, updatedLivestock).subscribe({
-      next: () => {
-        alert('Livestock updated successfully!');
-        this.router.navigate(['/livestock/list']);
-      },
-      error: (e) => alert(`Update failed: ${e}`)
-    }).add(() => this.isLoading = false);
+
+    this.livestockService.update(livestockId, livestockData)
+      .pipe(
+        concatMap(() => {
+          if (files && files.length > 0) {
+            return this.livestockService.uploadPhotos(livestockId, files);
+          }
+          return of(null); // no files to upload
+        })
+      )
+      .subscribe({
+        next: () => {
+          alert('Livestock updated successfully!');
+          this.router.navigate(['/livestock/details', livestockId], { replaceUrl: true });
+        },
+        error: (err) => {
+          console.error('Update failed', err);
+          alert(`Update failed: ${err.message || err}`);
+        },
+        complete: () => this.isLoading = false
+      });
   }
+
 }

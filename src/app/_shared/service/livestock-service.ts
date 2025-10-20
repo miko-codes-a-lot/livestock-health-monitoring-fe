@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Livestock } from '../model/livestock';
-import { Observable, map } from 'rxjs';
+import { Observable, map, forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 
@@ -60,11 +60,26 @@ export class LivestockService {
 
     // should get this in the ts
     // make this transform the data to what is needed to be rendered
-    getProfilePicture(animalPhotos: string): Observable<string> {
-      const url = `${this.baseUrl}/${animalPhotos}/photo`;
+    // 
+    // getProfilePicture(animalPhotos: string): Observable<string> {
+    //   // redirect to existing route
+    //   // url / animalId / photo
+    //   const url = `${this.baseUrl}/${animalPhotos}/photo`;
+
+    //   return this.http.get(url, { responseType: 'blob', withCredentials: true }).pipe(
+    //     map(blob => URL.createObjectURL(blob))
+    //   );
+    // }
+
+    getProfilePicture(filename: string): Observable<string> {
+      const url = `${this.baseUrl}/${filename}/photo`;
 
       return this.http.get(url, { responseType: 'blob', withCredentials: true }).pipe(
         map(blob => URL.createObjectURL(blob))
       );
+    }
+
+    getProfilePictures(filenames: string[]): Observable<string[]> {
+      return forkJoin(filenames.map(f => this.getProfilePicture(f)));
     }
 }

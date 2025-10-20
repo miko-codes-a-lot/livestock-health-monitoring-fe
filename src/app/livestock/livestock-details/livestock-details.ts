@@ -9,6 +9,8 @@ import { UserService } from '../../_shared/service/user-service';
 import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Livestock } from '../../_shared/model/livestock';
+import { forkJoin, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-livestock-details',
@@ -28,6 +30,8 @@ export class LivestockDetails implements OnInit {
   livestock?: Livestock;
   farmerName = '';
   livestockGroupName = '';
+  photoUrls: string[] = []; // <-- store converted URLs here
+
 
   constructor(
     private readonly livestockService: LivestockService,
@@ -45,6 +49,12 @@ export class LivestockDetails implements OnInit {
       next: (livestock) => {
         this.livestock = livestock;
 
+                // Load photo URLs
+        if (livestock.animalPhotos?.length) {
+          this.livestockService.getProfilePictures(livestock.animalPhotos)
+            .subscribe(urls => this.photoUrls = urls);
+        }
+
         // Fetch farmer name
         if (livestock.farmer) {
           this.userService.getOne(livestock.farmer).subscribe(f => {
@@ -61,6 +71,16 @@ export class LivestockDetails implements OnInit {
       },
       error: (err) => alert(`Something went wrong: ${err}`),
     }).add(() => (this.isLoading = false));
+  }
+
+  fullScreenPhotoUrl: string | null = null;
+
+  openPhoto(url: string) {
+    this.fullScreenPhotoUrl = url;
+  }
+
+  closePhoto() {
+    this.fullScreenPhotoUrl = null;
   }
 
   onUpdate() {

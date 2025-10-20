@@ -39,6 +39,8 @@ export class LivestockForm implements OnInit {
 
   existingPhotos: string[] = []; // filenames from DB
   previewPhotos: string[] = [];  // selected new files converted to preview URLs
+  // make an array that will catch the photos
+  avatarUrl: string[] = [];
 
   @Input()
   set initDoc(value: Livestock) {
@@ -48,6 +50,15 @@ export class LivestockForm implements OnInit {
       this.onSpeciesChange(value.species);
       // load existing photos
       this.existingPhotos = value.animalPhotos || [];
+
+      if (this.existingPhotos.length > 0) {
+        this.livestockService.getProfilePictures(this.existingPhotos)
+          .subscribe(urls => {
+            this.previewPhotos = urls; // re-use previewPhotos for display
+
+            console.log('his.previewPhotos', this.previewPhotos)
+          });
+      }
 
     }
   }
@@ -96,6 +107,8 @@ export class LivestockForm implements OnInit {
     this.loadLivestockGroups();
     // patch form if initDoc is already set
     if (this.initDoc) {
+      // initialize here
+      // this.loadProfilePicture(user._id);
       this.rxform.patchValue(this.initDoc);
       this.onSpeciesChange(this.initDoc.species);
     }
@@ -171,12 +184,18 @@ export class LivestockForm implements OnInit {
   }
 
   // make this work tomorrow apply the multiple here
-  // loadProfilePicture(userId: string) {
-  //   this.livestockService.getProfilePicture(userId).subscribe({
-  //     next: (url) => this.avatarUrl = url,
-  //     error: () => this.avatarUrl = null
-  //   });
-  // }
+  // fetch the data as array
+  loadProfilePicture(userId: string) {
+    // how to pass the data of the animalPhotos here?
+    this.livestockService.getProfilePicture(userId).subscribe({
+      next: (url) => {
+          this.avatarUrl.push(url)
+
+          console.log('this.avatarUrl', this.avatarUrl)
+        },
+      error: () => this.avatarUrl = []
+    });
+  }
 
   onSubmit() {
     if (this.rxform.invalid) return;

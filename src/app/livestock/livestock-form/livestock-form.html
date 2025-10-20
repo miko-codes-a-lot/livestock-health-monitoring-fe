@@ -8,29 +8,29 @@
       <mat-card-content>
         <!-- Row 1: Tag Number, Species, Breed -->
 
-        <div class="form-row">
-          <label>Animal Photos</label>
-            <!-- Existing photos from DB -->
-            <div class="form-row" *ngIf="existingPhotos.length > 0">
-              <label>Existing Animal Photos</label>
-              <div class="animal-photos-preview">
-                <!-- <img
-                  *ngFor="let filename of existingPhotos"
-                  [src]="'/livestocks/' + filename + '/photo'"
-                  alt="Animal photo"
-                  class="animal-photo"
-                /> -->
-                <img
-                  *ngFor="let filename of existingPhotos"
-                  [src]="'/livestocks/' + filename"
-                  alt="Animal photo"
-                  class="animal-photo"
-                />
+        <div class="form-row animal-photos-section">
+          <label class="section-label">Animal Photos</label>
+
+          <!-- Preview of newly selected files -->
+          <div *ngIf="previewPhotos.length > 0" class="photos-container">
+            <div class="animal-photos-preview">
+              <div class="photo-card" *ngFor="let preview of previewPhotos; let i = index">
+                <img [src]="preview" alt="New Animal photo preview" class="animal-photo" />
+                <!-- <button type="button" class="remove-btn" (click)="removePreviewPhoto(i)">
+                  &times;
+                </button> -->
               </div>
             </div>
+          </div>
 
-          <input id="animalPhotos" type="file" (change)="onFilesSelected($event)" multiple />
+          <!-- File input styled as button -->
+          <label for="animalPhotos" class="upload-btn">
+            <span>Upload Photos</span>
+            <input id="animalPhotos" type="file" (change)="onFilesSelected($event)" multiple hidden />
+          </label>
         </div>
+
+
         <div class="form-row">
           <mat-form-field appearance="outline" class="third-width">
             <mat-label>Tag Number</mat-label>

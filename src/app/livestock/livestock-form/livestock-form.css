@@ -45,17 +45,75 @@ mat-card-title {
   color: #555;
 }
 
-.photo-previews {
+/* --- Animal Photos Section --- */
+.animal-photos-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.photos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.animal-photos-preview {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 0.5rem;
+}
+
+.photo-card {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  transition: transform 0.2s ease;
+}
+
+.photo-card:hover {
+  transform: scale(1.05);
 }
 
 .animal-photo {
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 4px; /* keeps your original style */
 }
 
+.remove-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: rgba(255, 0, 0, 0.7);
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #3f51b5;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  width: fit-content;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.upload-btn:hover {
+  background-color: #303f9f;
+}
