@@ -5,6 +5,7 @@
   display: block;
   background-color: #f4f6f8;
   min-height: 100vh;
+  line-height: 1.5;
 }
 
 /* --- Toolbar --- */
@@ -16,11 +17,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .toolbar-title {
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.5px;
 }
 
@@ -35,9 +36,9 @@
 /* --- Card Base Styles --- */
 .card {
   background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 24px;
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -45,12 +46,12 @@
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
 .card h2 {
   margin: 0 0 16px 0;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #555;
   text-transform: uppercase;
@@ -62,25 +63,35 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #e8eaf6, #f3f4fb);
-  min-height: 180px;
+  min-height: 200px;
   text-align: center;
+  border-left: 6px solid #3f51b5;
+}
+
+.stat-content h2 {
+  font-size: 1rem;
+  color: #3f51b5;
+  margin-bottom: 8px;
 }
 
 .stat-number {
-  font-size: 3rem;
-  font-weight: bold;
-  color: #3f51b5;
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #303f9f;
   margin: 0;
 }
 
 /* --- Chart Cards --- */
 .chart-card {
-  height: 400px;
+  height: 420px;
+  display: flex;
+  flex-direction: column;
 }
 
 .chart-wrapper {
   position: relative;
   flex-grow: 1;
+  min-height: 300px;
 }
 
 /* --- Responsive Grid Spans --- */
@@ -90,6 +101,13 @@
   }
 
   .full-width-card {
-    grid-column: 1 / -1; /* Span all columns */
+    grid-column: 1 / -1;
+  }
+}
+
+/* --- Smaller Devices --- */
+@media (max-width: 600px) {
+  .chart-card {
+    height: auto;
   }
 }

@@ -9,8 +9,6 @@ import { UserService } from '../../_shared/service/user-service';
 import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Livestock } from '../../_shared/model/livestock';
-import { forkJoin, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-livestock-details',
