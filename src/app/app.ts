@@ -61,11 +61,14 @@ export class App {
   }
 
   onLogout() {
-    this.isLoading = true
+    this.isLoading = true;
 
     this.authService.logout().subscribe({
-      next: () => this.router.navigate(['/login']),
+      next: () => {
+        this.isLoggedIn = false;  // <-- hide drawer
+        this.router.navigate(['/login']);
+      },
       error: (err) => alert(`Something went wrong: ${err}`),
-    }).add(() => this.isLoading = false)
+    }).add(() => this.isLoading = false);
   }
 }
