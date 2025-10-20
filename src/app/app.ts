@@ -10,8 +10,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDrawer } from '@angular/material/sidenav';
 
-
-
 @Component({
   selector: 'app-root',
   imports: [
@@ -49,6 +47,7 @@ export class App {
   ngOnInit() {
     this.authService.currentUser$.subscribe({
       next: (user) => {
+        if(user)
         this.user = user
         this.isLoggedIn = this.user !== null
       }

@@ -58,9 +58,13 @@ export class Login {
     this.isLoading = true;
 
     this.authService.login(this.username.value, this.password.value).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
-      error: (err) => alert(`Something went wrong: ${err}`)
-    }).add(() => this.isLoading = false);
+      next: (res) => {
+        // Set the user for guards and UI
+        this.authService['currentUserSubject'].next(res.user);
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => console.error(err)
+    });
   }
 
   get username() {

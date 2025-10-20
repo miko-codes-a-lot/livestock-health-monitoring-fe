@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './login/login';
-import { authGuard } from './_shared/guard/auth-guard';
+import { AuthGuard } from './_shared/guard/auth-guard';
 
 export const routes: Routes = [
   {
@@ -13,37 +13,37 @@ export const routes: Routes = [
     component: Login,
   },
   {
-    canActivate: [authGuard],
+    canActivate: [AuthGuard],
     path: 'dashboard',
     loadChildren: () => import('./dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES)
   },
   {
-    canActivate: [authGuard],
+    canActivate: [AuthGuard],
     path: 'user',
     loadChildren: () => import('./user/user.routes').then(m => m.USER_ROUTES),
   },
   {
-    canActivate: [authGuard],
+    canActivate: [AuthGuard],
     path: 'livestock',
     loadChildren: () => import('./livestock/livestock.routes').then(m => m.LIVESTOCK_ROUTES),
   },
   {
-    canActivate: [authGuard],
+    canActivate: [AuthGuard],
     path: 'health-record',
     loadChildren: () => import('./health-record/health-record.routes').then(m => m.HEALTH_RECORD_ROUTES),
   },
   {
-    canActivate: [authGuard],
+    canActivate: [AuthGuard],
     path: 'treatment',
     loadChildren: () => import('./treatment/treatment.routes').then(m => m.TREATMENT_ROUTES),
   },
   {
-    canActivate: [authGuard],
+    canActivate: [AuthGuard],
     path: 'vaccination',
     loadChildren: () => import('./vaccination/vaccination.routes').then(m => m.VACCINATION_ROUTES),
   },
   {
-    canActivate: [authGuard],
+    canActivate: [AuthGuard],
     path: 'schedule',
     loadChildren: () => import('./schedule/schedule.routes').then(m => m.SCHEDULE_ROUTES),
   },
