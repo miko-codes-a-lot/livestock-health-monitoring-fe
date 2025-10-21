@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   getProfile(): Observable<UserDto> {
-    return this.http.get<UserDto>('/api/users/profile', { withCredentials: true });
+    return this.http.get<UserDto>('/users/profile', { withCredentials: true });
   }
 
   checkAuthStatus(): Observable<UserDto | null> {

@@ -1,6 +1,5 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { environment } from '../../../environments/environment.development'; // for dev
-// import { environment } from '../../../environments/environment'; // for prod
+import { environment } from '../../../environments/environment';
 
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
