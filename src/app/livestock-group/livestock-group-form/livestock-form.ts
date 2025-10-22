@@ -13,8 +13,6 @@ import { UserService } from '../../_shared/service/user-service';
 import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
 import { LivestockService } from '../../_shared/service/livestock-service';
 import { LivestockGroup } from '../../_shared/model/livestock-group';
-import { LivestockClassificationService } from '../../_shared/service/livestock-classification-service';
-import { LivestockBreedService } from '../../_shared/service/livestock-breed-service';
 
 @Component({
   selector: 'app-livestock-form',
@@ -34,13 +32,14 @@ import { LivestockBreedService } from '../../_shared/service/livestock-breed-ser
 })
 export class LivestockForm implements OnInit {
   @Input() isLoading = false;
+  // @Input() initDoc!: Livestock;
   private _initDoc!: Livestock;
-
   @Output() onSubmitEvent = new EventEmitter<{ livestockData: Livestock; files: File[] }>();
-
   selectedFiles: File[] = [];
-  existingPhotos: string[] = [];
-  previewPhotos: string[] = [];
+
+  existingPhotos: string[] = []; // filenames from DB
+  previewPhotos: string[] = [];  // selected new files converted to preview URLs
+  // make an array that will catch the photos
   avatarUrl: string[] = [];
 
   @Input()
@@ -49,12 +48,18 @@ export class LivestockForm implements OnInit {
     if (this.rxform && value) {
       this.rxform.patchValue(value);
       this.onSpeciesChange(value.species);
+      // load existing photos
       this.existingPhotos = value.animalPhotos || [];
 
       if (this.existingPhotos.length > 0) {
         this.livestockService.getProfilePictures(this.existingPhotos)
-          .subscribe(urls => this.previewPhotos = urls);
+          .subscribe(urls => {
+            this.previewPhotos = urls; // re-use previewPhotos for display
+
+            console.log('his.previewPhotos', this.previewPhotos)
+          });
       }
+
     }
   }
 
@@ -65,26 +70,45 @@ export class LivestockForm implements OnInit {
   rxform!: FormGroup<RxLivestockForm>;
   livestockGroups: LivestockGroup[] = [];
   farmers: { id: string; name: string }[] = [];
+  filteredBreeds: { value: string; label: string }[] = [];
 
-  speciesOptions: { _id: string; name: string }[] = [];
-  filteredBreeds: { _id: string; name: string }[] = [];
+  speciesOptions = [
+    { value: 'BUB', label: 'Bubaline' },
+    { value: 'BOV', label: 'Bovine' },
+  ];
+
+  breedOptions: { [key: string]: { value: string; label: string }[] } = {
+    BOV: [
+      { value: 'N', label: 'Native' },
+      { value: 'GN', label: 'Granded Native' },
+      { value: 'BR', label: 'Brahman' },
+      { value: 'BRX', label: 'Brahman Cross' },
+      { value: 'IB', label: 'Indu Brazil' },
+      { value: 'IBX', label: 'Indu Brazil Cross' },
+    ],
+    BUB: [
+      { value: 'PC', label: 'Philippine Carabao' },
+      { value: 'MBX', label: 'Murrah Buffalo Cross' },
+      { value: 'MB', label: 'Murrah Buffalo' },
+      { value: 'BB', label: 'Bulgarian Buffalo' },
+    ]
+  };
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly userService: UserService,
     private readonly livestockGroupService: LivestockGroupService,
     private readonly livestockService: LivestockService,
-    private readonly livestockClassificationService: LivestockClassificationService,
-    private readonly livestockBreedService: LivestockBreedService, // ✅ fixed wrong service
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
     this.loadFarmers();
     this.loadLivestockGroups();
-    this.loadClassifications(); // ✅ new
-
+    // patch form if initDoc is already set
     if (this.initDoc) {
+      // initialize here
+      // this.loadProfilePicture(user._id);
       this.rxform.patchValue(this.initDoc);
       this.onSpeciesChange(this.initDoc.species);
     }
@@ -131,6 +155,7 @@ export class LivestockForm implements OnInit {
       this.farmers = users
         .filter(u => u.role === 'farmer' && u._id)
         .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+      console.log('farmers', this.farmers)
     });
   }
 
@@ -140,45 +165,34 @@ export class LivestockForm implements OnInit {
     });
   }
 
-  private loadClassifications(): void {
-    this.livestockClassificationService.getAll().subscribe(classifications => {
-      this.speciesOptions = classifications.map((c: any) => ({
-        _id: c._id,
-        name: c.name
-      }));
-    });
-  }
-
-  onSpeciesChange(speciesId: string) {
-    if (!speciesId) {
-      this.filteredBreeds = [];
-      return;
+  onSpeciesChange(species: string) {
+    this.filteredBreeds = this.breedOptions[species] ?? [];
+    const currentBreed = this.rxform.get('breed')?.value;
+    if (!this.filteredBreeds.find(b => b.value === currentBreed)) {
+      this.rxform.get('breed')?.patchValue('');
     }
-
-    // ✅ Fetch breeds belonging to selected classification
-    this.livestockBreedService.getAll().subscribe(breeds => {
-      this.filteredBreeds = breeds
-        .filter((b: any) => b.classification?._id === speciesId)
-        .map((b: any) => ({ _id: b._id, name: b.name }));
-
-      const currentBreed = this.rxform.get('breed')?.value;
-      if (!this.filteredBreeds.find(b => b._id === currentBreed)) {
-        this.rxform.get('breed')?.patchValue('');
-      }
-    });
   }
 
   onFilesSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFiles = Array.from(input.files);
+      // this.rxform.get('animalPhotos')?.markAsTouched();
+
       this.previewPhotos = this.selectedFiles.map(file => URL.createObjectURL(file));
     }
   }
 
+  // make this work tomorrow apply the multiple here
+  // fetch the data as array
   loadProfilePicture(userId: string) {
+    // how to pass the data of the animalPhotos here?
     this.livestockService.getProfilePicture(userId).subscribe({
-      next: (url) => this.avatarUrl.push(url),
+      next: (url) => {
+          this.avatarUrl.push(url)
+
+          console.log('this.avatarUrl', this.avatarUrl)
+        },
       error: () => this.avatarUrl = []
     });
   }
@@ -186,8 +200,10 @@ export class LivestockForm implements OnInit {
   onSubmit() {
     if (this.rxform.invalid) return;
     const livestockData: Livestock = this.rxform.value as Livestock;
-    this.onSubmitEvent.emit({ livestockData, files: this.selectedFiles });
+    this.onSubmitEvent.emit({livestockData, files: this.selectedFiles});
   }
+
+  
 
   // --- Getters ---
   get tagNumber() { return this.rxform.controls.tagNumber; }

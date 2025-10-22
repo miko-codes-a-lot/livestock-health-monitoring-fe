@@ -1,0 +1,40 @@
+<div class="details-container">
+  <mat-card *ngIf="livestockClassification; else loading" class="livestock-card">
+    <mat-card-header>
+      <mat-card-title>Livestock Classification Details</mat-card-title>
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary" (click)="onUpdate()">Update</button>
+      </mat-card-actions>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="label">Name:</span>
+          <span class="value">{{ livestockClassification.name || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Description:</span>
+          <span class="value">{{ livestockClassification.description || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Icon:</span>
+          <span class="value">{{ livestockClassification.icon || '—' }}</span>
+        </div>
+      </div>
+
+      <mat-divider class="divider-space"></mat-divider>
+    </mat-card-content>
+  </mat-card>
+
+  <ng-template #loading>
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Fetching livestock classification details...</p>
+    </div>
+  </ng-template>
+</div>

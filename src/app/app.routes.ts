@@ -29,6 +29,16 @@ export const routes: Routes = [
   },
   {
     canActivate: [AuthGuard],
+    path: 'livestock-classification',
+    loadChildren: () => import('./livestock-classification/livestock-classification.routes').then(m => m.LIVESTOCK_CLASSIFICATION_ROUTES),
+  },
+  {
+    canActivate: [AuthGuard],
+    path: 'livestock-breed',
+    loadChildren: () => import('./livestock-breed/livestock-breed.routes').then(m => m.LIVESTOCK_BREED_ROUTES),
+  },
+  {
+    canActivate: [AuthGuard],
     path: 'health-record',
     loadChildren: () => import('./health-record/health-record.routes').then(m => m.HEALTH_RECORD_ROUTES),
   },

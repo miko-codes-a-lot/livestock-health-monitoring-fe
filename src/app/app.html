@@ -6,14 +6,14 @@
       <mat-nav-list>
         <a mat-list-item [routerLink]="isLoading ? null : `/dashboard/${user?.role}`">Dashboard</a>
         <a mat-list-item [routerLink]="isLoading ? null : '/user'">Users</a>
-        <a mat-list-item>Livestock Categories</a>
-        <a mat-list-item>Livestock Classification</a>
+        <a mat-list-item [routerLink]="isLoading ? null : '/livestock-classification'">Livestock Classification</a>
+        <a mat-list-item [routerLink]="isLoading ? null : '/livestock-breed'">Livestock Breed</a>
         <a mat-list-item [routerLink]="isLoading ? null : '/livestock'">Livestock</a>
         <a mat-list-item [routerLink]="isLoading ? null : '/health-record'">Health Record</a>
-        <a mat-list-item [routerLink]="isLoading ? null : '/treatment'">Treatment</a>
-        <a mat-list-item [routerLink]="isLoading ? null : '/vaccination'">Vaccination</a>
-        <a mat-list-item [routerLink]="isLoading ? null : '/schedule'">Schedule</a>
-        <a mat-list-item [routerLink]="isLoading ? null : '/user-settings'">User Settings</a>
+        <!-- <a mat-list-item [routerLink]="isLoading ? null : '/treatment'">Treatment</a> -->
+        <!-- <a mat-list-item [routerLink]="isLoading ? null : '/vaccination'">Vaccination</a> -->
+        <!-- <a mat-list-item [routerLink]="isLoading ? null : '/schedule'">Schedule</a> -->
+        <!-- <a mat-list-item [routerLink]="isLoading ? null : '/user-settings'">User Settings</a> -->
 
         <button
           mat-raised-button

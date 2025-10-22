@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LivestockCategories } from './livestock-categories';
+import { Livestock } from './livestock-group';
 
-describe('LivestockCategories', () => {
-  let component: LivestockCategories;
-  let fixture: ComponentFixture<LivestockCategories>;
+describe('Livestock', () => {
+  let component: Livestock;
+  let fixture: ComponentFixture<Livestock>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LivestockCategories]
+      imports: [Livestock]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LivestockCategories);
+    fixture = TestBed.createComponent(Livestock);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

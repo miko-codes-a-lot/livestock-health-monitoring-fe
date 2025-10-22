@@ -1,0 +1,47 @@
+<div class="form-container">
+  <form [formGroup]="rxform" (ngSubmit)="onSubmit()" class="livestock-form">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Livestock Breed Information</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <!-- Row 1: Name -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Breed Name</mat-label>
+            <input matInput formControlName="name" type="text" />
+            <mat-error *ngIf="name.hasError('required')">Breed name is required.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Row 2: Classification -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Classification</mat-label>
+
+            <mat-select formControlName="classification" *ngIf="classifications.length > 0; else loadingOptions">
+              <mat-option *ngFor="let c of classifications" [value]="c._id">
+                {{ c.name }}
+              </mat-option>
+            </mat-select>
+
+            <ng-template #loadingOptions>
+              <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+            </ng-template>
+
+            <mat-error *ngIf="classification.hasError('required')">Classification is required.</mat-error>
+          </mat-form-field>
+        </div>
+
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary" type="submit" [disabled]="rxform.invalid || isLoading">
+          {{ isLoading ? 'Saving...' : 'Submit' }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>

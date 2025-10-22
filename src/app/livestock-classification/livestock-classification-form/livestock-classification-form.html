@@ -1,0 +1,60 @@
+<div class="form-container">
+  <form [formGroup]="rxform" (ngSubmit)="onSubmit()" class="livestock-classification-form">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Livestock Classification Information</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Name -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" placeholder="Enter classification name" />
+            <mat-error *ngIf="name.hasError('required')">Name is required.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Description -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              placeholder="Enter a brief description"
+              rows="3"
+            ></textarea>
+            <mat-error *ngIf="description.hasError('required')">Description is required.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Icon -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Icon</mat-label>
+            <input
+              matInput
+              formControlName="icon"
+              placeholder="e.g. 🐄"
+              maxlength="2"
+            />
+            <mat-hint align="start">Use an emoji or symbol for quick identification</mat-hint>
+            <mat-error *ngIf="icon.hasError('required')">Icon is required.</mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="rxform.invalid || isLoading"
+        >
+          {{ isLoading ? 'Saving...' : 'Submit' }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>
