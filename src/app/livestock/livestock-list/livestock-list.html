@@ -23,13 +23,15 @@
       <!-- Species -->
       <ng-container matColumnDef="species">
         <th mat-header-cell *matHeaderCellDef> Species </th>
-        <td mat-cell *matCellDef="let livestock"> {{ livestock.species }} </td>
+        <td mat-cell *matCellDef="let livestock">
+          {{ livestock.species?.name }}
+        </td>
       </ng-container>
 
       <!-- Breed -->
       <ng-container matColumnDef="breed">
         <th mat-header-cell *matHeaderCellDef> Breed </th>
-        <td mat-cell *matCellDef="let livestock"> {{ livestock.breed }} </td>
+        <td mat-cell *matCellDef="let livestock"> {{ livestock.breed.name }} </td>
       </ng-container>
 
       <!-- Sex -->

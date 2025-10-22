@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [LivestockBreedForm],
   templateUrl: './livestock-breed-create.html',
-  styleUrl: './livestock-breed-create.css'
+  styleUrls: ['./livestock-breed-create.css']
 })
 export class LivestockBreedCreate {
   isLoading = false
@@ -26,7 +26,7 @@ export class LivestockBreedCreate {
     this.initDoc = this.livestockBreedService.getEmptyOrNullDoc()
   }
 
-  onSubmit(payload: { livestockBreedData: LivestockBreed; files: File[] }) {
+  onSubmit(payload: { livestockBreedData: LivestockBreed }) {
     const { livestockBreedData } = payload;
     this.isLoading = true;
     // Step 1: create livestock
