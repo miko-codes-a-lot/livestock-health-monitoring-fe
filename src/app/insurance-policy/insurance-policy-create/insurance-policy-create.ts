@@ -39,7 +39,7 @@ export class InsurancePolicyCreate {
           this.insurancePolicyService.uploadPolicyDocument(policyId, file).subscribe({
             next: () => {
               this.isLoading = false;
-              this.router.navigate(['/insurance/details', policyId], { replaceUrl: true });
+              this.router.navigate(['/insurance-policy/details', policyId], { replaceUrl: true });
             },
             error: (err) => {
               this.isLoading = false;
@@ -48,7 +48,7 @@ export class InsurancePolicyCreate {
           });
         } else {
           this.isLoading = false;
-          this.router.navigate(['/insurance/details', policyId], { replaceUrl: true });
+          this.router.navigate(['/insurance-policy/details', policyId], { replaceUrl: true });
         }
       },
       error: (err) => {
