@@ -4,14 +4,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LivestockService } from '../../_shared/service/livestock-service';
-import { UserService } from '../../_shared/service/user-service';
 import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
+import { UserService } from '../../_shared/service/user-service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Livestock } from '../../_shared/model/livestock';
+import { LivestockGroup } from '../../_shared/model/livestock-group';
 
 @Component({
-  selector: 'app-livestock-details',
+  selector: 'app-livestock-group-details',
   standalone: true,
   imports: [
     CommonModule,
@@ -23,18 +22,17 @@ import { Livestock } from '../../_shared/model/livestock';
   templateUrl: './livestock-group-details.html',
   styleUrls: ['./livestock-group-details.css']
 })
-export class LivestockDetails implements OnInit {
+export class LivestockGroupDetails implements OnInit {
   isLoading = false;
-  livestock?: Livestock;
+  livestockGroup?: LivestockGroup;
   farmerName = '';
   livestockGroupName = '';
   photoUrls: string[] = []; // <-- store converted URLs here
 
 
   constructor(
-    private readonly livestockService: LivestockService,
-    private readonly userService: UserService,
     private readonly livestockGroupService: LivestockGroupService,
+    private readonly userService: UserService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
   ) {}
@@ -43,29 +41,23 @@ export class LivestockDetails implements OnInit {
     this.isLoading = true;
     const id = this.route.snapshot.params['id'];
 
-    this.livestockService.getOne(id).subscribe({
-      next: (livestock) => {
-        this.livestock = livestock;
+    this.livestockGroupService.getOne(id).subscribe({
+      next: (livestockGroup) => {
+        this.livestockGroup = livestockGroup;
 
                 // Load photo URLs
-        if (livestock.animalPhotos?.length) {
-          this.livestockService.getProfilePictures(livestock.animalPhotos)
+        if (livestockGroup.groupPhotos?.length) {
+          this.livestockGroupService.getGroupPhotos(livestockGroup.groupPhotos)
             .subscribe(urls => this.photoUrls = urls);
         }
 
         // Fetch farmer name
-        if (livestock.farmer) {
-          this.userService.getOne(livestock.farmer).subscribe(f => {
+        if (livestockGroup.farmer) {
+          this.userService.getOne(livestockGroup.farmer).subscribe(f => {
             this.farmerName = `${f.firstName} ${f.lastName}`;
           });
         }
 
-        // Fetch livestock group name
-        if (livestock.livestockGroup) {
-          this.livestockGroupService.getOne(livestock.livestockGroup).subscribe(g => {
-            this.livestockGroupName = g.groupName;
-          });
-        }
       },
       error: (err) => alert(`Something went wrong: ${err}`),
     }).add(() => (this.isLoading = false));
@@ -82,11 +74,11 @@ export class LivestockDetails implements OnInit {
   }
 
   onUpdate() {
-    if (!this.livestock) return;
-    this.router.navigate(['/livestock/update', this.livestock._id]);
+    if (!this.livestockGroup) return;
+    this.router.navigate(['/livestock-group/update', this.livestockGroup._id]);
   }
 
   getPhotoUrl(filename: string) {
-    return `/uploads/livestock/${filename}`; // adjust according to your backend storage path
+    return `/uploads/livestock-group/${filename}`; // adjust according to your backend storage path
   }
 }

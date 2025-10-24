@@ -1,0 +1,85 @@
+<div class="form-container">
+  <form [formGroup]="rxform" (ngSubmit)="onSubmit()" class="livestock-form">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Livestock Information</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Row 1: Tag Number, Species, Breed -->
+
+        <!-- Animal Photos Section -->
+        <div class="form-row animal-photos-section">
+          <label class="section-label">Group Photos</label>
+
+          <!-- New previews -->
+          <div *ngIf="previewPhotos.length > 0" class="photos-container">
+            <div class="animal-photos-preview">
+              <div class="photo-card" *ngFor="let preview of previewPhotos">
+                <img [src]="preview" alt="New photo preview" class="animal-photo" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload Button -->
+          <label for="animalPhotos" class="upload-btn">
+            <span>Upload Photos</span>
+            <input id="animalPhotos" type="file" (change)="onFilesSelected($event)" multiple hidden />
+          </label>
+        </div>
+
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Group Name</mat-label>
+            <input matInput formControlName="groupName" type="text" />
+            <mat-error *ngIf="groupName.hasError('required')">Group Name is required.</mat-error>
+          </mat-form-field>
+
+          <!-- <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Species</mat-label>
+            <mat-select formControlName="species">
+              <mat-option *ngFor="let s of speciesOptions" [value]="s.value">{{ s.label }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="species.hasError('required')">Species is required.</mat-error>
+          </mat-form-field> -->
+<!-- 
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Breed</mat-label>
+            <mat-select formControlName="breed">
+              <mat-option *ngFor="let b of filteredBreeds" [value]="b.value">{{ b.label }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="breed.hasError('required')">Breed is required.</mat-error>
+          </mat-form-field> -->
+        </div>
+
+        <!-- Row 3: Farmer, Livestock Group -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Farmer</mat-label>
+            <mat-select 
+              formControlName="farmer" 
+              [disabled]="user?.role === 'farmer'">
+              <mat-option *ngFor="let f of farmers" [value]="f.id">{{ f.name }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="farmer.hasError('required')">Farmer is required.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="pending">Pending</mat-option>
+            <mat-option value="approved">Approved</mat-option>
+            <mat-option value="rejected">Rejected</mat-option>
+          </mat-select>
+        </mat-form-field>
+        </div>
+        
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary" type="submit" [disabled]="rxform.invalid || isLoading">Submit</button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>

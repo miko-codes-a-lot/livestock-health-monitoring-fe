@@ -1,0 +1,66 @@
+<div class="users-container">
+  <div class="users-header">
+    <h2>Insurance Policies</h2>
+    <button mat-raised-button color="primary" (click)="onCreate()">
+      <mat-icon>add</mat-icon> Create Insurance Policies
+    </button>
+  </div>
+
+  <div *ngIf="isLoading; else tableTemplate" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Fetching data...</p>
+  </div>
+
+  <ng-template #tableTemplate>
+    <table mat-table [dataSource]="insurancePolicies" class="mat-elevation-z2 user-table">
+
+      <!-- Policy Number -->
+      <ng-container matColumnDef="provider">
+        <th mat-header-cell *matHeaderCellDef> Provider </th>
+        <td mat-cell *matCellDef="let insurancePolicy"> {{ insurancePolicy.provider }} </td>
+      </ng-container>
+
+            <!-- Policy Number -->
+      <ng-container matColumnDef="policyNumber">
+        <th mat-header-cell *matHeaderCellDef> Group Name </th>
+        <td mat-cell *matCellDef="let insurancePolicy"> {{ insurancePolicy.policyNumber }} </td>
+      </ng-container>
+
+      <!-- Policy Number -->
+      <ng-container matColumnDef="livestockGroup">
+        <th mat-header-cell *matHeaderCellDef> Livestock Group </th>
+        <td mat-cell *matCellDef="let insurancePolicy"> {{ insurancePolicy.livestockGroup.groupName }} </td>
+      </ng-container>
+
+
+      <!-- Farmer -->
+      <ng-container matColumnDef="farmer">
+        <th mat-header-cell *matHeaderCellDef> Farmer </th>
+        <td mat-cell *matCellDef="let insurancePolicy"> {{ insurancePolicy.farmer.firstName }} {{ insurancePolicy.farmer.lastName }} </td>
+      </ng-container>
+
+      <!-- Status -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let insurancePolicy"> {{ insurancePolicy.status }} </td>
+      </ng-container>
+
+
+      <!-- Action -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Action </th>
+        <td mat-cell *matCellDef="let insurancePolicy">
+          <button mat-icon-button color="accent" (click)="onDetails(insurancePolicy._id!)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="onUpdate(insurancePolicy._id!)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </ng-template>
+</div>

@@ -1,0 +1,132 @@
+.details-container {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+.user-card {
+  width: 100%;
+  max-width: 600px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+mat-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #3f51b5;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 32px;
+  margin-top: 16px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  background-color: #fafafa;
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #777;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-weight: 600;
+  color: #333;
+}
+
+.text-capitalize {
+  text-transform: capitalize;
+}
+
+.divider-space {
+  margin: 24px 0;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 60px;
+  color: #555;
+  gap: 12px;
+}
+
+.livestock-photos {
+  margin-top: 16px;
+}
+
+.livestock-photos h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #3f51b5;
+}
+
+.animal-photos-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.animal-photos-preview img.animal-photo {
+  width: 80px;       /* smaller size */
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  transition: transform 0.2s ease;
+  cursor: pointer;    /* show clickable */
+}
+
+.animal-photos-preview img.animal-photo:hover {
+  transform: scale(1.2);  /* hover effect to preview bigger */
+  z-index: 10;
+}
+
+/* Full-screen overlay for photo */
+.photo-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.9); /* dark backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.full-screen-photo {
+  max-width: 90vw;   /* fits 90% of viewport width */
+  max-height: 90vh;  /* fits 90% of viewport height */
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  transition: transform 0.3s ease;
+}
+
+.full-screen-photo:hover {
+  transform: scale(1.05); /* subtle zoom */
+}
+
+@media (max-width: 600px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+}

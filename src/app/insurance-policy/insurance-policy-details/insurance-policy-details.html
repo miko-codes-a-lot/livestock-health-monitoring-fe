@@ -1,0 +1,79 @@
+<div class="details-container">
+  <mat-card *ngIf="insurancePolicy; else loading" class="insurance-card">
+    <mat-card-header>
+      <mat-card-title>Insurance Policy Details</mat-card-title>
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary" (click)="onUpdate()">Update</button>
+      </mat-card-actions>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="label">Policy Number:</span>
+          <span class="value">{{ insurancePolicy.policyNumber || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Provider:</span>
+          <span class="value">{{ insurancePolicy.provider || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Farmer:</span>
+          <span class="value">{{ farmer?.firstName }} {{ farmer?.lastName }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Livestock Group:</span>
+          <span class="value">{{ livestockGroup?.groupName || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Start Date:</span>
+          <span class="value">{{ insurancePolicy.startDate | date:'mediumDate' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">End Date:</span>
+          <span class="value">{{ insurancePolicy.endDate | date:'mediumDate' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Status:</span>
+          <span class="value text-capitalize">{{ insurancePolicy.status }}</span>
+        </div>
+      </div>
+
+      <mat-divider class="divider-space"></mat-divider>
+
+      <div class="policy-document" *ngIf="policyDocumentUrl">
+        <h3>Policy Document</h3>
+        <div class="document-preview">
+          <ng-container *ngIf="isImageFile(insurancePolicy.policyDocument); else nonImageDoc">
+            <img
+              [src]="policyDocumentUrl"
+              alt="Policy Document Preview"
+              class="document-photo"
+              (click)="openDocument(policyDocumentUrl)"
+            />
+          </ng-container>
+          <ng-template #nonImageDoc>
+            <button mat-stroked-button color="primary" (click)="openDocument(policyDocumentUrl)">
+              View Document
+            </button>
+          </ng-template>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <ng-template #loading>
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Fetching insurance policy details...</p>
+    </div>
+  </ng-template>
+</div>

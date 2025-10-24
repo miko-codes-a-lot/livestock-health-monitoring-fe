@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HealthRecord } from '../../_shared/model/health-record';
 import { RxHealthRecordForm } from './rx-health-record-form';
 import { CommonModule } from '@angular/common';
@@ -29,19 +29,15 @@ import { UserService } from '../../_shared/service/user-service';
   templateUrl: './health-record-form.html',
   styleUrl: './health-record-form.css'
 })
-export class HealthRecordForm {
+export class HealthRecordForm implements OnInit {
   @Input() isLoading = false;
-  // @Input() initDoc!: HealthRecord;
   private _initDoc!: HealthRecord;
 
-
-  // Setter
   @Input()
   set initDoc(value: HealthRecord) {
     this._initDoc = value;
     if (this.rxform && value) {
-      const { animal, ...rest } = value;
-      this.rxform.patchValue(rest); // patch all fields except animal
+      this.tryPatchForm();
     }
   }
 
@@ -51,8 +47,7 @@ export class HealthRecordForm {
 
   @Output() onSubmitEvent = new EventEmitter<HealthRecord>();
   animals: { _id: string; tagNumber: string; species: string }[] = [];
-  technicians: { id: string; name: string; }[] = [];
-
+  technicians: { id: string; name: string }[] = [];
   rxform!: FormGroup<RxHealthRecordForm>;
 
   constructor(
@@ -66,48 +61,9 @@ export class HealthRecordForm {
     this.initializeForm();
     this.loadAnimals();
     this.loadTechnicians();
-    // patch form if initDoc is already set
-    if (this.initDoc) {
-      this.rxform.patchValue(this.initDoc);
-      // this.onSpeciesChange(this.initDoc.species);
-    }
   }
-
-
-  private loadAnimals(): void {
-    this.livestockService.getAll().subscribe({
-      next: (data) => {
-        this.animals = data.map(a => ({
-          _id: String(a._id),
-          tagNumber: a.tagNumber,
-          species: a.species
-        }));
-
-        // Patch the animal after options exist
-        if (this._initDoc?.animal) {
-          this.rxform.controls.animal.setValue(String(this._initDoc.animal));
-        }
-      },
-      error: (err) => console.error('Error loading animals:', err)
-    });
-  }
-
-  private loadTechnicians(): void {
-    this.userService.getAll().subscribe(users => {
-      this.technicians = users
-        .filter(u => u.role === 'technician' && u._id)
-        .map(u => ({ id: String(u._id), name: `${u.firstName} ${u.lastName}` }));
-
-      // Patch technician control after options exist
-      if (this._initDoc?.technician) {
-        this.rxform.controls.technician.setValue(String(this._initDoc.technician));
-      }
-    });
-  }
-
 
   private initializeForm(): void {
-    // this.initDoc ?? 
     const hr = {
       animal: '',
       bodyCondition: '',
@@ -124,7 +80,6 @@ export class HealthRecordForm {
       status: 'pending'
     };
 
-    // create typed FormControls
     this.rxform = this.fb.nonNullable.group({
       animal: [hr.animal, Validators.required],
       bodyCondition: [hr.bodyCondition, Validators.required],
@@ -140,12 +95,57 @@ export class HealthRecordForm {
       weightKg: [hr.weightKg, [Validators.required, Validators.min(0)]],
       status: [hr.status]
     }) as unknown as FormGroup<RxHealthRecordForm>;
-      
-    // this.rxform.get('species')?.valueChanges.subscribe(value => {
-    //   this.onSpeciesChange(value);
-    // });
   }
 
+  private loadAnimals(): void {
+    this.livestockService.getAll().subscribe({
+      next: (data) => {
+        this.animals = data.map(a => ({
+          _id: String(a._id),
+          tagNumber: a.tagNumber,
+          species: a.species
+        }));
+        this.tryPatchForm();
+      },
+      error: (err) => console.error('Error loading animals:', err)
+    });
+  }
+
+  private loadTechnicians(): void {
+    this.userService.getAll().subscribe(users => {
+      this.technicians = users
+        .filter(u => u.role === 'technician' && u._id)
+        .map(u => ({ id: String(u._id), name: `${u.firstName} ${u.lastName}` }));
+      this.tryPatchForm();
+    });
+  }
+
+  private tryPatchForm(): void {
+    if (!this._initDoc || this.animals.length === 0 || this.technicians.length === 0) return;
+
+    const patchData: any = { ...this._initDoc };
+
+    // Handle animal object or ID
+    patchData.animal =
+      patchData.animal && typeof patchData.animal === 'object' && '_id' in patchData.animal
+        ? patchData.animal._id
+        : patchData.animal;
+
+    // Handle technician object or ID
+    patchData.technician =
+      patchData.technician && typeof patchData.technician === 'object' && '_id' in patchData.technician
+        ? patchData.technician._id
+        : patchData.technician;
+
+    // Format dates for <input type="date">
+    ['visitDate', 'vaccinationDate', 'dewormingDate'].forEach(field => {
+      if (patchData[field]) {
+        patchData[field] = new Date(patchData[field]).toISOString().split('T')[0];
+      }
+    });
+
+    this.rxform.patchValue(patchData);
+  }
 
   onSubmit() {
     if (this.rxform.invalid) return;

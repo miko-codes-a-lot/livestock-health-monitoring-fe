@@ -10,15 +10,6 @@
         <div class="form-row animal-photos-section">
           <label class="section-label">Animal Photos</label>
 
-          <!-- Existing photos from DB -->
-          <div *ngIf="existingPhotos.length > 0" class="photos-container">
-            <div class="animal-photos-preview">
-              <div class="photo-card" *ngFor="let photo of previewPhotos">
-                <img [src]="photo" alt="Existing animal photo" class="animal-photo" />
-              </div>
-            </div>
-          </div>
-
           <!-- New previews -->
           <div *ngIf="previewPhotos.length > 0" class="photos-container">
             <div class="animal-photos-preview">

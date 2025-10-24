@@ -1,0 +1,155 @@
+<div class="form-container">
+  <form [formGroup]="rxform" (ngSubmit)="onSubmit()" class="claims-form">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Claims Information</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Animal Selection -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Animal</mat-label>
+            <mat-select formControlName="animal" required>
+              <mat-option *ngFor="let a of animals" [value]="a._id">
+                {{ a.tagNumber }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="animal.hasError('required')">
+              Animal is required.
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <div class="form-row">
+           <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Farmer</mat-label>
+            <mat-select formControlName="farmer" required>
+              <mat-option *ngFor="let f of farmers" [value]="f.id">
+                {{ f.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="farmer.hasError('required')">
+              Farmer is required.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Cause of Death Category</mat-label>
+            <mat-select
+              formControlName="causeOfDeathCategory"
+              (selectionChange)="onCategoryChange($event.value)"
+              required
+            >
+              <mat-option *ngFor="let c of deathCategory" [value]="c.value">
+                {{ c.label }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="causeOfDeathCategory.hasError('required')">
+              Category is required.
+            </mat-error>
+          </mat-form-field>
+
+                <!-- Cause of Death Items -->
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Cause of Death</mat-label>
+            <mat-select formControlName="causeOfDeath" required>
+              <mat-option *ngFor="let i of causeOfDeathItems" [value]="i.value">
+                {{ i.label }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="causeOfDeath.hasError('required')">
+              Cause of death is required.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Farmer and Filed At -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Policy</mat-label>
+            <mat-select formControlName="policy" required>
+              <mat-option *ngFor="let p of selectPolicy" [value]="p.id">
+                {{ p.display }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="policy.hasError('required')">
+              Policy is required.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Date of Death -->
+        <div class="form-row">
+
+          <mat-form-field appearance="outline" class="second-width">
+            <mat-label>Filed At</mat-label>
+            <input matInput type="date" formControlName="filedAt" />
+            <mat-error *ngIf="filedAt.hasError('required')">
+              Filed date is required.
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="second-width">
+            <mat-label>Date of Death</mat-label>
+            <input matInput type="date" formControlName="dateOfDeath" />
+            <mat-error *ngIf="dateOfDeath.hasError('required')">
+              Date of death is required.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+         <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="draft">Draft</mat-option>
+              <mat-option value="pending">Pending</mat-option>
+              <mat-option value="approved">Approved</mat-option>
+              <mat-option value="rejected">Rejected</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Upload Evidence Photos -->
+        <div class="form-row animal-photos-section">
+          <label class="section-label">Evidence Photos</label>
+
+          <div *ngIf="previewPhotos.length > 0" class="photos-container">
+            <div class="animal-photos-preview">
+              <div class="photo-card" *ngFor="let preview of previewPhotos">
+                <img
+                  [src]="preview"
+                  alt="Photo preview"
+                  class="animal-photo"
+                />
+              </div>
+            </div>
+          </div>
+
+          <label for="evidencePhotos" class="upload-btn">
+            <span>Upload Photos</span>
+            <input
+              id="evidencePhotos"
+              type="file"
+              (change)="onFilesSelected($event)"
+              multiple
+              hidden
+            />
+          </label>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="rxform.invalid || isLoading"
+        >
+          {{ isLoading ? 'Submitting...' : 'Submit' }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>

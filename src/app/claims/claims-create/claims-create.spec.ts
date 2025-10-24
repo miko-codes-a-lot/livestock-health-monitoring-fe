@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LivestockForm } from './livestock-form';
+import { LivestockCreate } from './claims-create';
 
-describe('LivestockForm', () => {
-  let component: LivestockForm;
-  let fixture: ComponentFixture<LivestockForm>;
+describe('LivestockCreate', () => {
+  let component: LivestockCreate;
+  let fixture: ComponentFixture<LivestockCreate>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LivestockForm]
+      imports: [LivestockCreate]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LivestockForm);
+    fixture = TestBed.createComponent(LivestockCreate);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

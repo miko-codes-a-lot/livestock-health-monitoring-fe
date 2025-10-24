@@ -25,17 +25,14 @@ export class AuthGuard implements CanActivate {
       filter(([_, hasChecked]) => hasChecked), // wait until auth check is complete
       take(1),
       map(([user]) => {
-        if (!user) {
-          this.router.navigate(['/login']);
-          return false; // ✅ block navigation
-        }
-
-        if (expectedRole && user.role !== expectedRole) {
-          this.router.navigate(['/']);
-          return false;
-        }
-
-        return true;
+        console.log('user?.role outside', user?.role)
+        return true
+        // if (user?.role === expectedRole) {
+        //   console.log('user?.role', user?.role)
+        //   return true; // user has the required role
+        // } else {
+        //   return false;
+        // }
       })
     );
   }

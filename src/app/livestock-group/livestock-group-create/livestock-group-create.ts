@@ -1,47 +1,47 @@
 import { Component, Input } from '@angular/core';
-import { LivestockForm } from '../livestock-group-form/livestock-form';
-import { LivestockService } from '../../_shared/service/livestock-service';
-import { Livestock } from '../../_shared/model/livestock';
+import { LivestockGroupForm } from '../livestock-group-form/livestock-group-form';
+import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
+import { LivestockGroup } from '../../_shared/model/livestock-group';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-livestock-create',
   standalone: true,
-  imports: [LivestockForm],
+  imports: [LivestockGroupForm],
   templateUrl: './livestock-group-create.html',
   styleUrl: './livestock-group-create.css'
 })
-export class LivestockCreate {
+export class LivestockGroupCreate {
   isLoading = false
-  @Input() initDoc!: Livestock
+  @Input() initDoc!: LivestockGroup
 
 
   constructor(
-    private readonly livestockService: LivestockService,
+    private readonly livestockGroupService: LivestockGroupService,
     private readonly router: Router,
   ) {}
 
 
   ngOnInit(): void {
-    this.initDoc = this.livestockService.getEmptyOrNullDoc()
+    this.initDoc = this.livestockGroupService.getEmptyOrNullDoc()
 
   }
 
-  onSubmit(payload: { livestockData: Livestock; files: File[] }) {
-    const { livestockData, files } = payload;
+  onSubmit(payload: { livestockGroupData: LivestockGroup; files: File[] }) {
+    const { livestockGroupData, files } = payload;
     this.isLoading = true;
     // Step 1: create livestock
-    this.livestockService.create(livestockData).subscribe({
+    this.livestockGroupService.create(livestockGroupData).subscribe({
       next: (data) => {
 
-        const livestockId = data._id;
+        const livestockGroupId = data._id;
 
         if (files && files.length > 0) {
           // Step 2: upload photos
-          this.livestockService.uploadPhotos(livestockId, files).subscribe({
+          this.livestockGroupService.uploadGroupPhotos(livestockGroupId, files).subscribe({
             next: () => {
               this.isLoading = false;
-              this.router.navigate(['/livestock/details', livestockId], { replaceUrl: true });
+              this.router.navigate(['/livestock-group/details', livestockGroupId], { replaceUrl: true });
             },
             error: (err) => {
               this.isLoading = false;
@@ -50,7 +50,7 @@ export class LivestockCreate {
           });
         } else {
           this.isLoading = false;
-          this.router.navigate(['/livestock/details', livestockId], { replaceUrl: true });
+          this.router.navigate(['/livestock-group/details', livestockGroupId], { replaceUrl: true });
         }
       },
       error: (err) => {

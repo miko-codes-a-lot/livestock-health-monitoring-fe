@@ -1,5 +1,5 @@
 <div class="details-container">
-  <mat-card *ngIf="livestock; else loading" class="livestock-card">
+  <mat-card *ngIf="livestockGroup; else loading" class="livestock-card">
     <mat-card-header>
       <mat-card-title>Livestock Details</mat-card-title>
       <mat-card-actions align="end">
@@ -12,33 +12,8 @@
     <mat-card-content>
       <div class="details-grid">
         <div class="detail-item">
-          <span class="label">Tag Number:</span>
-          <span class="value">{{ livestock.tagNumber || '—' }}</span>
-        </div>
-
-        <div class="detail-item">
-          <span class="label">Species:</span>
-          <span class="value">{{ livestock.species || '—' }}</span>
-        </div>
-
-        <div class="detail-item">
-          <span class="label">Breed:</span>
-          <span class="value">{{ livestock.breed || '—' }}</span>
-        </div>
-
-        <div class="detail-item">
-          <span class="label">Sex:</span>
-          <span class="value text-capitalize">{{ livestock.sex }}</span>
-        </div>
-
-        <div class="detail-item">
-          <span class="label">Age:</span>
-          <span class="value">{{ livestock.age }}</span>
-        </div>
-
-        <div class="detail-item">
-          <span class="label">Date of Purchase:</span>
-          <span class="value">{{ livestock.dateOfPurchase | date:'mediumDate' }}</span>
+          <span class="label">Group Name:</span>
+          <span class="value">{{ livestockGroup.groupName || '—' }}</span>
         </div>
 
         <div class="detail-item">
@@ -47,30 +22,21 @@
         </div>
 
         <div class="detail-item">
-          <span class="label">Livestock Group:</span>
-          <span class="value">{{ livestockGroupName || '—' }}</span>
-        </div>
-
-        <div class="detail-item">
           <span class="label">Status:</span>
-          <span class="value text-capitalize">{{ livestock.status }}</span>
+          <span class="value text-capitalize">{{ livestockGroup.status }}</span>
         </div>
 
+<!-- 
         <div class="detail-item">
-          <span class="label">Insured:</span>
-          <span class="value">{{ livestock.isInsured ? 'Yes' : 'No' }}</span>
-        </div>
-
-        <div class="detail-item">
-          <span class="label">Deceased:</span>
-          <span class="value">{{ livestock.isDeceased ? 'Yes' : 'No' }}</span>
-        </div>
+          <span class="label">Date of Purchase:</span>
+          <span class="value">{{ livestock.dateOfPurchase | date:'mediumDate' }}</span>
+        </div> -->
       </div>
 
       <mat-divider class="divider-space"></mat-divider>
 
     <div class="livestock-photos" *ngIf="photoUrls.length > 0">
-      <h3>Animal Photos</h3>
+      <h3>Group Photos</h3>
       <div class="photo-gallery animal-photos-preview">
         <img
           *ngFor="let url of photoUrls"

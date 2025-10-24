@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LivestockGroup } from '../model/livestock-group';
-import { Observable } from 'rxjs';
+import { Observable, map, forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -23,9 +23,28 @@ export class LivestockGroupService {
         statusAt: now,            // current timestamp
       };
     }
-  
+
+    // uploadGroupPhotos
+
+    uploadGroupPhotos(livestockGroupId: any, files: File[]): Observable<any> {
+      const formData = new FormData();
+      files.forEach(file => formData.append('photos', file));
+      return this.http.put(`${this.baseUrl}/${livestockGroupId}/photos`, formData, { withCredentials: true });
+    }
+
+    getGroupPhoto(filename: string): Observable<string> {
+      const url = `${this.baseUrl}/${filename}/photo`;
+
+      return this.http.get(url, { responseType: 'blob', withCredentials: true }).pipe(
+        map(blob => URL.createObjectURL(blob))
+      );
+    }
+
+    getGroupPhotos(filenames: string[]): Observable<string[]> {
+      return forkJoin(filenames.map(f => this.getGroupPhoto(f)));
+    }
+
     getAll(): Observable<LivestockGroup[]> {
-      console.log('dawdaw')
       const test = this.http.get<LivestockGroup[]>(this.baseUrl, { withCredentials: true });
       console.log('test', test)
       return test

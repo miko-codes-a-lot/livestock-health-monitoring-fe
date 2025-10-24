@@ -1,0 +1,83 @@
+<div class="details-container">
+  <mat-card *ngIf="claims; else loading" class="livestock-card">
+    <mat-card-header>
+      <mat-card-title>Claims Details</mat-card-title>
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary" (click)="onUpdate()">Update</button>
+      </mat-card-actions>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="label">Animal:</span>
+          <span class="value">{{ animalTag }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Farmer:</span>
+          <span class="value">{{ farmerName }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Cause Of Death (category):</span>
+          <span class="value">{{ claims.causeOfDeathCategory }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Cause Of Death:</span>
+          <span class="value">{{ claims.causeOfDeath }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Policy:</span>
+          <span class="value">{{ policy }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Filed At:</span>
+          <span class="value">{{ claims.filedAt }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Date of Death:</span>
+          <span class="value">{{ claims.dateOfDeath }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Status:</span>
+          <span class="value">{{ claims.status }}</span>
+        </div>
+
+      </div>
+
+      <mat-divider class="divider-space"></mat-divider>
+
+      <div class="livestock-photos" *ngIf="photoUrls.length > 0">
+        <h3>Animal Photos</h3>
+        <div class="photo-gallery animal-photos-preview">
+          <img
+            *ngFor="let url of photoUrls"
+            [src]="url"
+            alt="Animal Photo"
+            class="animal-photo"
+            (click)="openPhoto(url)"
+          />
+        </div>
+      </div>
+
+      <div class="photo-overlay" *ngIf="fullScreenPhotoUrl" (click)="closePhoto()">
+        <img [src]="fullScreenPhotoUrl" alt="Full Screen Photo" class="full-screen-photo">
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <ng-template #loading>
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Fetching livestock details...</p>
+    </div>
+  </ng-template>
+</div>

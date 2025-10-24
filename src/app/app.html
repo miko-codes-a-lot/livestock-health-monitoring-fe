@@ -1,47 +1,70 @@
-<mat-drawer-container class="main-container" autosize>
+<mat-drawer-container class="example-container">
 
-  @if (isLoggedIn) {
-    <!-- ✅ added template reference variable -->
-    <mat-drawer #drawer mode="side" opened class="sidebar">
-      <mat-nav-list>
-        <a mat-list-item [routerLink]="isLoading ? null : `/dashboard/${user?.role}`">Dashboard</a>
-        <a mat-list-item [routerLink]="isLoading ? null : '/user'">Users</a>
-        <a mat-list-item [routerLink]="isLoading ? null : '/livestock-classification'">Livestock Classification</a>
-        <a mat-list-item [routerLink]="isLoading ? null : '/livestock-breed'">Livestock Breed</a>
-        <a mat-list-item [routerLink]="isLoading ? null : '/livestock'">Livestock</a>
-        <a mat-list-item [routerLink]="isLoading ? null : '/health-record'">Health Record</a>
-        <!-- <a mat-list-item [routerLink]="isLoading ? null : '/treatment'">Treatment</a> -->
-        <!-- <a mat-list-item [routerLink]="isLoading ? null : '/vaccination'">Vaccination</a> -->
-        <!-- <a mat-list-item [routerLink]="isLoading ? null : '/schedule'">Schedule</a> -->
-        <!-- <a mat-list-item [routerLink]="isLoading ? null : '/user-settings'">User Settings</a> -->
-
-        <button
-          mat-raised-button
-          color="warn"
-          (click)="onLogout()"
-          [disabled]="isLoading"
-          class="logout-btn"
-        >
-          Logout
-        </button>
-      </mat-nav-list>
-    </mat-drawer>
-  }
-
-  <mat-drawer-content>
+  <!-- Sidebar -->
+  <mat-drawer mode="side" opened *ngIf="isLoggedIn && showSideNav">
     <mat-toolbar color="primary">
-      <!-- ✅ call the toggle function -->
-       @if (!isLoggedIn) {
-        <button mat-icon-button (click)="toggleDrawer()">
-          <mat-icon>menu</mat-icon>
+      <span class="system-title">Livestock <br> Health Monitoring</span>
+    </mat-toolbar>
+    <mat-list role="list">
+      <app-nav [disabled]="isLoading" [menuItems]="filteredMenuItems"></app-nav>
+    </mat-list>
+  </mat-drawer>
+
+  <!-- Main content -->
+  <mat-drawer-content>
+
+    <!-- Top Navigation Bar -->
+    <mat-toolbar color="primary" class="top-nav" *ngIf="showTopNav && showSideNav">
+      <span class="dashboard-title">
+        <mat-icon class="title-icon">{{ activeIcon }}</mat-icon>
+        <span class="title-text">{{ activeTitle }}</span>
+      </span>
+      <span class="spacer"></span>
+
+      <!-- User Dropdown -->
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
+        <div class="user-avatar">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu" class="user-menu">
+        <!-- Header Section -->
+        <div class="menu-header">
+          <div class="menu-avatar">
+             <!-- to display -->
+            <!-- <mat-icon>account_circle</mat-icon> -->
+             <!-- {{ user.firstname }} -->
+          </div>
+          <div class="menu-info">
+            <!-- to display -->
+            <!-- <span class="menu-name">Juan Dela Cruz</span> -->
+            <!-- <span class="menu-role">Administrator</span> -->
+          </div>
+        </div>
+
+        <!-- <mat-divider></mat-divider> -->
+
+        <!-- Menu Items -->
+        <button mat-menu-item (click)="goToUserSettings()">
+          <mat-icon>settings</mat-icon>
+          <span>My Account</span>
         </button>
-      }
-      <span>Livestock Management</span>
+
+        <button mat-menu-item (click)="onClickLogout()">
+          <mat-icon color="warn">logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+
     </mat-toolbar>
 
-    <div class="content">
+    <!-- Page Content -->
+    <div class="main-content">
       <router-outlet></router-outlet>
     </div>
+
   </mat-drawer-content>
 
 </mat-drawer-container>
