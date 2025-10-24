@@ -18,6 +18,9 @@ import { LivestockBreedService } from '../../_shared/service/livestock-breed-ser
 import { MortalityCauseService } from '../../_shared/service/mortality-cause-service';
 import { MortalityCause } from '../../_shared/model/mortality-cause';
 import { InsurancePolicyService } from '../../_shared/service/insurance-policy-service';
+import { UserDto } from '../../_shared/model/user-dto';
+import { AuthService } from '../../_shared/service/auth-service';
+
 
 @Component({
   selector: 'app-claims-form',
@@ -45,6 +48,7 @@ export class ClaimsForm implements OnInit {
   existingPhotos: string[] = [];
   previewPhotos: string[] = [];
   avatarUrl: string[] = [];
+  user: UserDto | null = null; 
 
   @Input()
   set initDoc(value: Claims) {
@@ -78,16 +82,24 @@ export class ClaimsForm implements OnInit {
     private readonly livestockClassificationService: LivestockClassificationService,
     private readonly mortalityCauseService: MortalityCauseService,
     private readonly insurancePolicyService: InsurancePolicyService,
+    private readonly authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
-    this.loadFarmers();
     this.loadLivestockGroups();
     this.loadClassifications();
     this.loadCauseOfDeathCategory();
     this.loadInsurancePolicy();
     this.loadLivestock();
+    this.loadFarmers();
+    this.authService.currentUser$.subscribe({
+      next: (u) => {
+        if (u) {
+          this.user = u
+        }
+      }
+    })
   }
 
   private initializeForm(): void {
@@ -120,7 +132,6 @@ export class ClaimsForm implements OnInit {
     });
   }
 
-  // ✅ Auto-patching once all data are loaded
   private tryPatchForm(): void {
     if (!this.initDoc) return;
 
@@ -186,10 +197,20 @@ export class ClaimsForm implements OnInit {
 
   private loadFarmers(): void {
     this.userService.getAll().subscribe(users => {
-      this.farmers = users
-        .filter(u => u.role === 'farmer' && u._id)
-        .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
-      this.tryPatchForm();
+      if (this.user?.role === 'farmer') {
+        // Only include the logged-in farmer
+        this.farmers = users
+          .filter(u => u._id === this.user?._id)
+          .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+        
+        // Auto-select themselves
+        this.rxform.patchValue({ farmer: this.user._id });
+      } else {
+        // Admin or other roles: show all farmers
+        this.farmers = users
+          .filter(u => u.role === 'farmer')
+          .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+      }
     });
   }
 

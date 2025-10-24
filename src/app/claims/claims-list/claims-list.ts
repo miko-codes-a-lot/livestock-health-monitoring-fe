@@ -8,7 +8,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { Claims } from '../../_shared/model/claims';
 import { ClaimsService } from '../../_shared/service/claims-service';
-
+import { UserDto } from '../../_shared/model/user-dto';
+import { AuthService } from '../../_shared/service/auth-service';
 
 @Component({
   selector: 'app-claims-list',
@@ -27,22 +28,49 @@ export class ClaimsList {
   claims: Claims[] = [];
   isLoading = false;
 
-displayedColumns: string[] = ['animal', 'farmer', 'causeOfDeath', 'dateOfDeath', 'status', 'action'];
+  user: UserDto | null = null; 
+
+  displayedColumns: string[] = ['animal', 'farmer', 'causeOfDeath', 'dateOfDeath', 'status', 'action'];
 
   constructor(
     private readonly claimsService: ClaimsService,
+    private readonly authService: AuthService,
     private readonly router: Router
   ) {}
 
   ngOnInit() {
     this.isLoading = true;
 
+    this.authService.currentUser$.subscribe({
+      next: (u) => {
+        if (u) {
+          this.user = u
+        }
+      }
+    })
+
     this.claimsService.getAll().subscribe({
-      next: (claim) => {
-        this.claims = claim;
+      next: (claims) => {
+        this.claims = claims;
+
+        if (this.user?.role === 'farmer') {
+          // Show only the logged-in farmer's livestock groups
+          this.claims = claims.filter(
+            lg => this.isUserDto(lg.farmer) && lg.farmer._id === this.user?._id
+          );
+          // this.livestockGroups = livestockGroups.filter(lg => lg.farmer?._id === this.user?._id);
+          console.log('this.livestockGroups', this.claims)
+        } else {
+          // Show all for admin/other roles
+          this.claims = claims;
+        }
       },
       error: (err) => alert(`Something went wrong: ${err}`)
     }).add(() => (this.isLoading = false));
+  }
+
+  isUserDto(farmer: string | UserDto): farmer is UserDto {
+    return typeof farmer !== 'string' && '_id' in farmer;
   }
 
   onCreate() {
