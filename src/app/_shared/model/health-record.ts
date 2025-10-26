@@ -1,9 +1,10 @@
 import { Livestock } from "./livestock";
+import { FullLivestock } from "./response/full-livestock";
 import { UserDto } from "./user-dto";
 
 export interface HealthRecord {
   _id?: string;
-  animal: Livestock;
+  animal: FullLivestock;
   bodyCondition: string;
   createdAt: string;            // ISO date string
   dewormingDate?: string;       // ISO date string

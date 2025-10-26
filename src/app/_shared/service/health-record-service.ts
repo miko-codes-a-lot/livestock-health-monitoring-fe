@@ -3,7 +3,7 @@ import { HealthRecord } from '../model/health-record';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { UserDto } from '../model/user-dto';
-import { Livestock } from '../model/livestock';
+import { FullLivestock } from '../model/response/full-livestock';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class HealthRecordService {
     getEmptyOrNullDoc(): HealthRecord {
       return {
         _id: '',
-        animal: { _id: '' } as Livestock,
+        animal: { _id: '' } as FullLivestock,
         bodyCondition: '',
         createdAt: new Date().toISOString(),
         dewormingDate: undefined,
