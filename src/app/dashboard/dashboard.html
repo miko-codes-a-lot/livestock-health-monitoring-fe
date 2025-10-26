@@ -1,1 +1,201 @@
-<router-outlet />
+<div *ngIf="isLoading" class="loading-container">
+  <div class="loading-spinner">Loading analytics data...</div>
+</div>
+
+<ng-container *ngIf="!isLoading">
+  <div class="dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <div>
+          <h1 class="dashboard-title">
+            Occidental Mindoro San Jose Livestock Health Monitoring
+          </h1>
+          <p class="dashboard-subtitle">Dashboard Overview</p>
+        </div>
+        <!-- <div class="role-selector">
+          <label class="role-label">View as:</label>
+          <select [(ngModel)]="role" (change)="onRoleChange()" class="role-select">
+            <option value="farmer">Farmer</option>
+            <option value="technician">Technician</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div> -->
+      </div>
+    </div>
+
+    <!-- Stats Cards for Admin/Technician -->
+    <div class="stats-grid" *ngIf="role === 'admin' || role === 'technician'">
+      <div class="stat-card" style="border-left-color: #3b82f6;">
+        <div class="stat-content">
+          <div>
+            <p class="stat-title">Total Livestock</p>
+            <p class="stat-value" style="color: #3b82f6;">{{ dashboardStats.totalLivestock }}</p>
+            <p class="stat-subtitle">Registered animals</p>
+          </div>
+          <div class="stat-icon">🐮</div>
+        </div>
+      </div>
+
+      <div class="stat-card" style="border-left-color: #f59e0b;">
+        <div class="stat-content">
+          <div>
+            <p class="stat-title">Active Claims</p>
+            <p class="stat-value" style="color: #f59e0b;">{{ dashboardStats.activeClaims }}</p>
+            <p class="stat-subtitle">{{ dashboardStats.pendingClaims }} pending review</p>
+          </div>
+          <div class="stat-icon">📋</div>
+        </div>
+      </div>
+
+      <div class="stat-card" style="border-left-color: #10b981;">
+        <div class="stat-content">
+          <div>
+            <p class="stat-title">Health Records</p>
+            <p class="stat-value" style="color: #10b981;">{{ dashboardStats.healthRecordsThisMonth }}</p>
+            <p class="stat-subtitle">This month</p>
+          </div>
+          <div class="stat-icon">🏥</div>
+        </div>
+      </div>
+
+      <div class="stat-card" style="border-left-color: #8b5cf6;">
+        <div class="stat-content">
+          <div>
+            <p class="stat-title">Insurance Policies</p>
+            <p class="stat-value" style="color: #8b5cf6;">{{ dashboardStats.activeInsurancePolicies }}</p>
+            <p class="stat-subtitle">Currently active</p>
+          </div>
+          <div class="stat-icon">🛡️</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards for Farmer -->
+    <div class="stats-grid farmer-stats" *ngIf="role === 'farmer'">
+      <div class="stat-card" style="border-left-color: #3b82f6;">
+        <div class="stat-content">
+          <div>
+            <p class="stat-title">My Livestock</p>
+            <p class="stat-value" style="color: #3b82f6;">{{ farmerStats.myLivestock }}</p>
+            <p class="stat-subtitle">Total animals</p>
+          </div>
+          <div class="stat-icon">🐮</div>
+        </div>
+      </div>
+
+      <div class="stat-card" style="border-left-color: #f59e0b;">
+        <div class="stat-content">
+          <div>
+            <p class="stat-title">My Claims</p>
+            <p class="stat-value" style="color: #f59e0b;">{{ farmerStats.myClaims }}</p>
+            <p class="stat-subtitle">{{ farmerStats.pendingClaims }} pending</p>
+          </div>
+          <div class="stat-icon">📋</div>
+        </div>
+      </div>
+
+      <div class="stat-card" style="border-left-color: #10b981;">
+        <div class="stat-content">
+          <div>
+            <p class="stat-title">Health Checkups</p>
+            <p class="stat-value" style="color: #10b981;">{{ farmerStats.healthCheckups }}</p>
+            <p class="stat-subtitle">This year</p>
+          </div>
+          <div class="stat-icon">🏥</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts for Admin/Technician -->
+    <ng-container *ngIf="role === 'admin' || role === 'technician'">
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3 class="chart-title">Livestock by Species</h3>
+          <div class="chart-container">
+            <canvas id="livestockBySpeciesChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Claims by Status</h3>
+          <div class="chart-container">
+            <canvas id="claimsByStatusChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Health Records Trend</h3>
+          <div class="chart-container">
+            <canvas id="healthRecordsTrendChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Body Condition Distribution</h3>
+          <div class="chart-container">
+            <canvas id="bodyConditionChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3 class="chart-title">Mortality Causes</h3>
+          <div class="chart-container">
+            <canvas id="mortalityCausesChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Livestock by Municipality</h3>
+          <div class="chart-container">
+            <canvas id="livestockByLocationChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-full">
+        <div class="chart-card">
+          <h3 class="chart-title">Claims Filing & Processing Trend</h3>
+          <div class="chart-container">
+            <canvas id="claimsTrendChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Charts for Farmer -->
+    <ng-container *ngIf="role === 'farmer'">
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3 class="chart-title">My Livestock by Species</h3>
+          <div class="chart-container">
+            <canvas id="farmerLivestockChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">My Claims Status</h3>
+          <div class="chart-container">
+            <canvas id="farmerClaimsChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">My Health Checkups Trend</h3>
+          <div class="chart-container">
+            <canvas id="farmerHealthTrendChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">My Insurance Coverage</h3>
+          <div class="chart-container">
+            <canvas id="farmerInsuranceChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>

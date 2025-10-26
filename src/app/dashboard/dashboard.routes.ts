@@ -15,7 +15,7 @@ export const DASHBOARD_ROUTES: Routes = [
         loadComponent: () => import('./dashboard-farmer/dashboard-farmer').then(m => m.DashboardFarmer),
       },
       {
-        path: 'vet',
+        path: 'technician',
         loadComponent: () => import('./dashboard-veterinarian/dashboard-veterinarian').then(m => m.DashboardVeterinarian),
       },
     ]

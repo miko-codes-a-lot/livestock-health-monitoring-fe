@@ -55,8 +55,6 @@ export class App {
   ) {}
 
   ngOnInit() {
-
-
     this.authService.currentUser$.subscribe({
       next: (user) => {
           if (user) {
