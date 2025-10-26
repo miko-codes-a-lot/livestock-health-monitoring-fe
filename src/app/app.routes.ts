@@ -26,6 +26,12 @@ export const routes: Routes = [
   },
   {
     canActivate: [AuthGuard],
+    path: 'user-settings',
+    // data: { role: 'admin' },
+    loadChildren: () => import('./user-settings/user-settings.route').then(m => m.USER_SETTINGS_ROUTES),
+  },
+  {
+    canActivate: [AuthGuard],
     path: 'livestock',
     // data: { role: 'admin' },
     loadChildren: () => import('./livestock/livestock.routes').then(m => m.LIVESTOCK_ROUTES),
