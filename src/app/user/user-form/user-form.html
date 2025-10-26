@@ -97,6 +97,11 @@
             <h3>Address</h3>
 
             <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Province</mat-label>
+              <input matInput formControlName="province" type="text" readonly />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
               <mat-label>Municipality</mat-label>
               <mat-select
                 formControlName="municipality"
@@ -107,12 +112,6 @@
                   <mat-option [value]="address.name">{{ address.name }}</mat-option>
                 }
               </mat-select>
-            </mat-form-field>
-
-
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Province</mat-label>
-              <input matInput formControlName="province" type="text" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="half-width">
@@ -140,7 +139,7 @@
               <mat-label>Role</mat-label>
               <mat-select formControlName="role">
                 <mat-option value="admin">Admin</mat-option>
-                <mat-option value="vet">Veterinarian</mat-option>
+                <mat-option value="technician">Technician</mat-option>
                 <mat-option value="farmer">Farmer</mat-option>
               </mat-select>
             </mat-form-field>

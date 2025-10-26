@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<UserDto | null | undefined>(undefined);
+  private currentUserSubject = new BehaviorSubject<UserDto | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
   private hasCheckedAuthSubject = new BehaviorSubject<boolean>(false);
@@ -33,6 +33,10 @@ export class AuthService {
     );
   }
 
+  isLoggedIn(): boolean {
+    return !!this.currentUserValue
+  }
+
   getProfile(): Observable<UserDto> {
     return this.http.get<UserDto>('/users/profile', { withCredentials: true });
   }
@@ -51,5 +55,9 @@ export class AuthService {
       }),
       catchError(() => of(null))
     );
+  }
+
+  get currentUserValue(): UserDto | null {
+    return this.currentUserSubject.value
   }
 }

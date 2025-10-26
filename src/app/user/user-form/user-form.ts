@@ -76,8 +76,8 @@ export class UserForm implements OnInit {
       gender: this.fb.nonNullable.control<'male' | 'female'>(u.gender),
       role: this.fb.nonNullable.control<'admin' | 'farmer' | 'vet' | 'technician'>(u.role),
       address: this.fb.nonNullable.group({
-        province: [u.address.province ?? ''], // ✅ optional
-        // city: [''], // ✅ add this,
+        province: ['Occidental Mindoro'],
+        // city: [''], // add this,
         municipality: [u.address.municipality, Validators.required],
         barangay: [u.address.barangay, Validators.required],
       }),

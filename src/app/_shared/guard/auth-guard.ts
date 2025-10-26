@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../service/auth-service';
-import { combineLatest, map, take, filter } from 'rxjs';
+import { combineLatest, map, take, filter, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,12 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ) {
-    const expectedRole = route.data['role'] as string;
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']); // default login page
+      return of(false);
+    }
+
+    // const expectedRole = route.data['role'] as string;
 
     return combineLatest([
       this.authService.currentUser$,
