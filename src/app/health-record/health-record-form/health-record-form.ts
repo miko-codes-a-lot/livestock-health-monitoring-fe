@@ -122,7 +122,7 @@ export class HealthRecordForm implements OnInit {
       animal: [this.hr.animal, Validators.required],
       bodyCondition: [this.hr.bodyCondition, Validators.required],
       dewormingDate: [this.hr.dewormingDate, Validators.required],
-      diagnosis: [this.hr.diagnosis, Validators.required],
+      diagnosis: [this.hr.diagnosis],
       notes: [this.hr.notes],
       symptomsObserved: [this.hr.symptomsObserved],
       technician: [this.hr.technician, Validators.required],

@@ -51,9 +51,13 @@
           <mat-form-field appearance="outline" class="third-width">
             <mat-label>Body Condition</mat-label>
             <mat-select formControlName="bodyCondition">
-              <mat-option value="thin">Thin</mat-option>
+              <mat-option value="emaciated">Emaciated</mat-option>
               <mat-option value="ideal">Ideal</mat-option>
-              <mat-option value="overweight">Overweight</mat-option>
+              <mat-option value="fat">Fat</mat-option>
+              <mat-option value="obese">Obese</mat-option>
+              <mat-option value="thin">Thin</mat-option>
+              <mat-option value="pregnant">Pregnant</mat-option>
+              <mat-option value="not_pregnant">not_pregnant</mat-option>
             </mat-select>
             <mat-error *ngIf="bodyCondition.hasError('required')">Body Condition is required.</mat-error>
           </mat-form-field>
