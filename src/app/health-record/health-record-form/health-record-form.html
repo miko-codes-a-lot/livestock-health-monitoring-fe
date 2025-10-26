@@ -68,11 +68,18 @@
 
         <!-- Row 2: Visit Date, Diagnosis -->
         <div class="form-row">
+          <!-- === START: Visit Date Update === -->
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Visit Date</mat-label>
-            <input matInput type="date" formControlName="visitDate" />
+            <!-- 1. Remove type="date", add [matDatepicker] -->
+            <input matInput [matDatepicker]="visitPicker" formControlName="visitDate">
+            <!-- 2. Add toggle and link to datepicker -->
+            <mat-datepicker-toggle matSuffix [for]="visitPicker"></mat-datepicker-toggle>
+            <!-- 3. Add the datepicker component -->
+            <mat-datepicker #visitPicker></mat-datepicker>
             <mat-error *ngIf="visitDate.hasError('required')">Visit Date is required.</mat-error>
           </mat-form-field>
+          <!-- === END: Visit Date Update === -->
 
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Diagnosis</mat-label>
@@ -111,15 +118,23 @@
 
         <!-- Row 5: Vaccination Date, Deworming Date, Vitamins -->
         <div class="form-row">
+          <!-- === START: Vaccination Date Update === -->
           <mat-form-field appearance="outline" class="third-width">
             <mat-label>Vaccination Date</mat-label>
-            <input matInput type="date" formControlName="vaccinationDate" />
+            <input matInput [matDatepicker]="vacPicker" formControlName="vaccinationDate" />
+             <mat-datepicker-toggle matSuffix [for]="vacPicker"></mat-datepicker-toggle>
+            <mat-datepicker #vacPicker></mat-datepicker>
           </mat-form-field>
+          <!-- === END: Vaccination Date Update === -->
 
+          <!-- === START: Deworming Date Update === -->
           <mat-form-field appearance="outline" class="third-width">
             <mat-label>Deworming Date</mat-label>
-            <input matInput type="date" formControlName="dewormingDate" />
+            <input matInput [matDatepicker]="dewormPicker" formControlName="dewormingDate" />
+            <mat-datepicker-toggle matSuffix [for]="dewormPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dewormPicker></mat-datepicker>
           </mat-form-field>
+          <!-- === END: Deworming Date Update === -->
 
           <mat-form-field appearance="outline" class="third-width">
             <mat-label>Vitamins Administered</mat-label>

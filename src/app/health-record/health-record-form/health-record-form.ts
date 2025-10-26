@@ -9,6 +9,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { HealthRecordService } from '../../_shared/service/health-record-service';
 import { LivestockService } from '../../_shared/service/livestock-service';
 import { UserService } from '../../_shared/service/user-service';
@@ -26,7 +28,9 @@ import { LivestockGroupService } from '../../_shared/service/livestock-group-ser
     MatSelectModule,
     MatButtonModule,
     MatCardModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   templateUrl: './health-record-form.html',
   styleUrl: './health-record-form.css'
@@ -50,7 +54,7 @@ export class HealthRecordForm implements OnInit {
     return this._initDoc;
   }
 
-  @Output() onSubmitEvent = new EventEmitter<HealthRecord>();
+  @Output() onSubmitEvent = new EventEmitter<any>();
   animals: { _id: string; tagNumber: string; species: string }[] = [];
   technicians: { id: string; name: string }[] = [];
   rxform!: FormGroup<RxHealthRecordForm>;
@@ -120,7 +124,7 @@ export class HealthRecordForm implements OnInit {
       dewormingDate: [this.hr.dewormingDate, Validators.required],
       diagnosis: [this.hr.diagnosis, Validators.required],
       notes: [this.hr.notes],
-      symptomsObserved: [this.hr.symptomsObserved, Validators.required],
+      symptomsObserved: [this.hr.symptomsObserved],
       technician: [this.hr.technician, Validators.required],
       treatmentGiven: [this.hr.treatmentGiven],
       vaccinationDate: [this.hr.vaccinationDate],
@@ -247,10 +251,12 @@ export class HealthRecordForm implements OnInit {
         ? patchData.technician._id
         : patchData.technician;
 
-    // Format dates for <input type="date">
+    // --- 3. Update Date Patching Logic ---
+    // Convert date strings to Date objects for the MatDatepickers
     ['visitDate', 'vaccinationDate', 'dewormingDate'].forEach(field => {
       if (patchData[field]) {
-        patchData[field] = new Date(patchData[field]).toISOString().split('T')[0];
+        // The datepicker control works best with native Date objects
+        patchData[field] = new Date(patchData[field]);
       }
     });
 
@@ -259,7 +265,7 @@ export class HealthRecordForm implements OnInit {
 
   onSubmit() {
     if (this.rxform.invalid) return;
-    this.onSubmitEvent.emit(this.rxform.value as HealthRecord);
+    this.onSubmitEvent.emit(this.rxform.value);
   }
 
   // --- Getters ---

@@ -64,7 +64,7 @@ export class DashboardAdmin implements AfterViewInit, OnDestroy {
     this.reportData.healthStatus = { healthy: 0, sick: 0, quarantine: 0, deceased: 0 };
     livestocks.forEach(l => {
       const records = healthRecords
-        .filter(r => r.animal === l._id)
+        .filter(r => r.animal._id === l._id)
         .sort((a, b) => {
           const dateA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
           const dateB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;

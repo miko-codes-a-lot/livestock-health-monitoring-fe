@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HealthRecord } from '../model/health-record';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { UserDto } from '../model/user-dto';
+import { Livestock } from '../model/livestock';
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +15,14 @@ export class HealthRecordService {
     getEmptyOrNullDoc(): HealthRecord {
       return {
         _id: '',
-        animal: '',
+        animal: { _id: '' } as Livestock,
         bodyCondition: '',
         createdAt: new Date().toISOString(),
         dewormingDate: undefined,
         diagnosis: '',
         notes: '',
         symptomsObserved: '',
-        technician: '',
+        technician: { _id: '' } as UserDto,
         treatmentGiven: '',
         updatedAt: new Date().toISOString(),
         vaccinationDate: undefined,

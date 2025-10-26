@@ -42,8 +42,8 @@ export class HealthRecordDetails implements OnInit {
         this.healthRecord = healthRecord;
         console.log('healthRecord', healthRecord)
         // Fetch farmer name
-        if (healthRecord.technician) {
-          this.userService.getOne(healthRecord.technician).subscribe(f => {
+        if (healthRecord.technician?._id) {
+          this.userService.getOne(healthRecord.technician._id).subscribe(f => {
             this.technicianName = `${f.firstName} ${f.lastName}`;
           });
         }

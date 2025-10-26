@@ -78,7 +78,7 @@ export class DashboardFarmer implements AfterViewInit, OnDestroy {
     this.reportData.healthStatus = { healthy: 0, sick: 0, quarantine: 0, deceased: 0 };
     livestocks.forEach(l => {
       const records = healthRecords
-        .filter(r => r.animal === l._id)
+        .filter(r => r.animal._id === l._id)
         .sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime());
 
       const latest = records[0];

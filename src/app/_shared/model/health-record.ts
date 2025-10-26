@@ -1,13 +1,16 @@
+import { Livestock } from "./livestock";
+import { UserDto } from "./user-dto";
+
 export interface HealthRecord {
   _id?: string;
-  animal: string;               // references the animal ID
+  animal: Livestock;
   bodyCondition: string;
   createdAt: string;            // ISO date string
   dewormingDate?: string;       // ISO date string
   diagnosis?: string;
   notes?: string;
   symptomsObserved?: string;
-  technician: string;           // references the technician ID
+  technician: UserDto;
   treatmentGiven?: string;
   updatedAt?: string;           // ISO date string
   vaccinationDate?: string;     // ISO date string

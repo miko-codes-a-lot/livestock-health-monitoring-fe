@@ -47,8 +47,8 @@ export class LivestockService {
           
           const simpleAnimal: Livestock = {
             ...fullAnimal,
-            species: fullAnimal.species.name,
-            breed: fullAnimal.breed.name,
+            species: fullAnimal.species._id!!,
+            breed: fullAnimal.breed._id!!,
           };
 
           return simpleAnimal;

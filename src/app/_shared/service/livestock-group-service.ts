@@ -67,8 +67,8 @@ export class LivestockGroupService {
                   return {
                     ...fullAnimal,
                     
-                    species: fullAnimal.species.name,
-                    breed: fullAnimal.breed.name,
+                    species: fullAnimal.species._id!!,
+                    breed: fullAnimal.breed._id!!,
                   };
                 }) 
               : []

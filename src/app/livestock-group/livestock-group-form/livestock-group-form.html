@@ -37,26 +37,19 @@
           </mat-form-field>
         </div>
 
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Farmer</mat-label>
-            <mat-select 
-              formControlName="farmer" 
-              [disabled]="user?.role === 'farmer'">
-              <mat-option *ngFor="let f of farmers" [value]="f.id">{{ f.name }}</mat-option>
-            </mat-select>
-            <mat-error *ngIf="farmer.hasError('required')">Farmer is required.</mat-error>
-          </mat-form-field>
-
-        <!-- <mat-form-field appearance="outline" class="half-width">
-          <mat-label>Status</mat-label>
-          <mat-select formControlName="status">
-            <mat-option value="pending">Pending</mat-option>
-            <mat-option value="approved">Approved</mat-option>
-            <mat-option value="rejected">Rejected</mat-option>
-          </mat-select>
-        </mat-form-field> -->
-        </div>
+        <ng-container *ngIf="user?.role !== 'farmer'">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Farmer</mat-label>
+              <mat-select 
+                formControlName="farmer" 
+                [disabled]="user?.role === 'farmer'">
+                <mat-option *ngFor="let f of farmers" [value]="f.id">{{ f.name }}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="farmer.hasError('required')">Farmer is required.</mat-error>
+            </mat-form-field>
+          </div>
+        </ng-container>
         
       </mat-card-content>
 
