@@ -17,7 +17,7 @@ export class LivestockGroupService {
         farmer: '',               // farmer id (string)
         groupName: '',            // empty group name
         groupPhotos: [],          // no photos yet
-        status: 'pending',        // default status
+        status: 'draft',        // default status
         createdAt: now,           // current timestamp
         updatedAt: now,           // current timestamp
         statusAt: now,            // current timestamp
@@ -45,9 +45,7 @@ export class LivestockGroupService {
     }
 
     getAll(): Observable<LivestockGroup[]> {
-      const test = this.http.get<LivestockGroup[]>(this.baseUrl, { withCredentials: true });
-      console.log('test', test)
-      return test
+      return this.http.get<LivestockGroup[]>(this.baseUrl, { withCredentials: true });
     }
   
     getOne(id: string): Observable<LivestockGroup> {
@@ -60,6 +58,11 @@ export class LivestockGroupService {
   
     update(id: string, livestockGroup: LivestockGroup): Observable<LivestockGroup> {
       return this.http.put<LivestockGroup>(`${this.baseUrl}/${id}`, livestockGroup, { withCredentials: true });
+    }
+
+    updateStatus(id: string, status: object): Observable<LivestockGroup> {
+      const result = this.http.patch<LivestockGroup>(`${this.baseUrl}/${id}/status`, status, { withCredentials: true });
+      return result
     }
   
     delete(id: string): Observable<void> {

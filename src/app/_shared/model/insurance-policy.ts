@@ -7,5 +7,5 @@ export interface InsurancePolicy {
   startDate: string; 
   endDate: string;
   policyDocument?: string; 
-  status: 'pending' | 'approved' | 'rejected' | 'expired';
+  status: 'draft' | 'pending' | 'approved' | 'rejected' | 'expired';
 }

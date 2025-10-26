@@ -113,7 +113,7 @@
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Livestock Group</mat-label>
             <mat-select formControlName="livestockGroup">
-              <mat-option *ngFor="let g of livestockGroups" [value]="g._id">
+              <mat-option *ngFor="let g of filteredGroups" [value]="g._id">
                 {{ g.groupName }}
               </mat-option>
             </mat-select>

@@ -1,7 +1,7 @@
 <div class="claims-container">
   <div class="claims-header">
     <h2>Claims</h2>
-    <button mat-raised-button color="primary" (click)="onCreate()">
+    <button mat-raised-button color="primary" (click)="onCreate()" *ngIf="user?.role === 'farmer'">
       <mat-icon>add</mat-icon> Create Claim
     </button>
   </div>
@@ -55,7 +55,12 @@
           <button mat-icon-button color="accent" (click)="onDetails(claim._id!)">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button mat-icon-button color="primary" (click)="onUpdate(claim._id!)">
+          <button mat-icon-button color="primary"
+            (click)="onUpdate(claim._id!)"
+            *ngIf="user?.role === 'farmer'"
+            [disabled]="claim.status === 'pending'
+            || claim.status === 'approved'"
+          >
             <mat-icon>edit</mat-icon>
           </button>
         </td>

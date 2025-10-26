@@ -77,6 +77,11 @@ export class ClaimsService {
       );
     }
 
+    updateStatus(id: string, status: object): Observable<Claims> {
+      const result = this.http.patch<Claims>(`${this.baseUrl}/${id}/process`, status, { withCredentials: true });
+      return result
+    }
+
     getProfilePictures(filenames: string[]): Observable<string[]> {
       return forkJoin(filenames.map(f => this.getProfilePicture(f)));
     }

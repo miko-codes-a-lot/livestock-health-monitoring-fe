@@ -4,5 +4,5 @@ export interface RxLivestockGroupForm {
   groupName: FormControl<string>;
   farmer: FormControl<string>;
   groupPhotos: FormControl<string[]>;
-  status: FormControl<'pending' | 'approved' | 'rejected'>;
+  status: FormControl< 'draft' | 'pending' | 'approved' | 'rejected'>;
 }

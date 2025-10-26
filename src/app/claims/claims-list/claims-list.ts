@@ -56,13 +56,14 @@ export class ClaimsList {
         if (this.user?.role === 'farmer') {
           // Show only the logged-in farmer's livestock groups
           this.claims = claims.filter(
-            lg => this.isUserDto(lg.farmer) && lg.farmer._id === this.user?._id
+            c => this.isUserDto(c.farmer) && c.farmer._id === this.user?._id
           );
           // this.livestockGroups = livestockGroups.filter(lg => lg.farmer?._id === this.user?._id);
-          console.log('this.livestockGroups', this.claims)
         } else {
           // Show all for admin/other roles
-          this.claims = claims;
+          this.claims = claims.filter(
+            c => c.status !== 'draft'
+          );
         }
       },
       error: (err) => alert(`Something went wrong: ${err}`)

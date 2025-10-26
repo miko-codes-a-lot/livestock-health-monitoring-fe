@@ -3,7 +3,13 @@
     <mat-card-header>
       <mat-card-title>Livestock Details</mat-card-title>
       <mat-card-actions align="end">
-        <button mat-raised-button color="primary" (click)="onUpdate()">Update</button>
+        <!-- *ngIf="user?.role === 'farmer'" -->
+        <button mat-raised-button color="primary"
+          (click)="onUpdate()"
+          *ngIf="user?.role === 'farmer'"
+          [disabled]="livestock.status === 'pending'
+          || livestock.status === 'approved'"
+        >Update</button> 
       </mat-card-actions>
     </mat-card-header>
 

@@ -103,14 +103,14 @@ export class LivestockGroupForm implements OnInit {
       groupName: '',
       farmer: '',
       groupPhotos: [],
-      status: 'pending',
+      status: 'draft',
     };
 
     this.rxform = this.fb.nonNullable.group({
       groupName: [l.groupName, Validators.required],
       farmer: [l.farmer, Validators.required],
       groupPhotos: [l.groupPhotos || []],
-      status: [l.status as 'pending' | 'approved' | 'rejected'],
+      status: [l.status as 'draft' | 'pending' | 'approved' | 'rejected'],
     });
 
   }
@@ -161,6 +161,7 @@ export class LivestockGroupForm implements OnInit {
   onSubmit() {
     if (this.rxform.invalid) return;
     const livestockGroupData: LivestockGroup = this.rxform.value as LivestockGroup;
+    console.log('livestockGroupData', livestockGroupData)
     this.onSubmitEvent.emit({livestockGroupData, files: this.selectedFiles});
   }
 

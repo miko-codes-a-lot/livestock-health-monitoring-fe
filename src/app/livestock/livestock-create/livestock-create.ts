@@ -55,6 +55,7 @@ export class LivestockCreate {
       },
       error: (err) => {
         this.isLoading = false;
+        alert(err.error.message)
         console.error('Livestock creation failed', err);
       },
     });

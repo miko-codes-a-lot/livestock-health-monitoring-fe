@@ -31,6 +31,7 @@ export class LivestockGroupCreate {
     const { livestockGroupData, files } = payload;
     this.isLoading = true;
     // Step 1: create livestock
+    console.log('livestockGroupData', livestockGroupData)
     this.livestockGroupService.create(livestockGroupData).subscribe({
       next: (data) => {
 
@@ -55,6 +56,7 @@ export class LivestockGroupCreate {
       },
       error: (err) => {
         this.isLoading = false;
+        alert(err.error.message)
         console.error('Livestock creation failed', err);
       },
     });

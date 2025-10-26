@@ -31,7 +31,6 @@ export class ClaimsUpdate implements OnInit {
 
     this.claimsService.getOne(this.id).subscribe({
       next: (doc) => {
-        console.log('doc', doc)
         this.initDoc = doc;
         // patch form after fetch
       },
@@ -56,12 +55,13 @@ export class ClaimsUpdate implements OnInit {
       )
       .subscribe({
         next: () => {
-          alert('Livestock updated successfully!');
-          this.router.navigate(['/livestock/details', claimsId], { replaceUrl: true });
+          alert('Claim updated successfully!');
+          this.router.navigate(['/claims/details', claimsId], { replaceUrl: true });
         },
         error: (err) => {
+          alert(err.error.message)
           console.error('Update failed', err);
-          alert(`Update failed: ${err.message || err}`);
+          // alert(`Update failed: ${err.message || err}`);
         },
         complete: () => this.isLoading = false
       });

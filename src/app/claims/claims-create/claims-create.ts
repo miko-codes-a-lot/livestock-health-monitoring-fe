@@ -55,6 +55,7 @@ export class ClaimsCreate {
       },
       error: (err) => {
         this.isLoading = false;
+        alert(err.error.message)
         console.error('Claims creation failed', err);
       },
     });

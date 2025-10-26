@@ -68,7 +68,7 @@ export class App {
                 { label: 'Livestock Classification', icon: 'category', link: '/livestock-classification', roles: ['admin', 'technician']  },
                 { label: 'Livestock Breed', icon: 'pets', link: '/livestock-breed', roles: ['admin', 'technician']  },
                 { label: 'Livestock Group', icon: 'groups', link: '/livestock-group', roles: ['admin', 'technician', 'farmer']  },
-                { label: 'Livestock', icon: 'grass', link: '/livestock', roles: ['admin', 'technician']  },
+                { label: 'Livestock', icon: 'grass', link: '/livestock', roles: ['admin', 'technician', 'farmer']  },
                 { label: 'Health Record', icon: 'medical_services', link: '/health-record', roles: ['admin', 'technician']  },
                 { label: 'Insurance Policy', icon: 'verified_user', link: '/insurance-policy', roles: ['admin', 'technician', 'farmer']  },
                 { label: 'Claims', icon: 'assignment', link: '/claims', roles: ['admin', 'technician', 'farmer']  },

@@ -8,5 +8,5 @@ export interface RxInsurancePolicyForm {
   startDate: FormControl<string>;          // ISO date string
   endDate: FormControl<string>;            // ISO date string
   policyDocument: FormControl<string>;     // filename or URL of document
-  status: FormControl<'pending' | 'approved' | 'rejected' | 'expired'>; // status union
+  status: FormControl< 'draft' | 'pending' | 'approved' | 'rejected' | 'expired'>; // status union
 }

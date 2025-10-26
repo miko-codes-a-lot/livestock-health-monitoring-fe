@@ -45,7 +45,8 @@ export class InsurancePolicyForm implements OnInit {
   existingPhoto: string = '';
 
   avatarUrl: string[] = [];
-  livestockGroups: LivestockGroup[] = [];
+  // livestockGroups: LivestockGroup[] = [];
+  livestockGroups: { _id: string; groupName: string }[] = [];
 
   user: UserDto | null = null; 
 
@@ -127,7 +128,7 @@ export class InsurancePolicyForm implements OnInit {
       startDate: [l.startDate, Validators.required],
       endDate: [l.endDate, Validators.required],
       policyDocument: [l.policyDocument || ''],
-      status: [l.status as 'pending' | 'approved' | 'rejected' | 'expired'],
+      status: [l.status as 'draft' | 'pending' | 'approved' | 'rejected' | 'expired'],
     });
 
   }
@@ -154,12 +155,18 @@ export class InsurancePolicyForm implements OnInit {
   private loadInsurancePolicies(): void {
     this.insurancePolicyService.getAll().subscribe(policies => {
       this.insurancePolicy = policies;
+      console.log('policies', policies)
     });
   }
 
   private loadLivestockGroups(): void {
     this.livestockGroupService.getAll().subscribe(groups => {
-      this.livestockGroups = groups;
+      this.livestockGroups = groups
+      .filter((l: any) => l.farmer._id === this.user?._id)
+        .map((l: any) => ({
+            _id: l._id,
+            groupName: l.groupName
+        }));
     });
   }
 
@@ -206,9 +213,8 @@ export class InsurancePolicyForm implements OnInit {
 
   onSubmit() {
     if (this.rxform.invalid) return;
-
     const insurancePolicyData: InsurancePolicy = this.rxform.value as InsurancePolicy;
-
+    console.log('insurancePolicyData', insurancePolicyData)
     this.onSubmitEvent.emit({
       insurancePolicyData,
       file: this.selectedFile, // now matches the payload type

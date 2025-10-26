@@ -3,10 +3,12 @@ import { Livestock } from '../model/livestock';
 import { Observable, map, forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
+export type LivestockGroupStatus = 'draft' | 'pending' | 'verified' | 'rejected';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class LivestockService {
     constructor(private readonly http: HttpClient) {}
     // private readonly baseUrl = '/livestocks';
@@ -24,15 +26,13 @@ export class LivestockService {
             animalPhotos: [],
             isInsured: false,
             isDeceased: false,
-            status: 'pending',
+            status: 'draft',
             statusAt: '',
         };
     }
   
     getAll(): Observable<Livestock[]> {
-      console.log('dawdaw')
       const test = this.http.get<Livestock[]>(this.baseUrl, { withCredentials: true });
-      console.log('test', test)
       return test
     }
   
@@ -56,6 +56,14 @@ export class LivestockService {
       const formData = new FormData();
       files.forEach(file => formData.append('photos', file));
       return this.http.put(`${this.baseUrl}/${livestockId}/photos`, formData, { withCredentials: true });
+    }
+
+    updateGroupStatus(groupId: string, status: LivestockGroupStatus): Observable<{ message: string }> {
+      return this.http.patch<{ message: string }>(
+        `${this.baseUrl}/group/${groupId}/status`,
+        { status },
+        { withCredentials: true } // if you need cookies/session
+      );
     }
 
     // should get this in the ts

@@ -15,6 +15,8 @@ import { LivestockService } from '../../_shared/service/livestock-service';
 import { LivestockGroup } from '../../_shared/model/livestock-group';
 import { LivestockClassificationService } from '../../_shared/service/livestock-classification-service';
 import { LivestockBreedService } from '../../_shared/service/livestock-breed-service';
+import { UserDto } from '../../_shared/model/user-dto';
+import { AuthService } from '../../_shared/service/auth-service';
 
 @Component({
   selector: 'app-livestock-form',
@@ -42,6 +44,7 @@ export class LivestockForm implements OnInit {
   existingPhotos: string[] = [];
   previewPhotos: string[] = [];
   avatarUrl: string[] = [];
+  user: UserDto | null = null; 
 
   @Input()
   set initDoc(value: Livestock) {
@@ -68,6 +71,7 @@ export class LivestockForm implements OnInit {
 
   speciesOptions: { _id: string; name: string }[] = [];
   filteredBreeds: { _id: string; name: string }[] = [];
+  filteredGroups: { _id: string; groupName: string }[] = [];
 
   constructor(
     private readonly fb: FormBuilder,
@@ -75,14 +79,24 @@ export class LivestockForm implements OnInit {
     private readonly livestockGroupService: LivestockGroupService,
     private readonly livestockService: LivestockService,
     private readonly livestockClassificationService: LivestockClassificationService,
-    private readonly livestockBreedService: LivestockBreedService, // ✅ fixed wrong service
+    private readonly livestockBreedService: LivestockBreedService,
+    private readonly authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
     this.loadFarmers();
-    this.loadLivestockGroups();
-    this.loadClassifications(); // ✅ new
+    // this.loadLivestockGroups();
+    this.loadClassifications();
+
+    this.authService.currentUser$.subscribe({
+      next: (u) => {
+        if (u) {
+          this.user = u
+        }
+      }
+    })
+
 
     if (this.initDoc) {
       this.rxform.patchValue(this.initDoc);
@@ -102,7 +116,7 @@ export class LivestockForm implements OnInit {
       isInsured: false,
       livestockGroup: '',
       farmer: '',
-      status: 'pending',
+      status: 'draft',
       animalPhotos: []
     };
 
@@ -124,21 +138,40 @@ export class LivestockForm implements OnInit {
     this.rxform.get('species')?.valueChanges.subscribe(value => {
       this.onSpeciesChange(value);
     });
+
+    this.rxform.get('farmer')?.valueChanges.subscribe(value => {
+      this.onFarmerChange(value);
+    });
   }
 
   private loadFarmers(): void {
     this.userService.getAll().subscribe(users => {
-      this.farmers = users
-        .filter(u => u.role === 'farmer' && u._id)
-        .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+      // this.farmers = users
+      //   .filter(u => u.role === 'farmer' && u._id)
+      //   .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+
+      if (this.user?.role === 'farmer') {
+        // Only include the logged-in farmer
+        this.farmers = users
+          .filter(u => u._id === this.user?._id)
+          .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+        
+        // Auto-select themselves
+        this.rxform.patchValue({ farmer: this.user._id });
+      } else {
+        // Admin or other roles: show all farmers
+        this.farmers = users
+          .filter(u => u.role === 'farmer')
+          .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+      }
     });
   }
 
-  private loadLivestockGroups(): void {
-    this.livestockGroupService.getAll().subscribe(groups => {
-      this.livestockGroups = groups;
-    });
-  }
+  // private loadLivestockGroups(): void {
+  //   this.livestockGroupService.getAll().subscribe(groups => {
+  //     this.livestockGroups = groups;
+  //   });
+  // }
 
   private loadClassifications(): void {
     this.livestockClassificationService.getAll().subscribe(classifications => {
@@ -155,7 +188,7 @@ export class LivestockForm implements OnInit {
       return;
     }
 
-    // ✅ Fetch breeds belonging to selected classification
+    // Fetch breeds belonging to selected classification
     this.livestockBreedService.getAll().subscribe(breeds => {
       this.filteredBreeds = breeds
         .filter((b: any) => b.classification?._id === speciesId)
@@ -165,6 +198,27 @@ export class LivestockForm implements OnInit {
       if (!this.filteredBreeds.find(b => b._id === currentBreed)) {
         this.rxform.get('breed')?.patchValue('');
       }
+    });
+  }
+
+  onFarmerChange(farmerId: string) {
+    if (!farmerId) {
+      this.filteredGroups = [];
+      return;
+    }
+    
+    this.livestockGroupService.getAll().subscribe(groups => {
+      this.filteredGroups = groups
+        .filter((b: any) => b.farmer?._id === farmerId)
+        .map((b: any) => ({
+            _id: b._id,
+            groupName: b.groupName 
+        }));
+      
+      this.rxform.get('livestockGroup')?.value;
+      // if (!this.filteredGroups.find(b => b._id === currentGroup)) {
+      //     this.rxform.get('livestockGroup')?.patchValue('' as any);
+      // }
     });
   }
 

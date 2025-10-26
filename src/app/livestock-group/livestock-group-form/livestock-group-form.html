@@ -2,7 +2,7 @@
   <form [formGroup]="rxform" (ngSubmit)="onSubmit()" class="livestock-form">
     <mat-card>
       <mat-card-header>
-        <mat-card-title>Livestock Information</mat-card-title>
+        <mat-card-title>Livestock Group Information</mat-card-title>
       </mat-card-header>
 
       <mat-card-content>
@@ -30,32 +30,15 @@
 
 
         <div class="form-row">
-          <mat-form-field appearance="outline" class="third-width">
+          <mat-form-field appearance="outline" class="full-width">
             <mat-label>Group Name</mat-label>
             <input matInput formControlName="groupName" type="text" />
             <mat-error *ngIf="groupName.hasError('required')">Group Name is required.</mat-error>
           </mat-form-field>
-
-          <!-- <mat-form-field appearance="outline" class="third-width">
-            <mat-label>Species</mat-label>
-            <mat-select formControlName="species">
-              <mat-option *ngFor="let s of speciesOptions" [value]="s.value">{{ s.label }}</mat-option>
-            </mat-select>
-            <mat-error *ngIf="species.hasError('required')">Species is required.</mat-error>
-          </mat-form-field> -->
-<!-- 
-          <mat-form-field appearance="outline" class="third-width">
-            <mat-label>Breed</mat-label>
-            <mat-select formControlName="breed">
-              <mat-option *ngFor="let b of filteredBreeds" [value]="b.value">{{ b.label }}</mat-option>
-            </mat-select>
-            <mat-error *ngIf="breed.hasError('required')">Breed is required.</mat-error>
-          </mat-form-field> -->
         </div>
 
-        <!-- Row 3: Farmer, Livestock Group -->
         <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
+          <mat-form-field appearance="outline" class="full-width">
             <mat-label>Farmer</mat-label>
             <mat-select 
               formControlName="farmer" 
@@ -65,14 +48,14 @@
             <mat-error *ngIf="farmer.hasError('required')">Farmer is required.</mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="half-width">
+        <!-- <mat-form-field appearance="outline" class="half-width">
           <mat-label>Status</mat-label>
           <mat-select formControlName="status">
             <mat-option value="pending">Pending</mat-option>
             <mat-option value="approved">Approved</mat-option>
             <mat-option value="rejected">Rejected</mat-option>
           </mat-select>
-        </mat-form-field>
+        </mat-form-field> -->
         </div>
         
       </mat-card-content>

@@ -61,6 +61,11 @@ export class InsurancePolicyService {
     update(id: string, insurancePolicy: InsurancePolicy): Observable<InsurancePolicy> {
       return this.http.put<InsurancePolicy>(`${this.baseUrl}/${id}`, insurancePolicy, { withCredentials: true });
     }
+
+    updateStatus(id: string, status: object): Observable<InsurancePolicy> {
+      const result = this.http.patch<InsurancePolicy>(`${this.baseUrl}/${id}/status`, status, { withCredentials: true });
+      return result
+    }
   
     delete(id: string): Observable<void> {
       return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });

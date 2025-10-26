@@ -29,7 +29,7 @@ export class InsurancePolicyUpdate implements OnInit {
     this.isLoading = true;
     this.initDoc = this.insurancePolicyService.getEmptyOrNullDoc();
     this.id = this.route.snapshot.params['id'];
-
+    // include the upadate here
     this.insurancePolicyService.getOne(this.id).subscribe({
       next: (doc) => {
         console.log('doc', doc)
@@ -47,6 +47,7 @@ onSubmit(payload: { insurancePolicyData: InsurancePolicy; file: File | null }) {
 
   this.isLoading = true;
 
+  insurancePolicyData.status = 'pending'
   this.insurancePolicyService.update(insurancePolicyId, insurancePolicyData)
     .pipe(
       concatMap(() => {
@@ -59,7 +60,7 @@ onSubmit(payload: { insurancePolicyData: InsurancePolicy; file: File | null }) {
     )
     .subscribe({
       next: () => {
-        alert('Insurance Policy updated successfully!');
+        alert('Insurance policy updated successfully. It is now pending approval.');
         this.router.navigate(['/insurance/details', insurancePolicyId], { replaceUrl: true });
       },
       error: (err) => {

@@ -1,7 +1,9 @@
 <div class="users-container">
   <div class="users-header">
     <h2>Livestocks</h2>
-    <button mat-raised-button color="primary" (click)="onCreate()">
+    <!-- to hide -->
+     <!-- *ngIf="user?.role === 'farmer'"-->
+    <button mat-raised-button color="primary" (click)="onCreate()" *ngIf="user?.role === 'farmer'"> 
       <mat-icon>add</mat-icon> Create Livestock
     </button>
   </div>
@@ -59,7 +61,12 @@
           <button mat-icon-button color="accent" (click)="onDetails(livestock._id!)">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button mat-icon-button color="primary" (click)="onUpdate(livestock._id!)">
+          <!-- remove ng-if, if the admin is able to create -->
+          <button mat-icon-button color="primary" 
+            (click)="onUpdate(livestock._id!)"
+            *ngIf="user?.role === 'farmer'"
+            [disabled]="livestock.status === 'pending' || livestock.status==='approved'"
+          >
             <mat-icon>edit</mat-icon>
           </button>
         </td>

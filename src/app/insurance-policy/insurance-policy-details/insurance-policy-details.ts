@@ -10,7 +10,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { InsurancePolicy } from '../../_shared/model/insurance-policy';
 import { UserDto } from '../../_shared/model/user-dto';
 import { LivestockGroup } from '../../_shared/model/livestock-group';
-
+import { AuthService } from '../../_shared/service/auth-service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-insurance-policy-details',
@@ -20,7 +21,8 @@ import { LivestockGroup } from '../../_shared/model/livestock-group';
     MatCardModule,
     MatButtonModule,
     MatDividerModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatIconModule
   ],
   templateUrl: './insurance-policy-details.html',
   styleUrls: ['./insurance-policy-details.css']
@@ -33,10 +35,12 @@ export class InsurancePolicyDetails implements OnInit {
   livestockGroup: LivestockGroup | undefined;
   photoUrls: string = ''; // <-- store converted URLs here
   policyDocumentUrl: string | null = null;
+  user: UserDto | null = null; 
 
   constructor(
     private readonly insurancePolicyService: InsurancePolicyService,
     private readonly userService: UserService,
+    private readonly authService: AuthService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
   ) {}
@@ -44,6 +48,14 @@ export class InsurancePolicyDetails implements OnInit {
   ngOnInit(): void {
     this.isLoading = true;
     const id = this.route.snapshot.params['id'];
+
+    this.authService.currentUser$.subscribe({
+      next: (u) => {
+        if (u) {
+          this.user = u
+        }
+      }
+    })
 
     this.insurancePolicyService.getOne(id).subscribe({
       next: (insurancePolicy) => {
@@ -96,5 +108,46 @@ export class InsurancePolicyDetails implements OnInit {
 
   getPhotoUrl(filename: string) {
     return `/uploads/insurance-policy/${filename}`; // adjust according to your backend storage path
+  }
+
+  onApprove() {
+    const status = {
+      status: "approved"
+    }
+      if (this.insurancePolicy?._id) {
+        this.insurancePolicyService.updateStatus(this.insurancePolicy._id, status)
+          .subscribe({
+            next: (res) => {
+              alert('Successfully Approved')
+              this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+                this.router.navigate(['/insurance-policy/details', this.insurancePolicy!._id]);
+              });
+            },
+            error: (err) => {
+              console.error('Error updating status:', err);
+            }
+          });
+      }
+  }
+
+  onReject() {
+    // TODO: Add logic to approve the policy
+    const status = {
+      status: "rejected"
+    }
+    if (this.insurancePolicy?._id) {
+      this.insurancePolicyService.updateStatus(this.insurancePolicy._id, status)
+        .subscribe({
+          next: (res) => {
+            alert('Successfully Rejected')
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigate(['/insurance-policy/details', this.insurancePolicy!._id]);
+            });
+          },
+          error: (err) => {
+            console.error('Error updating status:', err);
+          }
+        });
+    }
   }
 }

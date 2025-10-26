@@ -125,6 +125,13 @@ mat-card-title {
   transform: scale(1.05); /* subtle zoom */
 }
 
+.approval-buttons {
+  display: flex;
+  justify-content: center; /* center horizontally */
+  gap: 1rem;               /* space between buttons */
+  margin: 1rem;        /* optional spacing from card content */
+}
+
 @media (max-width: 600px) {
   .details-grid {
     grid-template-columns: 1fr;

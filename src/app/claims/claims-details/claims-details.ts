@@ -13,6 +13,9 @@ import { Claims } from '../../_shared/model/claims';
 import { LivestockService } from '../../_shared/service/livestock-service';
 import { LivestockBreedService } from '../../_shared/service/livestock-breed-service';
 import { LivestockClassificationService } from '../../_shared/service/livestock-classification-service';
+import { AuthService } from '../../_shared/service/auth-service';
+import { MatIconModule } from '@angular/material/icon';
+import { UserDto } from '../../_shared/model/user-dto';
 
 @Component({
   selector: 'app-claims-details',
@@ -22,7 +25,8 @@ import { LivestockClassificationService } from '../../_shared/service/livestock-
     MatCardModule,
     MatButtonModule,
     MatDividerModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatIconModule
   ],
   templateUrl: './claims-details.html',
   styleUrls: ['./claims-details.css']
@@ -39,6 +43,7 @@ export class ClaimsDetails implements OnInit {
   photoUrls: string[] = [];
 
   fullScreenPhotoUrl: string | null = null;
+  user: UserDto | null = null; 
 
   constructor(
     private readonly claimsService: ClaimsService,
@@ -49,16 +54,24 @@ export class ClaimsDetails implements OnInit {
     private readonly livestockGroupService: LivestockGroupService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
+    private readonly authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.isLoading = true;
     const id = this.route.snapshot.params['id'];
 
+    this.authService.currentUser$.subscribe({
+      next: (u) => {
+        if (u) {
+          this.user = u
+        }
+      }
+    })
+
     this.claimsService.getOne(id).subscribe({
       next: (claims) => {
         this.claims = claims;
-        console.log('claims', claims);
         // Farmer
         if (claims.farmer) {
           let farmerId: string;
@@ -133,5 +146,42 @@ export class ClaimsDetails implements OnInit {
 
   getPhotoUrl(filename: string) {
     return `/uploads/claims/${filename}`; // adjust according to backend path
+  }
+
+  toReview() {
+    if (this.claims?._id) {
+      this.processStatus(this.claims._id, 'pending', 'Successfully Submitted for Review')
+    }
+  }
+
+  onApprove() {
+    if (this.claims?._id) {
+      this.processStatus(this.claims._id, 'approved')
+    }
+  }
+
+  onReject() {
+    if (this.claims?._id) {
+      this.processStatus(this.claims._id, 'rejected')
+    }
+  }
+
+  processStatus(claimsId: string, statusValue: string, customMessage?: string) {
+    this.claimsService.updateStatus(claimsId, {status: statusValue})
+      .subscribe({
+        next: (res) => {
+          if(customMessage) {
+            alert(customMessage)
+          } else {
+            alert(`Claim Successfully ${statusValue}`)
+          }
+          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            this.router.navigate(['/claims/details', this.claims!._id]);
+          });
+        },
+        error: (err) => {
+          console.error('Error updating status:', err);
+        }
+      });
   }
 }

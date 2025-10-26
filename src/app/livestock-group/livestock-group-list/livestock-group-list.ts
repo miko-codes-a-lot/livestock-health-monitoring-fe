@@ -66,7 +66,9 @@ export class LivestockGroupList {
           console.log('this.livestockGroups', this.livestockGroups)
         } else {
           // Show all for admin/other roles
-          this.livestockGroups = livestockGroups;
+          this.livestockGroups = livestockGroups.filter(
+            ls => ls.status !== 'draft'
+          );
         }
       },
       error: (err) => alert(`Something went wrong: ${err}`)

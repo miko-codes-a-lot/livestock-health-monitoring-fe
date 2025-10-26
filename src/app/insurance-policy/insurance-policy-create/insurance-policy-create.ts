@@ -28,12 +28,12 @@ export class InsurancePolicyCreate {
   onSubmit(payload: { insurancePolicyData: InsurancePolicy; file: File | null }) {
     const { insurancePolicyData, file } = payload;
     this.isLoading = true;
-
+    // insurancePolicyData.status = 'pending'
     // Step 1: create insurance policy
     this.insurancePolicyService.create(insurancePolicyData).subscribe({
       next: (data) => {
         const policyId = data._id;
-
+     
         // Step 2: upload file if selected
         if (file) {
           this.insurancePolicyService.uploadPolicyDocument(policyId, file).subscribe({
@@ -53,6 +53,7 @@ export class InsurancePolicyCreate {
       },
       error: (err) => {
         this.isLoading = false;
+        alert('Policy number is already in use')
         console.error('Insurance policy creation failed', err);
       },
     });

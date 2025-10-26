@@ -48,7 +48,8 @@ export class ClaimsForm implements OnInit {
   existingPhotos: string[] = [];
   previewPhotos: string[] = [];
   avatarUrl: string[] = [];
-  user: UserDto | null = null; 
+  user: UserDto | null = null;
+  filteredGroups: { _id: string; groupName: string }[] = [];
 
   @Input()
   set initDoc(value: Claims) {
@@ -63,7 +64,7 @@ export class ClaimsForm implements OnInit {
   }
 
   rxform!: FormGroup<RxClaimsForm>;
-  livestockGroups: LivestockGroup[] = [];
+  // livestockGroups: LivestockGroup[] = [];
   farmers: { id: string; name: string }[] = [];
   speciesOptions: { _id: string; name: string }[] = [];
   filteredBreeds: { _id: string; name: string }[] = [];
@@ -73,6 +74,21 @@ export class ClaimsForm implements OnInit {
   selectedCategoryValue: string | null = null;
   selectPolicy: { id: string; display: string }[] = [];
   animals: any[] = [];
+  filteredPolicies: { _id: string; name: string }[] = [];
+  livestockGroups: { _id: string; groupName: string }[] = [];
+  filteredAnimals: { _id: string; name: string }[] = [];
+
+  l: Claims = this.initDoc ?? {
+    animal: '',
+    causeOfDeath: '',
+    causeOfDeathCategory: '',
+    dateOfDeath: '',
+    evidencePhotos: [],
+    farmer: '',
+    filedAt: '',
+    policy: '',
+    status: 'draft' as 'draft' | 'approved' | 'rejected' | 'pending',
+  };
 
   constructor(
     private readonly fb: FormBuilder,
@@ -87,10 +103,10 @@ export class ClaimsForm implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
-    this.loadLivestockGroups();
     this.loadClassifications();
     this.loadCauseOfDeathCategory();
-    this.loadInsurancePolicy();
+    // this.loadInsurancePolicy();
+    this.loadLivestockGroups();
     this.loadLivestock();
     this.loadFarmers();
     this.authService.currentUser$.subscribe({
@@ -103,33 +119,27 @@ export class ClaimsForm implements OnInit {
   }
 
   private initializeForm(): void {
-    const l: Claims = this.initDoc ?? {
-      animal: '',
-      causeOfDeath: '',
-      causeOfDeathCategory: '',
-      dateOfDeath: '',
-      evidencePhotos: [],
-      farmer: '',
-      filedAt: '',
-      policy: '',
-      status: 'draft' as 'draft' | 'approved' | 'rejected' | 'pending',
-    };
+
 
     this.rxform = this.fb.nonNullable.group({
-      animal: [l.animal, Validators.required],
-      causeOfDeath: [l.causeOfDeath, Validators.required],
-      causeOfDeathCategory: [l.causeOfDeathCategory, Validators.required],
-      dateOfDeath: [l.dateOfDeath, Validators.required],
-      evidencePhotos: [l.evidencePhotos || []],
-      farmer: [l.farmer, Validators.required],
-      filedAt: [l.filedAt, Validators.required],
-      policy: [l.policy, Validators.required],
-      status: [l.status || 'draft']
+      animal: [this.l.animal, Validators.required],
+      // causeOfDeath: [this.l.causeOfDeath, Validators.required],
+      causeOfDeathCategory: [this.l.causeOfDeathCategory, Validators.required],
+      dateOfDeath: [this.l.dateOfDeath, Validators.required],
+      evidencePhotos: [this.l.evidencePhotos || []],
+      farmer: [this.l.farmer, Validators.required],
+      filedAt: [this.l.filedAt, Validators.required],
+      policy: [this.l.policy, Validators.required],
+      status: [this.l.status || 'draft'],
     });
 
     this.rxform.get('species')?.valueChanges.subscribe(value => {
       this.onSpeciesChange(value);
     });
+
+    // this.rxform.get('livestockGroup')?.valueChanges.subscribe(value => {
+    //   this.onLivestockGroupChange(value);
+    // });
   }
 
   private tryPatchForm(): void {
@@ -151,6 +161,7 @@ export class ClaimsForm implements OnInit {
       patchData.farmer = (this.initDoc.farmer as { _id: string })._id;
     } else {
       patchData.farmer = this.initDoc.farmer as string;
+      this.loadFarmers()
     }
 
     // Animal
@@ -183,8 +194,9 @@ export class ClaimsForm implements OnInit {
       this.onCategoryChange(this.initDoc.causeOfDeathCategory);
     }
 
+    //on update
     if (this.initDoc.causeOfDeath) {
-      this.rxform.controls.causeOfDeath.setValue(this.initDoc.causeOfDeath);
+      this.rxform.controls.causeOfDeath?.setValue(this.initDoc.causeOfDeath);
     }
 
     // Show existing uploaded photos
@@ -205,12 +217,13 @@ export class ClaimsForm implements OnInit {
         
         // Auto-select themselves
         this.rxform.patchValue({ farmer: this.user._id });
-      } else {
-        // Admin or other roles: show all farmers
-        this.farmers = users
-          .filter(u => u.role === 'farmer')
-          .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
       }
+      // else {
+      //   // Admin or other roles: show all farmers
+      //   this.farmers = users
+      //     .filter(u => u.role === 'farmer')
+      //     .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+      // }
     });
   }
 
@@ -225,15 +238,8 @@ export class ClaimsForm implements OnInit {
     });
   }
 
-  private loadInsurancePolicy(): void {
-    this.insurancePolicyService.getAll().subscribe(policies => {
-      this.selectPolicy = policies.map(p => ({
-        id: p._id!,
-        display: `${p.policyNumber} - ${p.provider}`
-      }));
-      this.tryPatchForm();
-    });
-  }
+
+  
 
   private loadLivestock(): void {
     this.livestockService.getAll().subscribe(livestock => {
@@ -244,8 +250,59 @@ export class ClaimsForm implements OnInit {
 
   private loadLivestockGroups(): void {
     this.livestockGroupService.getAll().subscribe(groups => {
-      this.livestockGroups = groups;
+      this.livestockGroups = groups
+      .filter((l: any) => l.farmer._id === this.user?._id)
+        .map((l: any) => ({
+            _id: l._id,
+            groupName: l.groupName
+        }));
     });
+  }
+
+  
+  onLivestockGroupChange(livestockGroupId: string) {
+    if (!livestockGroupId) {
+      this.filteredAnimals = [];
+      this.selectPolicy = [];
+      return;
+    }
+
+    // this is what I need
+    this.livestockService.getAll().subscribe(livestocks => {
+      this.filteredAnimals = livestocks
+        .filter((l: any) => l.livestockGroup === livestockGroupId)
+        .map((l: any) => ({
+            _id: l._id,
+            name: `${l.tagNumber} - ${l.breed.name} ${l.species.name}` 
+        }));
+
+
+      const currentAnimal = this.rxform.get('animal')?.value;
+      if (!this.filteredAnimals.find(b => b._id === currentAnimal)) {
+          this.rxform.get('animal')?.patchValue('');
+      }
+
+      this.loadInsurancePolicy(livestockGroupId, this.user?._id)
+
+    });
+    
+  }
+
+  // this is what i need
+  private loadInsurancePolicy(groupId: string, farmerId: any): void {
+
+    this.insurancePolicyService.getAll().subscribe(policies => {
+      console.log('policies', policies)
+      this.selectPolicy = policies
+      .filter((p: any) => p.livestockGroup._id === groupId && p.farmer._id === farmerId)
+      .map(p => ({
+        id: p._id!,
+        display: `${p.policyNumber} - ${p.provider}`
+      }));
+      console.log('this.selectPolicy', this.selectPolicy)
+      this.tryPatchForm();
+    });
+
   }
 
   private loadClassifications(): void {
@@ -261,7 +318,24 @@ export class ClaimsForm implements OnInit {
     this.selectedCategoryValue = selectedValue;
     const selectedCause = this.mortalityCauses.find(c => c.value === selectedValue);
     this.causeOfDeathItems = selectedCause ? selectedCause.items : [];
-    this.rxform.controls.causeOfDeath.setValue('');
+
+    const hasCauses = this.causeOfDeathItems.length > 0;
+    console.log('this.causeOfDeathItems', this.causeOfDeathItems)
+    // If the selected category has cause-of-death items, add the control
+    if (hasCauses) {
+      if (!this.rxform.get('causeOfDeath')) {
+        (this.rxform as FormGroup<any>).addControl(
+          'causeOfDeath',
+          this.fb.control(this.l.causeOfDeath || '', Validators.required)
+        );
+      }
+    } 
+    // Otherwise, remove it if it exists
+    else {
+      if (this.rxform.get('causeOfDeath')) {
+        this.rxform.removeControl('causeOfDeath');
+      }
+    }
   }
 
   onSpeciesChange(speciesId: string) {

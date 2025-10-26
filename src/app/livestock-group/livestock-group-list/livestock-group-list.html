@@ -1,7 +1,7 @@
 <div class="users-container">
   <div class="users-header">
     <h2>Livestock Groups</h2>
-    <button mat-raised-button color="primary" (click)="onCreate()">
+    <button mat-raised-button color="primary" (click)="onCreate()" *ngIf="user?.role === 'farmer'">
       <mat-icon>add</mat-icon> Create Livestock
     </button>
   </div>
@@ -32,15 +32,19 @@
         <td mat-cell *matCellDef="let livestockGroup"> {{ livestockGroup.status }} </td>
       </ng-container>
 
-
       <!-- Action -->
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef> Action </th>
-        <td mat-cell *matCellDef="let livestock">
-          <button mat-icon-button color="accent" (click)="onDetails(livestock._id!)">
+        <td mat-cell *matCellDef="let livestockGroup">
+          <button mat-icon-button color="accent" (click)="onDetails(livestockGroup._id!)">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button mat-icon-button color="primary" (click)="onUpdate(livestock._id!)">
+
+          <button mat-icon-button
+                  color="primary" 
+                  (click)="onUpdate(livestockGroup._id!)"
+                  *ngIf="user?.role === 'farmer'"
+                  [disabled]="livestockGroup.status === 'pending' || livestockGroup.status==='approved'">
             <mat-icon>edit</mat-icon>
           </button>
         </td>

@@ -61,7 +61,7 @@ export class InsurancePolicyList {
     this.insurancePolicyService.getAll().subscribe({
       next: (insurancePolicy) => {
           this.insurancePolicies = insurancePolicy;
-
+        
           if (this.user?.role === 'farmer') {
           // Show only the logged-in farmer's livestock groups
           this.insurancePolicies = insurancePolicy.filter(

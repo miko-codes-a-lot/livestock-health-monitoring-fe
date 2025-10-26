@@ -8,21 +8,7 @@
       <mat-card-content>
         <!-- Animal Selection -->
         <div class="form-row">
-          <mat-form-field appearance="outline" class="third-width">
-            <mat-label>Animal</mat-label>
-            <mat-select formControlName="animal" required>
-              <mat-option *ngFor="let a of animals" [value]="a._id">
-                {{ a.tagNumber }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="animal.hasError('required')">
-              Animal is required.
-            </mat-error>
-          </mat-form-field>
 
-        </div>
-
-        <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Farmer</mat-label>
             <mat-select 
@@ -32,8 +18,32 @@
             </mat-select>
             <mat-error *ngIf="farmer.hasError('required')">Farmer is required.</mat-error>
           </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Livestock Group</mat-label>
+            <mat-select (selectionChange)="onLivestockGroupChange($event.value)">
+              <mat-option *ngFor="let g of livestockGroups" [value]="g._id">
+                {{ g.groupName }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
 
-          <mat-form-field appearance="outline" class="third-width">
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Animal</mat-label>
+            <mat-select formControlName="animal" required>
+              <mat-option *ngFor="let a of filteredAnimals" [value]="a._id">
+                {{ a.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="animal.hasError('required')">
+              Animal is required.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
             <mat-label>Cause of Death Category</mat-label>
             <mat-select
               formControlName="causeOfDeathCategory"
@@ -48,24 +58,19 @@
               Category is required.
             </mat-error>
           </mat-form-field>
-
-                <!-- Cause of Death Items -->
-          <mat-form-field appearance="outline" class="third-width">
-            <mat-label>Cause of Death</mat-label>
-            <mat-select formControlName="causeOfDeath" required>
-              <mat-option *ngFor="let i of causeOfDeathItems" [value]="i.value">
-                {{ i.label }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="causeOfDeath.hasError('required')">
-              Cause of death is required.
-            </mat-error>
-          </mat-form-field>
         </div>
-
+         <div class="form-row" *ngIf="causeOfDeathItems.length">
+            <!-- Cause of Death Items -->
+            <mat-form-field *ngIf="rxform.get('causeOfDeath')" appearance="outline" class="full-width">
+              <mat-label>Cause of Death</mat-label>
+              <mat-select formControlName="causeOfDeath">
+                <mat-option *ngFor="let c of causeOfDeathItems" [value]="c.value">{{ c.label }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+         </div>
         <!-- Farmer and Filed At -->
         <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="full-width" >
             <mat-label>Policy</mat-label>
             <mat-select formControlName="policy" required>
               <mat-option *ngFor="let p of selectPolicy" [value]="p.id">
@@ -80,7 +85,6 @@
 
         <!-- Date of Death -->
         <div class="form-row">
-
           <mat-form-field appearance="outline" class="second-width">
             <mat-label>Filed At</mat-label>
             <input matInput type="date" formControlName="filedAt" />
@@ -94,18 +98,6 @@
             <mat-error *ngIf="dateOfDeath.hasError('required')">
               Date of death is required.
             </mat-error>
-          </mat-form-field>
-        </div>
-
-        <div class="form-row">
-         <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Status</mat-label>
-            <mat-select formControlName="status">
-              <mat-option value="draft">Draft</mat-option>
-              <mat-option value="pending">Pending</mat-option>
-              <mat-option value="approved">Approved</mat-option>
-              <mat-option value="rejected">Rejected</mat-option>
-            </mat-select>
           </mat-form-field>
         </div>
 

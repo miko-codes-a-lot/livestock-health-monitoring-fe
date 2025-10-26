@@ -1,7 +1,7 @@
 export interface Claims {
   _id?: string;
   animal: string;
-  causeOfDeath: string;
+  causeOfDeath?: string;
   causeOfDeathCategory: string;
   createdAt: string;
   dateOfDeath: string;

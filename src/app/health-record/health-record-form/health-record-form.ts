@@ -12,6 +12,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HealthRecordService } from '../../_shared/service/health-record-service';
 import { LivestockService } from '../../_shared/service/livestock-service';
 import { UserService } from '../../_shared/service/user-service';
+import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
+
 
 @Component({
   selector: 'app-health-record-form',
@@ -37,7 +39,10 @@ export class HealthRecordForm implements OnInit {
   set initDoc(value: HealthRecord) {
     this._initDoc = value;
     if (this.rxform && value) {
+      console.log('update?', value)
+      // run fetch from animal
       this.tryPatchForm();
+      this.populateAnimal(value.animal)
     }
   }
 
@@ -50,51 +55,156 @@ export class HealthRecordForm implements OnInit {
   technicians: { id: string; name: string }[] = [];
   rxform!: FormGroup<RxHealthRecordForm>;
 
+  farmers: { _id: string; name: string; }[] = [];
+  filteredGroups: { _id: string; name: string }[] = [];
+  filteredAnimals: { _id: string; name: string }[] = [];
+
+  hr = {
+    animal: '',
+    bodyCondition: '',
+    dewormingDate: '',
+    diagnosis: '',
+    notes: '',
+    symptomsObserved: '',
+    technician: '',
+    treatmentGiven: '',
+    vaccinationDate: '',
+    visitDate: '',
+    vitaminsAdministered: '',
+    weightKg: 0,
+    status: 'pending',
+    farmer: '', // 68f0164e7162f5d2cbde9418
+    livestockGroup: ''
+  };
+
   constructor(
     private readonly fb: FormBuilder,
     private readonly healthRecordService: HealthRecordService,
     private readonly livestockService: LivestockService,
     private readonly userService: UserService,
+    private readonly livestockGroupService: LivestockGroupService,
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
     this.loadAnimals();
     this.loadTechnicians();
+    this.loadFarmers();
+
+    // if update, use the animal data (_id, farmer._id, livestockGroup._id)load the data to farmer, livestock group, and animal
+    console.log('initDoc', this.initDoc)
   }
 
   private initializeForm(): void {
-    const hr = {
-      animal: '',
-      bodyCondition: '',
-      dewormingDate: '',
-      diagnosis: '',
-      notes: '',
-      symptomsObserved: '',
-      technician: '',
-      treatmentGiven: '',
-      vaccinationDate: '',
-      visitDate: '',
-      vitaminsAdministered: '',
-      weightKg: 0,
-      status: 'pending'
-    };
+    // const hr = {
+    //   animal: '',
+    //   bodyCondition: '',
+    //   dewormingDate: '',
+    //   diagnosis: '',
+    //   notes: '',
+    //   symptomsObserved: '',
+    //   technician: '',
+    //   treatmentGiven: '',
+    //   vaccinationDate: '',
+    //   visitDate: '',
+    //   vitaminsAdministered: '',
+    //   weightKg: 0,
+    //   status: 'pending',
+    //   farmer: '68f0164e7162f5d2cbde9418',
+    //   livestockGroup: ''
+    // };
 
     this.rxform = this.fb.nonNullable.group({
-      animal: [hr.animal, Validators.required],
-      bodyCondition: [hr.bodyCondition, Validators.required],
-      dewormingDate: [hr.dewormingDate, Validators.required],
-      diagnosis: [hr.diagnosis, Validators.required],
-      notes: [hr.notes],
-      symptomsObserved: [hr.symptomsObserved, Validators.required],
-      technician: [hr.technician, Validators.required],
-      treatmentGiven: [hr.treatmentGiven],
-      vaccinationDate: [hr.vaccinationDate],
-      visitDate: [hr.visitDate, Validators.required],
-      vitaminsAdministered: [hr.vitaminsAdministered],
-      weightKg: [hr.weightKg, [Validators.required, Validators.min(0)]],
-      status: [hr.status]
+      animal: [this.hr.animal, Validators.required],
+      bodyCondition: [this.hr.bodyCondition, Validators.required],
+      dewormingDate: [this.hr.dewormingDate, Validators.required],
+      diagnosis: [this.hr.diagnosis, Validators.required],
+      notes: [this.hr.notes],
+      symptomsObserved: [this.hr.symptomsObserved, Validators.required],
+      technician: [this.hr.technician, Validators.required],
+      treatmentGiven: [this.hr.treatmentGiven],
+      vaccinationDate: [this.hr.vaccinationDate],
+      visitDate: [this.hr.visitDate, Validators.required],
+      vitaminsAdministered: [this.hr.vitaminsAdministered],
+      weightKg: [this.hr.weightKg, [Validators.required, Validators.min(0)]],
+      status: [this.hr.status],
+      farmer: [this.hr.farmer || ''],
+      livestockGroup: [this.hr.livestockGroup || '']
     }) as unknown as FormGroup<RxHealthRecordForm>;
+
+    this.rxform.get('farmer')?.valueChanges.subscribe(value => {
+      this.onFarmerChange(value);
+    });
+
+    this.rxform.get('livestockGroup')?.valueChanges.subscribe(value => {
+      this.onLivestockGroupChange(value);
+    });
+  }
+
+  
+  private loadFarmers(): void {
+    this.userService.getAll().subscribe(users => {
+      this.farmers = users
+        .filter(u => u.role === 'farmer')
+        .map(u => ({
+          _id: String(u._id),
+          name: `${u.firstName} ${u.lastName}` 
+      }));
+      // this.tryPatchForm();
+    });
+  }
+
+  onFarmerChange(farmerId: string) {
+    this.filteredAnimals = [];
+    if (!farmerId) {
+      this.filteredGroups = [];
+      return;
+    }
+    
+
+    this.livestockGroupService.getAll().subscribe(groups => {
+      this.filteredGroups = groups
+        .filter((b: any) => b.farmer?._id === farmerId)
+        .map((b: any) => ({
+            _id: b._id,
+            name: b.groupName 
+        }));
+      
+      this.rxform.get('livestockGroup')?.value;
+      // if (!this.filteredGroups.find(b => b._id === currentGroup)) {
+      //     this.rxform.get('livestockGroup')?.patchValue('' as any);
+      // }
+    });
+  }
+
+  onLivestockGroupChange(livestockGroupId: string) {
+    if (!livestockGroupId) {
+      this.filteredAnimals = [];
+      return;
+    }
+
+    this.livestockService.getAll().subscribe(livestocks => {
+      this.filteredAnimals = livestocks
+        .filter((l: any) => l.livestockGroup === livestockGroupId)
+        .map((l: any) => ({
+            _id: l._id,
+            name: `${l.tagNumber} - ${l.breed.name} ${l.species.name}` 
+        }));
+      
+      const currentAnimal = this.rxform.get('animal')?.value;
+      if (!this.filteredAnimals.find(b => b._id === currentAnimal)) {
+          this.rxform.get('animal')?.patchValue('');
+      }
+    });
+    
+  }
+
+  populateAnimal (animal: any) {
+    if (!animal) return;
+    const farmerId = animal?.farmer?._id || animal?.farmer;
+    const livestockGroupId = animal?.livestockGroup?._id || animal?.livestockGroup;
+    (this.rxform as any).patchValue({ farmer: farmerId });
+    (this.rxform as any).patchValue({ livestockGroup: livestockGroupId });
   }
 
   private loadAnimals(): void {

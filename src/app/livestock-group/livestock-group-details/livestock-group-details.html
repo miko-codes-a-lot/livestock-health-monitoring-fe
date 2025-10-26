@@ -3,7 +3,13 @@
     <mat-card-header>
       <mat-card-title>Livestock Details</mat-card-title>
       <mat-card-actions align="end">
-        <button mat-raised-button color="primary" (click)="onUpdate()">Update</button>
+        <!-- *ngIf="user?.role === 'farmer'" -->
+        <button mat-raised-button color="primary"
+          (click)="onUpdate()"
+          *ngIf="user?.role === 'farmer'"
+          [disabled]="livestockGroup.status==='pending'
+          || livestockGroup.status==='approved'"
+        >Update</button>
       </mat-card-actions>
     </mat-card-header>
 
@@ -26,7 +32,7 @@
           <span class="value text-capitalize">{{ livestockGroup.status }}</span>
         </div>
 
-<!-- 
+      <!-- 
         <div class="detail-item">
           <span class="label">Date of Purchase:</span>
           <span class="value">{{ livestock.dateOfPurchase | date:'mediumDate' }}</span>
@@ -53,6 +59,36 @@
         <img [src]="fullScreenPhotoUrl" alt="Full Screen Photo" class="full-screen-photo">
       </div>
     </mat-card-content>
+
+    <mat-card-actions class="approval-buttons" *ngIf="user?.role === 'farmer'">
+      <button mat-raised-button color="primary" 
+        (click)="toReview()"
+        [disabled]="livestockGroup.status === 'pending' || !livestockGroup.livestocks?.length"
+      >
+        <mat-icon>send</mat-icon> Submit for Review?
+      </button>
+    </mat-card-actions>
+
+    <!-- Approve / Reject Buttons -->
+    <mat-card-actions class="approval-buttons" *ngIf="user?.role === 'admin' || user?.role === 'technician'">
+      <button
+        mat-stroked-button
+        color="warn"
+        (click)="onReject()"
+        [disabled]="livestockGroup.status === 'rejected'"
+      >
+        <mat-icon>close</mat-icon> Reject
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onApprove()"
+        [disabled]="livestockGroup.status === 'approved'"
+      >
+        <mat-icon>check_circle</mat-icon> Approve
+      </button>
+    </mat-card-actions>
   </mat-card>
 
   <ng-template #loading>

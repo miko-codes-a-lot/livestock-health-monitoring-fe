@@ -9,6 +9,9 @@ import { UserService } from '../../_shared/service/user-service';
 import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Livestock } from '../../_shared/model/livestock';
+import { UserDto } from '../../_shared/model/user-dto';
+import { AuthService } from '../../_shared/service/auth-service';
+
 
 @Component({
   selector: 'app-livestock-details',
@@ -28,8 +31,8 @@ export class LivestockDetails implements OnInit {
   livestock?: Livestock;
   farmerName = '';
   livestockGroupName = '';
-  photoUrls: string[] = []; // <-- store converted URLs here
-
+  photoUrls: string[] = [];
+  user: UserDto | null = null; 
 
   constructor(
     private readonly livestockService: LivestockService,
@@ -37,11 +40,20 @@ export class LivestockDetails implements OnInit {
     private readonly livestockGroupService: LivestockGroupService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
+    private readonly authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.isLoading = true;
     const id = this.route.snapshot.params['id'];
+
+    this.authService.currentUser$.subscribe({
+      next: (u) => {
+        if (u) {
+          this.user = u
+        }
+      }
+    })
 
     this.livestockService.getOne(id).subscribe({
       next: (livestock) => {
