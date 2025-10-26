@@ -3,7 +3,6 @@
     <mat-card-header>
       <mat-card-title>Livestock Details</mat-card-title>
       <mat-card-actions align="end">
-        <!-- *ngIf="user?.role === 'farmer'" -->
         <button mat-raised-button color="primary"
           (click)="onUpdate()"
           *ngIf="user?.role === 'farmer'"
@@ -31,45 +30,84 @@
           <span class="label">Status:</span>
           <span class="value text-capitalize">{{ livestockGroup.status }}</span>
         </div>
-
-      <!-- 
-        <div class="detail-item">
-          <span class="label">Date of Purchase:</span>
-          <span class="value">{{ livestock.dateOfPurchase | date:'mediumDate' }}</span>
-        </div> -->
       </div>
 
       <mat-divider class="divider-space"></mat-divider>
 
-    <div class="livestock-photos" *ngIf="photoUrls.length > 0">
-      <h3>Group Photos</h3>
-      <div class="photo-gallery animal-photos-preview">
-        <img
-          *ngFor="let url of photoUrls"
-          [src]="url"
-          alt="Animal Photo"
-          class="animal-photo"
-          (click)="openPhoto(url)"
-        />
+      <div class="livestock-photos" *ngIf="photoUrls.length > 0">
+        <h3>Group Photos</h3>
+        <div class="photo-gallery animal-photos-preview">
+          <img
+            *ngFor="let url of photoUrls"
+            [src]="url"
+            alt="Animal Photo"
+            class="animal-photo"
+            (click)="openPhoto(url)"
+          />
+        </div>
       </div>
-    </div>
 
-    <!-- Fullscreen overlay -->
       <div class="photo-overlay" *ngIf="fullScreenPhotoUrl" (click)="closePhoto()">
         <img [src]="fullScreenPhotoUrl" alt="Full Screen Photo" class="full-screen-photo">
       </div>
-    </mat-card-content>
+      
+      <mat-divider class="divider-space" *ngIf="livestocks.length > 0"></mat-divider>
+
+      <div class="livestock-list" *ngIf="livestocks.length > 0">
+        <h3>Livestock in this Group - ({{ livestocks.length }})</h3>
+      
+        <table mat-table [dataSource]="livestocks" class="mat-elevation-z2">
+      
+          <ng-container matColumnDef="tagNumber">
+            <th mat-header-cell *matHeaderCellDef> Tag # </th>
+            <td mat-cell *matCellDef="let animal"> {{animal.tagNumber}} </td>
+          </ng-container>
+      
+          <ng-container matColumnDef="species">
+            <th mat-header-cell *matHeaderCellDef> Species </th>
+            <td mat-cell *matCellDef="let animal" class="text-capitalize"> {{ animal.species.icon }} {{animal.species.name}} </td>
+          </ng-container>
+      
+          <ng-container matColumnDef="breed">
+            <th mat-header-cell *matHeaderCellDef> Breed </th>
+            <td mat-cell *matCellDef="let animal" class="text-capitalize"> {{animal.breed.name}} </td>
+          </ng-container>
+      
+          <ng-container matColumnDef="sex">
+            <th mat-header-cell *matHeaderCellDef> Sex </th>
+            <td mat-cell *matCellDef="let animal" class="text-capitalize"> {{animal.sex}} </td>
+          </ng-container>
+      
+          <ng-container matColumnDef="age">
+            <th mat-header-cell *matHeaderCellDef> Age </th>
+            <td mat-cell *matCellDef="let animal"> {{animal.age}} </td>
+          </ng-container>
+      
+          <!-- <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef> Status </th>
+            <td mat-cell *matCellDef="let animal" class="text-capitalize"> {{animal.status}} </td>
+          </ng-container> -->
+      
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      <div class="empty-list-message" *ngIf="!isLoading && livestocks.length === 0 && livestockGroup">
+        <mat-icon>info_outline</mat-icon>
+        <span>This group does not contain any livestock yet.</span>
+      </div>
+      </mat-card-content>
 
     <mat-card-actions class="approval-buttons" *ngIf="user?.role === 'farmer'">
       <button mat-raised-button color="primary" 
         (click)="toReview()"
-        [disabled]="livestockGroup.status === 'pending' || !livestockGroup.livestocks?.length"
+        [disabled]="livestockGroup.status === 'pending' || livestocks.length === 0"
       >
         <mat-icon>send</mat-icon> Submit for Review?
       </button>
     </mat-card-actions>
 
-    <!-- Approve / Reject Buttons -->
     <mat-card-actions class="approval-buttons" *ngIf="user?.role === 'admin' || user?.role === 'technician'">
       <button
         mat-stroked-button
@@ -84,7 +122,7 @@
         mat-raised-button
         color="primary"
         (click)="onApprove()"
-        [disabled]="livestockGroup.status === 'approved'"
+        [disabled]="livestockGroup.status === 'approved' || livestocks.length === 0"
       >
         <mat-icon>check_circle</mat-icon> Approve
       </button>

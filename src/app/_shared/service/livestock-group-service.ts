@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { LivestockGroup } from '../model/livestock-group';
 import { Observable, map, forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { FullLivestockGroup } from '../model/response/full-livestock-group';
+import { FullLivestock } from '../model/response/full-livestock';
+import { Livestock } from '../model/livestock';
 
 @Injectable({
   providedIn: 'root'
@@ -48,9 +51,41 @@ export class LivestockGroupService {
       return this.http.get<LivestockGroup[]>(this.baseUrl, { withCredentials: true });
     }
   
-    getOne(id: string): Observable<LivestockGroup> {
-      return this.http.get<LivestockGroup>(`${this.baseUrl}/${id}`, { withCredentials: true });
+    getOne(id: string): Observable<FullLivestockGroup> {
+      return this.http.get<FullLivestockGroup>(`${this.baseUrl}/${id}`, { withCredentials: true });
     }
+
+    getOneSimple(id: string): Observable<LivestockGroup> {
+    // Call getOne() and pipe its result
+    return this.getOne(id).pipe(
+      map((fullDoc: FullLivestockGroup): LivestockGroup => {
+        
+        // --- Start Mapping Logic ---
+        const mappedGroup: LivestockGroup = {
+          // Use the spread operator to copy all identical properties
+          ...fullDoc,
+          
+          // Explicitly map the 'livestocks' array
+          livestocks: fullDoc.livestocks 
+            ? fullDoc.livestocks.map((fullAnimal: FullLivestock): Livestock => {
+                // Map each FullLivestock item to a Livestock item
+                return {
+                  // Spread to copy identical properties
+                  ...fullAnimal,
+                  
+                  // Overwrite the properties that are different
+                  species: fullAnimal.species.name, // Extract name from the object
+                  breed: fullAnimal.breed.name,     // Extract name from the object
+                };
+              }) 
+            : [] // If fullDoc.livestocks is null/undefined, default to an empty array
+        };
+        // --- End Mapping Logic ---
+
+        return mappedGroup;
+      })
+    );
+  }
   
     create(livestockGroup: LivestockGroup): Observable<LivestockGroup> {
       return this.http.post<LivestockGroup>(this.baseUrl, livestockGroup, { withCredentials: true });

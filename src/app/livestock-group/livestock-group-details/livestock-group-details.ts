@@ -7,12 +7,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
 import { UserService } from '../../_shared/service/user-service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LivestockGroup } from '../../_shared/model/livestock-group';
 import { UserDto } from '../../_shared/model/user-dto';
 import { AuthService } from '../../_shared/service/auth-service';
 import { MatIconModule } from '@angular/material/icon';
 import { LivestockService } from '../../_shared/service/livestock-service';
-import { Livestock } from '../../_shared/model/livestock';
+import { MatTableModule } from '@angular/material/table'; // <-- Import MatTableModule
+import { FullLivestockGroup } from '../../_shared/model/response/full-livestock-group';
+import { FullLivestock } from '../../_shared/model/response/full-livestock';
+
 export type LivestockGroupStatus = 'draft' | 'pending' | 'verified' | 'rejected';
 @Component({
   selector: 'app-livestock-group-details',
@@ -23,18 +25,23 @@ export type LivestockGroupStatus = 'draft' | 'pending' | 'verified' | 'rejected'
     MatButtonModule,
     MatDividerModule,
     MatProgressSpinnerModule,
-    MatIconModule
+    MatIconModule,
+    MatTableModule // <-- Add MatTableModule here
   ],
   templateUrl: './livestock-group-details.html',
   styleUrls: ['./livestock-group-details.css']
 })
 export class LivestockGroupDetails implements OnInit {
   isLoading = false;
-  livestockGroup?: LivestockGroup;
+  livestockGroup?: FullLivestockGroup;
   farmerName = '';
   livestockGroupName = '';
   photoUrls: string[] = [];
   user: UserDto | null = null; 
+
+  livestocks: FullLivestock[] = [];
+  // displayedColumns: string[] = ['tagNumber', 'species', 'breed', 'sex', 'age', 'status'];
+  displayedColumns: string[] = ['tagNumber', 'species', 'breed', 'sex', 'age'];
 
 
   constructor(
@@ -43,7 +50,7 @@ export class LivestockGroupDetails implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly authService: AuthService,
-    private readonly livestockService: LivestockService,
+    private readonly livestockService: LivestockService, // Keep this for status updates
   ) {}
 
   ngOnInit(): void {
@@ -61,6 +68,11 @@ export class LivestockGroupDetails implements OnInit {
     this.livestockGroupService.getOne(id).subscribe({
       next: (livestockGroup) => {
         this.livestockGroup = livestockGroup;
+        
+        if (livestockGroup.livestocks) {
+          this.livestocks = livestockGroup.livestocks;
+        }
+
         // Load photo URLs
         if (livestockGroup.groupPhotos?.length) {
           this.livestockGroupService.getGroupPhotos(livestockGroup.groupPhotos)
@@ -73,10 +85,9 @@ export class LivestockGroupDetails implements OnInit {
             this.farmerName = `${f.firstName} ${f.lastName}`;
           });
         }
-
       },
       error: (err) => alert(`Something went wrong: ${err}`),
-    }).add(() => (this.isLoading = false));
+    }).add(() => (this.isLoading = false)); // <-- Your original loading logic is correct now
   }
 
   fullScreenPhotoUrl: string | null = null;
@@ -84,41 +95,41 @@ export class LivestockGroupDetails implements OnInit {
   openPhoto(url: string) {
     this.fullScreenPhotoUrl = url;
   }
-
+  
   closePhoto() {
     this.fullScreenPhotoUrl = null;
   }
-
+  
   onUpdate() {
     if (!this.livestockGroup) return;
     this.router.navigate(['/livestock-group/update', this.livestockGroup._id]);
   }
-
+  
   getPhotoUrl(filename: string) {
     return `/uploads/livestock-group/${filename}`; // adjust according to your backend storage path
   }
-
+  
   toReview() {
     if (this.livestockGroup?._id) {
       this.processStatus(this.livestockGroup._id, 'pending', 'Successfully Submitted for Review')
       this.updateStatus(this.livestockGroup._id, 'pending')
     }
   }
-
+  
   onApprove() {
     if (this.livestockGroup?._id) {
       this.processStatus(this.livestockGroup._id, 'verified')
       this.updateStatus(this.livestockGroup._id, 'verified')
     }
   }
-
+  
   onReject() {
     if (this.livestockGroup?._id) {
       this.processStatus(this.livestockGroup._id, 'rejected')
       this.updateStatus(this.livestockGroup._id, 'rejected')
     }
   }
-
+  
   updateStatus(groupId: string, status: LivestockGroupStatus) {
     this.isLoading = true;
     this.livestockService.updateGroupStatus(groupId, status).subscribe({
@@ -134,8 +145,7 @@ export class LivestockGroupDetails implements OnInit {
       }
     });
   }
-
-
+  
   processStatus(livestockGroupsId: string, statusValue: string, customMessage?: string) {
     this.livestockGroupService.updateStatus(livestockGroupsId, {status: statusValue})
       .subscribe({
