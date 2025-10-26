@@ -29,7 +29,7 @@ export class LivestockUpdate implements OnInit {
     this.initDoc = this.livestockService.getEmptyOrNullDoc();
     this.id = this.route.snapshot.params['id'];
 
-    this.livestockService.getOne(this.id).subscribe({
+    this.livestockService.getOneSimple(this.id).subscribe({
       next: (doc) => {
         console.log('doc', doc)
         this.initDoc = doc;

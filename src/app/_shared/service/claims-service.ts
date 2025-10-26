@@ -29,31 +29,31 @@ export class ClaimsService {
     }
   
     getAll(): Observable<Claims[]> {
-      const test = this.http.get<Claims[]>(this.baseUrl, { withCredentials: true });
+      const test = this.http.get<Claims[]>(this.baseUrl);
       console.log('test', test)
       return test
     }
   
     getOne(id: string): Observable<Claims> {
-      return this.http.get<Claims>(`${this.baseUrl}/${id}`, { withCredentials: true });
+      return this.http.get<Claims>(`${this.baseUrl}/${id}`);
     }
-  
+
     create(claims: Claims): Observable<Claims> {
-      return this.http.post<Claims>(this.baseUrl, claims, { withCredentials: true });
+      return this.http.post<Claims>(this.baseUrl, claims);
     }
   
     update(id: string, claims: Claims): Observable<Claims> {
-      return this.http.put<Claims>(`${this.baseUrl}/${id}`, claims, { withCredentials: true });
+      return this.http.put<Claims>(`${this.baseUrl}/${id}`, claims);
     }
   
     delete(id: string): Observable<void> {
-      return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
+      return this.http.delete<void>(`${this.baseUrl}/${id}`);
     }
 
     uploadPhotos(claimsId: any, files: File[]): Observable<any> {
       const formData = new FormData();
       files.forEach(file => formData.append('photos', file));
-      return this.http.put(`${this.baseUrl}/${claimsId}/photos`, formData, { withCredentials: true });
+      return this.http.put(`${this.baseUrl}/${claimsId}/photos`, formData);
     }
 
     // should get this in the ts
@@ -78,7 +78,7 @@ export class ClaimsService {
     }
 
     updateStatus(id: string, status: object): Observable<Claims> {
-      const result = this.http.patch<Claims>(`${this.baseUrl}/${id}/process`, status, { withCredentials: true });
+      const result = this.http.patch<Claims>(`${this.baseUrl}/${id}/process`, status);
       return result
     }
 

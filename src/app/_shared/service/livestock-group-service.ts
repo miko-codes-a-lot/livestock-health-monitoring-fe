@@ -56,34 +56,26 @@ export class LivestockGroupService {
     }
 
     getOneSimple(id: string): Observable<LivestockGroup> {
-    // Call getOne() and pipe its result
-    return this.getOne(id).pipe(
-      map((fullDoc: FullLivestockGroup): LivestockGroup => {
-        
-        // --- Start Mapping Logic ---
-        const mappedGroup: LivestockGroup = {
-          // Use the spread operator to copy all identical properties
-          ...fullDoc,
+      return this.getOne(id).pipe(
+        map((fullDoc: FullLivestockGroup): LivestockGroup => {
           
-          // Explicitly map the 'livestocks' array
-          livestocks: fullDoc.livestocks 
-            ? fullDoc.livestocks.map((fullAnimal: FullLivestock): Livestock => {
-                // Map each FullLivestock item to a Livestock item
-                return {
-                  // Spread to copy identical properties
-                  ...fullAnimal,
-                  
-                  // Overwrite the properties that are different
-                  species: fullAnimal.species.name, // Extract name from the object
-                  breed: fullAnimal.breed.name,     // Extract name from the object
-                };
-              }) 
-            : [] // If fullDoc.livestocks is null/undefined, default to an empty array
-        };
-        // --- End Mapping Logic ---
+          const mappedGroup: LivestockGroup = {
+            ...fullDoc,
+            
+            livestocks: fullDoc.livestocks 
+              ? fullDoc.livestocks.map((fullAnimal: FullLivestock): Livestock => {
+                  return {
+                    ...fullAnimal,
+                    
+                    species: fullAnimal.species.name,
+                    breed: fullAnimal.breed.name,
+                  };
+                }) 
+              : []
+          };
 
-        return mappedGroup;
-      })
+          return mappedGroup;
+        })
     );
   }
   

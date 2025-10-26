@@ -57,10 +57,13 @@
         <h3>Livestock in this Group - ({{ livestocks.length }})</h3>
       
         <table mat-table [dataSource]="livestocks" class="mat-elevation-z2">
-      
           <ng-container matColumnDef="tagNumber">
             <th mat-header-cell *matHeaderCellDef> Tag # </th>
-            <td mat-cell *matCellDef="let animal"> {{animal.tagNumber}} </td>
+            <td mat-cell *matCellDef="let animal">
+              <a class="clickable-link" (click)="onDetails(animal._id!)">
+                {{animal.tagNumber}}
+              </a>
+            </td>
           </ng-container>
       
           <ng-container matColumnDef="species">

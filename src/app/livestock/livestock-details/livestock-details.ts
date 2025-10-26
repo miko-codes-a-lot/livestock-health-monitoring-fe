@@ -8,9 +8,9 @@ import { LivestockService } from '../../_shared/service/livestock-service';
 import { UserService } from '../../_shared/service/user-service';
 import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Livestock } from '../../_shared/model/livestock';
 import { UserDto } from '../../_shared/model/user-dto';
 import { AuthService } from '../../_shared/service/auth-service';
+import { FullLivestock } from '../../_shared/model/response/full-livestock';
 
 
 @Component({
@@ -28,7 +28,7 @@ import { AuthService } from '../../_shared/service/auth-service';
 })
 export class LivestockDetails implements OnInit {
   isLoading = false;
-  livestock?: Livestock;
+  livestock?: FullLivestock;
   farmerName = '';
   livestockGroupName = '';
   photoUrls: string[] = [];

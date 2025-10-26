@@ -145,6 +145,10 @@ export class LivestockGroupDetails implements OnInit {
       }
     });
   }
+
+  onDetails(id: string) {
+    this.router.navigate(['/livestock/details', id]);
+  }
   
   processStatus(livestockGroupsId: string, statusValue: string, customMessage?: string) {
     this.livestockGroupService.updateStatus(livestockGroupsId, {status: statusValue})
