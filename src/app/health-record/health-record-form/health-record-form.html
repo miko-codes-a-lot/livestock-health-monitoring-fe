@@ -111,12 +111,17 @@
             <textarea matInput formControlName="treatmentGiven"></textarea>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="half-width">
+          <mat-form-field appearance="outline" class="half-width" *ngIf="user?.role === 'admin'">
             <mat-label>Technician</mat-label>
             <mat-select formControlName="technician">
               <mat-option *ngFor="let f of technicians" [value]="f.id">{{ f.name }}</mat-option>
             </mat-select>
             <mat-error *ngIf="technician.hasError('required')">Technician is required.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width" *ngIf="user?.role === 'technician'">
+            <mat-label>Technician</mat-label>
+            <input matInput [value]="loggedInTechnician?.name" readonly />
           </mat-form-field>
         </div>
 

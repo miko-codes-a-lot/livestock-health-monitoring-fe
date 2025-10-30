@@ -71,6 +71,10 @@
             <span class="label">Barangay:</span>
             <span class="value">{{ user.address.barangay || '—' }}</span>
           </div>
+          <div class="detail-item" *ngIf="user.rsbsaNumber">
+            <span class="label">RSBSA Number:</span>
+            <span class="value">{{ user.rsbsaNumber || '—' }}</span>
+          </div>
         </div>
       </mat-card-content>
     </mat-card>

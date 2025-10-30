@@ -1,40 +1,46 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { HealthRecord } from '../../_shared/model/health-record';
 import { HealthRecordService } from '../../_shared/service/health-record-service';
+import { GenericTableComponent } from '../../_shared/component/table/generic-table.component';
+
+interface ColumnDef<T> {
+  key: string;
+  label: string;
+  cell?: (element: T) => any;
+}
 
 @Component({
   selector: 'app-health-record-list',
+  standalone: true,
   imports: [
     CommonModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
     MatProgressSpinnerModule,
+    GenericTableComponent
   ],
   templateUrl: './health-record-list.html',
-  styleUrl: './health-record-list.css'
+  styleUrls: ['./health-record-list.css']
 })
-export class HealthRecordList {
-healthRecords: HealthRecord[] = [];
+export class HealthRecordList implements OnInit {
+  dataSource = new MatTableDataSource<HealthRecord>();
   isLoading = false;
 
-  displayedColumns = [
-    'animal',            // reference to the livestock
-    'visitDate',
-    'bodyCondition',
-    'weightKg',
-    'diagnosis',
-    'treatmentGiven',
-    'technician',
-    'action'             // for buttons like edit/view
+  columnDefs: ColumnDef<HealthRecord>[] = [
+    { key: 'animal', label: 'Animal', cell: r => r.animal?.tagNumber || 'N/A' },
+    { key: 'visitDate', label: 'Visit Date', cell: r => new Date(r.visitDate).toLocaleString() },
+    { key: 'bodyCondition', label: 'Body Condition' },
+    { key: 'weightKg', label: 'Weight (kg)' },
+    { key: 'diagnosis', label: 'Diagnosis' },
+    { key: 'treatmentGiven', label: 'Treatment' },
+    { key: 'technician', label: 'Technician', cell: r => `${r.technician.firstName} ${r.technician.lastName}` },
   ];
+
+  // DO NOT include 'actions' here; GenericTableComponent handles it automatically
+  displayedColumnsKeys = [...this.columnDefs.map(c => c.key), 'actions'];
 
   constructor(
     private readonly healthRecordService: HealthRecordService,
@@ -45,10 +51,7 @@ healthRecords: HealthRecord[] = [];
     this.isLoading = true;
 
     this.healthRecordService.getAll().subscribe({
-      next: (healthRecord) => {
-        this.healthRecords = healthRecord;
-        console.log('this.healthRecord dawdw', healthRecord); // ✅ real data is here
-      },
+      next: (records) => this.dataSource.data = records,
       error: (err) => alert(`Something went wrong: ${err}`)
     }).add(() => (this.isLoading = false));
   }

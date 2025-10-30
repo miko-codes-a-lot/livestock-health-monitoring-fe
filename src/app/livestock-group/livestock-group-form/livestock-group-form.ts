@@ -110,7 +110,7 @@ export class LivestockGroupForm implements OnInit {
       groupName: [l.groupName, Validators.required],
       farmer: [l.farmer, Validators.required],
       groupPhotos: [l.groupPhotos || []],
-      status: [l.status as 'draft' | 'pending' | 'approved' | 'rejected'],
+      status: [l.status as 'draft' | 'pending' | 'approved' | 'rejected' | 'verified'],
     });
 
   }

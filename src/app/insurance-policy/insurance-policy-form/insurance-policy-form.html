@@ -56,15 +56,15 @@
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Farmer</mat-label>
             <mat-select formControlName="farmer">
-              <mat-option *ngFor="let f of farmers" [value]="f.id">{{ f.name }}</mat-option>
+              <mat-option *ngFor="let f of farmers" [value]="f._id">{{ f.name }}</mat-option>
             </mat-select>
             <mat-error *ngIf="farmer.hasError('required')">Farmer is required.</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Livestock Group</mat-label>
             <mat-select formControlName="livestockGroup">
-              <mat-option *ngFor="let g of livestockGroups" [value]="g._id">
-                {{ g.groupName }}
+              <mat-option *ngFor="let g of filteredGroups" [value]="g._id">
+                {{ g.name }}
               </mat-option>
             </mat-select>
             <mat-error *ngIf="livestockGroup.hasError('required')">

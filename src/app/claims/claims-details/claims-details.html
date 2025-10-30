@@ -59,7 +59,7 @@
 
       <mat-divider class="divider-space"></mat-divider>
 
-      <div class="livestock-photos" *ngIf="photoUrls.length > 0">
+      <div class="livestock-photos" *ngIf="photoUrls && photoUrls.length > 0">
         <h3>Animal Photos</h3>
         <div class="photo-gallery animal-photos-preview">
           <img
@@ -80,12 +80,12 @@
         <!-- Approve / Reject Buttons -->
     <mat-card-actions class="approval-buttons" *ngIf="user?.role === 'admin' || user?.role === 'technician'">
       <button mat-stroked-button color="warn" (click)="onReject()"
-         [disabled]="claims.status === 'rejected'"
+         [disabled]="claims.status === 'rejected' || claims.status === 'approved'"
       >
         <mat-icon>close</mat-icon> Reject
       </button>
       <button mat-raised-button color="primary" (click)="onApprove()"
-         [disabled]="claims.status === 'approved'"
+         [disabled]="claims.status === 'approved' || claims.status === 'rejected'"
       >
         <mat-icon>check_circle</mat-icon> Approve
       </button>
@@ -93,8 +93,11 @@
     <mat-card-actions class="approval-buttons" *ngIf="user?.role === 'farmer'">
       <button mat-raised-button color="primary" 
         (click)="toReview()"
-        [disabled]="claims.status === 'pending'
-        || claims.status === 'approved'"
+        [disabled]="
+        claims.status === 'pending'
+        || claims.status === 'approved'
+        || claims.status === 'rejected'
+        "
       >
         <mat-icon>send</mat-icon> Submit for Review?
       </button>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, ComponentFactoryResolver } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Claims } from '../../_shared/model/claims';
 import { RxClaimsForm } from './rx-claims-form';
@@ -15,6 +15,7 @@ import { LivestockService } from '../../_shared/service/livestock-service';
 import { LivestockGroup } from '../../_shared/model/livestock-group';
 import { LivestockClassificationService } from '../../_shared/service/livestock-classification-service';
 import { LivestockBreedService } from '../../_shared/service/livestock-breed-service';
+import { ClaimsService } from '../../_shared/service/claims-service';
 import { MortalityCauseService } from '../../_shared/service/mortality-cause-service';
 import { MortalityCause } from '../../_shared/model/mortality-cause';
 import { InsurancePolicyService } from '../../_shared/service/insurance-policy-service';
@@ -38,6 +39,8 @@ import { AuthService } from '../../_shared/service/auth-service';
   templateUrl: './claims-form.html',
   styleUrls: ['./claims-form.css']
 })
+
+
 export class ClaimsForm implements OnInit {
   @Input() isLoading = false;
   private _initDoc!: Claims;
@@ -50,11 +53,29 @@ export class ClaimsForm implements OnInit {
   avatarUrl: string[] = [];
   user: UserDto | null = null;
   filteredGroups: { _id: string; groupName: string }[] = [];
+  selectedGroup: string | null = null;
+
 
   @Input()
   set initDoc(value: Claims) {
     this._initDoc = value;
     if (this.rxform && value) {
+      // here
+
+      const animalObj = typeof value.animal === 'object' && value.animal !== null
+      ? (value.animal as any)
+      : null;
+      if (animalObj?.livestockGroup) {
+        this.selectedGroup = animalObj.livestockGroup; // auto-select in UI
+        this.onLivestockGroupChange(animalObj.livestockGroup);
+      }
+     
+      this.existingPhotos = value.evidencePhotos || [];
+
+      if (this.existingPhotos.length > 0) {
+        this.claimsService.getProfilePictures(this.existingPhotos)
+          .subscribe(urls => this.previewPhotos = urls);
+      }
       this.tryPatchForm();
     }
   }
@@ -69,7 +90,7 @@ export class ClaimsForm implements OnInit {
   speciesOptions: { _id: string; name: string }[] = [];
   filteredBreeds: { _id: string; name: string }[] = [];
   mortalityCauses: MortalityCause[] = [];
-  deathCategory: { label: string; value: string }[] = [];
+  deathCategory: { label: string; _id: string }[] = [];
   causeOfDeathItems: { label: string; value: string }[] = [];
   selectedCategoryValue: string | null = null;
   selectPolicy: { id: string; display: string }[] = [];
@@ -98,6 +119,7 @@ export class ClaimsForm implements OnInit {
     private readonly livestockClassificationService: LivestockClassificationService,
     private readonly mortalityCauseService: MortalityCauseService,
     private readonly insurancePolicyService: InsurancePolicyService,
+    private readonly claimsService: ClaimsService,
     private readonly authService: AuthService,
   ) {}
 
@@ -118,6 +140,8 @@ export class ClaimsForm implements OnInit {
     })
   }
 
+  private readonly OTHER_CATEGORY_VALUE = 'other_specify';
+
   private initializeForm(): void {
 
 
@@ -131,6 +155,7 @@ export class ClaimsForm implements OnInit {
       filedAt: [this.l.filedAt, Validators.required],
       policy: [this.l.policy, Validators.required],
       status: [this.l.status || 'draft'],
+      otherCauseOfDeath: [''],
     });
 
     this.rxform.get('species')?.valueChanges.subscribe(value => {
@@ -191,12 +216,26 @@ export class ClaimsForm implements OnInit {
 
     // Populate cause of death category items if applicable
     if (this.initDoc.causeOfDeathCategory) {
-      this.onCategoryChange(this.initDoc.causeOfDeathCategory);
+        // 💡 Call onCategoryChange to ensure controls (like otherCauseOfDeath) are created/enabled
+        this.onCategoryChange(this.initDoc.causeOfDeathCategory); 
     }
 
-    //on update
-    if (this.initDoc.causeOfDeath) {
-      this.rxform.controls.causeOfDeath?.setValue(this.initDoc.causeOfDeath);
+    // 💡 NEW LOGIC FOR HANDLING 'OTHERS, PLEASE SPECIFY' ON UPDATE
+    if (this.initDoc.causeOfDeathCategory && this.initDoc.causeOfDeath) {
+        const categoryId = this.initDoc.causeOfDeathCategory;
+        
+        // Find the selected category object using the category ID
+        const selectedCategory = this.mortalityCauses.find(c => c._id === categoryId);
+
+        // Check if the loaded category is the 'Others please specify' option
+        if (selectedCategory?.label === 'Other (Please Specify)') {
+            // Since 'causeOfDeath' holds the free-text string in this case, 
+            // patch the new 'otherCauseOfDeath' control with it.
+            this.rxform.controls.otherCauseOfDeath?.setValue(this.initDoc.causeOfDeath);
+        } else {
+            // If it's a standard dropdown value, patch the causeOfDeath control (original logic)
+            this.rxform.controls.causeOfDeath?.setValue(this.initDoc.causeOfDeath);
+        }
     }
 
     // Show existing uploaded photos
@@ -228,11 +267,14 @@ export class ClaimsForm implements OnInit {
   }
 
   private loadCauseOfDeathCategory(): void {
+    // fix this use the service
     this.mortalityCauseService.getAll().subscribe(mortalityCauses => {
       this.mortalityCauses = mortalityCauses;
+      console.log('this.deathCategory', mortalityCauses)
       this.deathCategory = mortalityCauses.map(c => ({
-        label: c.items[c.items.length - 1]?.label || c.value,
-        value: c.value
+          label: c.label, 
+          _id: c._id || '',
+          value: c.value 
       }));
       this.tryPatchForm();
     });
@@ -293,6 +335,8 @@ export class ClaimsForm implements OnInit {
 
     this.insurancePolicyService.getAll().subscribe(policies => {
       console.log('policies', policies)
+      console.log('groupId', groupId)
+      console.log('farmerId', farmerId)
       this.selectPolicy = policies
       .filter((p: any) => p.livestockGroup._id === groupId && p.farmer._id === farmerId)
       .map(p => ({
@@ -314,28 +358,62 @@ export class ClaimsForm implements OnInit {
     });
   }
 
-  onCategoryChange(selectedValue: string) {
-    this.selectedCategoryValue = selectedValue;
-    const selectedCause = this.mortalityCauses.find(c => c.value === selectedValue);
-    this.causeOfDeathItems = selectedCause ? selectedCause.items : [];
+  // claims-form.ts (replace the existing onCategoryChange)
 
-    const hasCauses = this.causeOfDeathItems.length > 0;
-    console.log('this.causeOfDeathItems', this.causeOfDeathItems)
-    // If the selected category has cause-of-death items, add the control
-    if (hasCauses) {
-      if (!this.rxform.get('causeOfDeath')) {
-        (this.rxform as FormGroup<any>).addControl(
-          'causeOfDeath',
-          this.fb.control(this.l.causeOfDeath || '', Validators.required)
-        );
+  onCategoryChange(selectedId: string) { // Renamed from selectedValue to selectedId for clarity
+      this.selectedCategoryValue = selectedId;
+      const selectedCategory = this.mortalityCauses.find(c => c._id === selectedId);
+
+      if (!selectedCategory) {
+          this.causeOfDeathItems = [];
+          this.rxform.removeControl('causeOfDeath');
+          this.rxform.get('otherCauseOfDeath')?.setValue('');
+          this.rxform.get('otherCauseOfDeath')?.clearValidators();
+          this.rxform.get('otherCauseOfDeath')?.disable();
+          return;
       }
-    } 
-    // Otherwise, remove it if it exists
-    else {
-      if (this.rxform.get('causeOfDeath')) {
-        this.rxform.removeControl('causeOfDeath');
+
+      const categoryLabel = selectedCategory.label;
+      const hasCauses = selectedCategory.items.length > 0;
+      
+      // --- New "Other, Please Specify" Logic ---
+      const isOtherCategory = categoryLabel === 'Other (Please Specify)';
+
+      // 1. Handle the 'Other, please specify' field
+      const otherControl = this.rxform.get('otherCauseOfDeath');
+      if (isOtherCategory) {
+          otherControl?.enable();
+          otherControl?.setValidators(Validators.required);
+          // Ensure standard causeOfDeath is removed/disabled if it exists
+          if (this.rxform.get('causeOfDeath')) {
+              this.rxform.removeControl('causeOfDeath');
+          }
+      } else {
+          otherControl?.setValue('');
+          otherControl?.clearValidators();
+          otherControl?.disable();
       }
-    }
+      otherControl?.updateValueAndValidity();
+
+
+      // 2. Handle the standard 'Cause of Death' dropdown (original logic)
+      this.causeOfDeathItems = hasCauses ? selectedCategory.items : [];
+      if (hasCauses && !isOtherCategory) { // Only add if it has items AND it's not the 'Other' category
+        if (!this.rxform.get('causeOfDeath')) {
+          (this.rxform as FormGroup<any>).addControl(
+            'causeOfDeath',
+            this.fb.control(this.l.causeOfDeath || '', Validators.required)
+          );
+        }
+      } 
+      // Otherwise, remove it if it exists
+      else if (!hasCauses && !isOtherCategory) {
+        if (this.rxform.get('causeOfDeath')) {
+          this.rxform.removeControl('causeOfDeath');
+        }
+      }
+      // Note: The logic for 'causeOfDeath' needs to be in RxClaimsForm if you want a getter for it. 
+      // I'll assume you update RxClaimsForm to include 'otherCauseOfDeath' now.
   }
 
   onSpeciesChange(speciesId: string) {
@@ -360,10 +438,45 @@ export class ClaimsForm implements OnInit {
     });
   }
 
+
   onSubmit() {
-    if (this.rxform.invalid) return;
-    const claimsData: Claims = this.rxform.value as Claims;
-    this.onSubmitEvent.emit({ claimsData, files: this.selectedFiles });
+      if (this.rxform.invalid) return;
+
+      const formValue = this.rxform.getRawValue(); 
+
+      let claimsData: Claims = formValue as unknown as Claims;
+
+      const selectedCategory = this.deathCategory.find(c => c._id === formValue.causeOfDeathCategory);
+      const isOtherCategory = selectedCategory?.label === 'Other (Please Specify)';
+
+      if (isOtherCategory) {
+          // If "Other" is selected, use the free-text input for the final DB field
+          claimsData.causeOfDeath = formValue.otherCauseOfDeath;
+      } else if (formValue.causeOfDeath) {
+          // Otherwise, use the selected value from the standard dropdown
+          claimsData.causeOfDeath = formValue.causeOfDeath;
+      } else {
+          // Ensure causeOfDeath is present, even if empty (depending on your model)
+          claimsData.causeOfDeath = ''; 
+      }
+      
+      // 3. Crucial Cleanup: Delete the temporary control that doesn't exist in the DB model.
+      delete (claimsData as any).otherCauseOfDeath;
+
+      // 4. Emit the cleaned and typed data
+      this.onSubmitEvent.emit({ claimsData, files: this.selectedFiles });
+  }
+
+  public isOtherCategorySelected(): boolean {
+      const selectedCategoryId = this.causeOfDeathCategory.value;
+      if (!selectedCategoryId) {
+          return false;
+      }
+      
+      // Find the object and check its label
+      const selectedCategory = this.deathCategory.find(c => c._id === selectedCategoryId);
+      
+      return selectedCategory?.label === 'Other (Please Specify)';
   }
 
   // --- Getters ---
@@ -376,4 +489,5 @@ export class ClaimsForm implements OnInit {
   get filedAt() { return this.rxform.controls.filedAt; }
   get policy() { return this.rxform.controls.policy; }
   get status() { return this.rxform.controls.status; }
+  get otherCauseOfDeath() { return this.rxform.controls.otherCauseOfDeath; }
 }

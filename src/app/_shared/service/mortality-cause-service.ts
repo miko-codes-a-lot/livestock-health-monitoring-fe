@@ -11,8 +11,7 @@ export class MortalityCauseService {
     private readonly baseUrl = `/mortality-causes`;
 
     getAll(): Observable<MortalityCause[]> {
-      const result = this.http.get<MortalityCause[]>(this.baseUrl, { withCredentials: true });
-      console.log('result', result)
+      const result = this.http.get<MortalityCause[]>(this.baseUrl);
       return result
     }
 

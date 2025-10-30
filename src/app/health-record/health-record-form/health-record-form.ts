@@ -15,7 +15,8 @@ import { HealthRecordService } from '../../_shared/service/health-record-service
 import { LivestockService } from '../../_shared/service/livestock-service';
 import { UserService } from '../../_shared/service/user-service';
 import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
-
+import { AuthService } from '../../_shared/service/auth-service';
+import { UserDto } from '../../_shared/model/user-dto';
 
 @Component({
   selector: 'app-health-record-form',
@@ -43,10 +44,9 @@ export class HealthRecordForm implements OnInit {
   set initDoc(value: HealthRecord) {
     this._initDoc = value;
     if (this.rxform && value) {
-      console.log('update?', value)
       // run fetch from animal
       this.tryPatchForm();
-      this.populateAnimal(value.animal)
+      this.populateAnimal(value)
     }
   }
 
@@ -57,11 +57,13 @@ export class HealthRecordForm implements OnInit {
   @Output() onSubmitEvent = new EventEmitter<any>();
   animals: { _id: string; tagNumber: string; species: string }[] = [];
   technicians: { id: string; name: string }[] = [];
+  loggedInTechnician: { name: string } | null = null;
   rxform!: FormGroup<RxHealthRecordForm>;
 
   farmers: { _id: string; name: string; }[] = [];
   filteredGroups: { _id: string; name: string }[] = [];
   filteredAnimals: { _id: string; name: string }[] = [];
+  user: UserDto | null = null;
 
   hr = {
     animal: '',
@@ -87,6 +89,7 @@ export class HealthRecordForm implements OnInit {
     private readonly livestockService: LivestockService,
     private readonly userService: UserService,
     private readonly livestockGroupService: LivestockGroupService,
+    private readonly authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -94,9 +97,17 @@ export class HealthRecordForm implements OnInit {
     this.loadAnimals();
     this.loadTechnicians();
     this.loadFarmers();
+    this.authService.currentUser$.subscribe({
+      next: (u) => {
+        if (u) {
+          this.user = u
+        }
+      }
+    })
 
     // if update, use the animal data (_id, farmer._id, livestockGroup._id)load the data to farmer, livestock group, and animal
     console.log('initDoc', this.initDoc)
+    this.tryPatchForm();
   }
 
   private initializeForm(): void {
@@ -121,7 +132,7 @@ export class HealthRecordForm implements OnInit {
     this.rxform = this.fb.nonNullable.group({
       animal: [this.hr.animal, Validators.required],
       bodyCondition: [this.hr.bodyCondition, Validators.required],
-      dewormingDate: [this.hr.dewormingDate, Validators.required],
+      dewormingDate: [this.hr.dewormingDate],
       diagnosis: [this.hr.diagnosis],
       notes: [this.hr.notes],
       symptomsObserved: [this.hr.symptomsObserved],
@@ -157,6 +168,7 @@ export class HealthRecordForm implements OnInit {
       // this.tryPatchForm();
     });
   }
+
 
   onFarmerChange(farmerId: string) {
     this.filteredAnimals = [];
@@ -203,12 +215,25 @@ export class HealthRecordForm implements OnInit {
     
   }
 
-  populateAnimal (animal: any) {
-    if (!animal) return;
-    const farmerId = animal?.farmer?._id || animal?.farmer;
-    const livestockGroupId = animal?.livestockGroup?._id || animal?.livestockGroup;
+  populateAnimal(value: any) {
+    if (!value.animal) return;
+    const farmerId = value?.animal?.farmer;
+    const livestockGroupId = value?.animal.livestockGroup;
     (this.rxform as any).patchValue({ farmer: farmerId });
     (this.rxform as any).patchValue({ livestockGroup: livestockGroupId });
+    (this.rxform as any).patchValue({
+      animal: value.animal._id || '',  
+      bodyCondition: value.bodyCondition || '',
+      weightKg: value.weightKg || 0,
+      diagnosis: value.diagnosis || '',
+      visitDate: value.visitDate ? new Date(value.visitDate) : null,
+      vaccinationDate: value.vaccinationDate ? new Date(value.vaccinationDate) : null,
+      dewormingDate: value.dewormingDate ? new Date(value.dewormingDate) : null,
+      symptomsObserved: value.symptomsObserved || '',
+      notes: value.notes || '',
+      treatmentGiven: value.treatmentGiven || '',
+      technician: value.technician?._id || value.technician || ''
+    });
   }
 
   private loadAnimals(): void {
@@ -219,17 +244,39 @@ export class HealthRecordForm implements OnInit {
           tagNumber: a.tagNumber,
           species: a.species
         }));
-        this.tryPatchForm();
       },
       error: (err) => console.error('Error loading animals:', err)
     });
   }
 
+  // private loadTechnicians(): void {
+  //   this.userService.getAll().subscribe(users => {
+  //     this.technicians = users
+  //       .filter(u => u.role === 'technician' && u._id)
+  //       .map(u => ({ id: String(u._id), name: `${u.firstName} ${u.lastName}` }));
+  //     this.tryPatchForm();
+  //   });
+  // }
+
+  
   private loadTechnicians(): void {
     this.userService.getAll().subscribe(users => {
-      this.technicians = users
-        .filter(u => u.role === 'technician' && u._id)
-        .map(u => ({ id: String(u._id), name: `${u.firstName} ${u.lastName}` }));
+      if (this.user?.role === 'technician') {
+        // Only include the logged-in farmer
+        const tech = users.find(u => u._id === this.user?._id);
+        if (tech) {
+          // this.technicians = [{ id: tech._id!, name: `${tech.firstName} ${tech.lastName}` }];
+          this.loggedInTechnician = { name: `${tech.firstName} ${tech.lastName}` };
+          this.rxform.patchValue({ technician: tech._id });
+        }
+      }
+      else {
+        // Admin or other roles: show all farmers
+        this.technicians = users
+          .filter(u => u.role === 'technician')
+          .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+      }
+
       this.tryPatchForm();
     });
   }
@@ -265,7 +312,20 @@ export class HealthRecordForm implements OnInit {
 
   onSubmit() {
     if (this.rxform.invalid) return;
-    this.onSubmitEvent.emit(this.rxform.value);
+      const value = { ...this.rxform.value };
+
+      const dateFields: (keyof RxHealthRecordForm)[] = ['dewormingDate', 'vaccinationDate', 'visitDate'];
+
+      dateFields.forEach(field => {
+        const fieldValue = value[field];
+        if (fieldValue) {
+          // Convert to ISO string safely
+          value[field] = new Date(fieldValue as unknown as string).toISOString() as any;
+        } else {
+          delete value[field]; // optional: remove if empty
+        }
+      });
+    this.onSubmitEvent.emit(value);
   }
 
   // --- Getters ---

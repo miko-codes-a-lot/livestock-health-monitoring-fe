@@ -2,14 +2,11 @@
   <mat-card *ngIf="insurancePolicy; else loading" class="insurance-card">
     <mat-card-header>
       <mat-card-title>Insurance Policy Details</mat-card-title>
-      <mat-card-actions align="end" *ngIf="user?.role === 'farmer'">
+      <mat-card-actions align="end" *ngIf="user?.role === 'technician'">
         <button 
           mat-raised-button color="primary"
           (click)="onUpdate()"
-          [disabled]="
-            insurancePolicy.status === 'pending'
-            || insurancePolicy.status === 'approved'
-          "
+          [disabled]="insurancePolicy.status === 'approved'"
         >Update</button>
       </mat-card-actions>
     </mat-card-header>
@@ -77,7 +74,7 @@
     </mat-card-content>
 
     <!-- Approve / Reject Buttons -->
-    <mat-card-actions class="approval-buttons" *ngIf="user?.role === 'admin' || user?.role === 'technician'">
+    <!-- <mat-card-actions class="approval-buttons" *ngIf="user?.role === 'admin' || user?.role === 'technician'">
       <button
         mat-stroked-button
         color="warn"
@@ -95,7 +92,7 @@
       >
         <mat-icon>check_circle</mat-icon> Approve
       </button>
-    </mat-card-actions>
+    </mat-card-actions> -->
   </mat-card>
 
   <ng-template #loading>

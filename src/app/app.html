@@ -1,7 +1,8 @@
 <mat-drawer-container class="example-container">
 
   <!-- Sidebar -->
-  <mat-drawer mode="side" opened *ngIf="isLoggedIn && showSideNav">
+   <!-- opened *ngIf="isLoggedIn && showSideNav" -->
+  <mat-drawer mode="side" [opened]="isLoggedIn && showSideNav" [disableClose]="true">
     <mat-toolbar color="primary">
       <span class="system-title">Livestock <br> Health Monitoring</span>
     </mat-toolbar>

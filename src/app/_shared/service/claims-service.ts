@@ -53,7 +53,7 @@ export class ClaimsService {
     uploadPhotos(claimsId: any, files: File[]): Observable<any> {
       const formData = new FormData();
       files.forEach(file => formData.append('photos', file));
-      return this.http.put(`${this.baseUrl}/${claimsId}/photos`, formData);
+      return this.http.put(`${this.baseUrl}/${claimsId}/evidence`, formData);
     }
 
     // should get this in the ts
@@ -70,7 +70,7 @@ export class ClaimsService {
     // }
 
     getProfilePicture(filename: string): Observable<string> {
-      const url = `${this.baseUrl}/${filename}/photo`;
+      const url = `${this.baseUrl}/${filename}/evidence`;
 
       return this.http.get(url, { responseType: 'blob', withCredentials: true }).pipe(
         map(blob => URL.createObjectURL(blob))

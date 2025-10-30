@@ -13,5 +13,6 @@ export interface UserDto {
     barangay: string,
   }
   gender: 'male' | 'female'
-  role: 'admin' | 'farmer' | 'vet' |'technician'
+  role: 'admin' | 'farmer' | 'vet' |'technician',
+  rsbsaNumber?: string
 }

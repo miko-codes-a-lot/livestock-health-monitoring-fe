@@ -1,73 +1,12 @@
-<div class="claims-container">
-  <div class="claims-header">
-    <h2>Claims</h2>
-    <button mat-raised-button color="primary" (click)="onCreate()" *ngIf="user?.role === 'farmer'">
-      <mat-icon>add</mat-icon> Create Claim
-    </button>
-  </div>
-
-  <div *ngIf="isLoading; else tableTemplate" class="loading-container">
-    <mat-spinner diameter="40"></mat-spinner>
-    <p>Fetching claims...</p>
-  </div>
-
-  <ng-template #tableTemplate>
-    <table mat-table [dataSource]="claims" class="mat-elevation-z2 claims-table">
-
-      <!-- Animal -->
-      <ng-container matColumnDef="animal">
-        <th mat-header-cell *matHeaderCellDef> Tag Number (Animal) </th>
-        <td mat-cell *matCellDef="let claim"> {{ claim.animal.tagNumber }} </td>
-      </ng-container>
-
-      <!-- Farmer -->
-      <ng-container matColumnDef="farmer">
-        <th mat-header-cell *matHeaderCellDef> Farmer </th>
-        <td mat-cell *matCellDef="let claim"> 
-          {{ claim.farmer?.firstName }} {{ claim.farmer?.lastName }} 
-        </td>
-      </ng-container>
-
-      <!-- Cause of Death -->
-      <ng-container matColumnDef="causeOfDeath">
-        <th mat-header-cell *matHeaderCellDef> Cause of Death </th>
-        <td mat-cell *matCellDef="let claim"> {{ claim.causeOfDeath }} </td>
-      </ng-container>
-
-      <!-- Date of Death -->
-      <ng-container matColumnDef="dateOfDeath">
-        <th mat-header-cell *matHeaderCellDef> Date of Death </th>
-        <td mat-cell *matCellDef="let claim"> 
-          {{ claim.dateOfDeath | date:'mediumDate' }} 
-        </td>
-      </ng-container>
-
-      <!-- Status -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef> Status </th>
-        <td mat-cell *matCellDef="let claim"> {{ claim.status }} </td>
-      </ng-container>
-
-      <!-- Action -->
-      <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef> Action </th>
-        <td mat-cell *matCellDef="let claim">
-          <button mat-icon-button color="accent" (click)="onDetails(claim._id!)">
-            <mat-icon>visibility</mat-icon>
-          </button>
-          <button mat-icon-button color="primary"
-            (click)="onUpdate(claim._id!)"
-            *ngIf="user?.role === 'farmer'"
-            [disabled]="claim.status === 'pending'
-            || claim.status === 'approved'"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  </ng-template>
-</div>
+<app-generic-table
+  [title]="'Claims'"
+  [createButtonLabel]="'Create Claim'"
+  [displayedColumns]="displayedColumnsKeys"
+  [columnDefs]="columnDefs"
+  [dataSource]="dataSource"
+  [isLoading]="isLoading"
+  (create)="onCreate()"
+  (details)="onDetails($event)"
+  (update)="onUpdate($event)"
+>
+</app-generic-table>

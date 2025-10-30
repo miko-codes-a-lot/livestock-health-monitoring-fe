@@ -4,7 +4,7 @@ import { Observable, map, forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { FullLivestock } from '../model/response/full-livestock';
 
-export type LivestockGroupStatus = 'draft' | 'pending' | 'verified' | 'rejected';
+export type LivestockGroupStatus =  'draft' | 'pending' | 'approved' | 'rejected' | 'verified';
 
 @Injectable({
   providedIn: 'root'

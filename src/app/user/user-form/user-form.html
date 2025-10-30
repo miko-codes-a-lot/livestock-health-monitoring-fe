@@ -93,9 +93,8 @@
           </mat-form-field>
 
           <!-- Address -->
+          <h3>Address</h3>
           <div formGroupName="address" class="address-group">
-            <h3>Address</h3>
-
             <mat-form-field appearance="outline" class="half-width">
               <mat-label>Province</mat-label>
               <input matInput formControlName="province" type="text" readonly />
@@ -136,14 +135,30 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Role</mat-label>
-              <mat-select formControlName="role">
-                <mat-option value="admin">Admin</mat-option>
-                <mat-option value="technician">Technician</mat-option>
-                <mat-option value="farmer">Farmer</mat-option>
-              </mat-select>
+                <mat-label>Role</mat-label>
+                <mat-select 
+                    formControlName="role"
+                    (selectionChange)="onRoleChange($event.value)"
+                    [disabled]="rxform.controls.role.disabled" 
+                >
+                    <mat-option *ngFor="let role of availableRoles" [value]="role.value">
+                        {{ role.label }}
+                    </mat-option>
+                </mat-select>
             </mat-form-field>
           </div>
+
+          <div>
+             <!-- rsbsaNumber -->
+            <mat-form-field appearance="outline" class="half-width" *ngIf='isRoleFarmer'>
+              <mat-label>RSBSA Number</mat-label>
+              <input matInput formControlName="rsbsaNumber" type="text" />
+              <mat-error *ngIf="rxform.get('rsbsaNumber')?.hasError('required')">
+                Email is required.
+              </mat-error>
+            </mat-form-field>
+          </div>
+   
         </mat-card-content>
 
         <mat-card-actions align="end">

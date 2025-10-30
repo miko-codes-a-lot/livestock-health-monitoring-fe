@@ -18,4 +18,5 @@ export interface RxUserForm {
   address: FormGroup<RxAddress>
   gender: FormControl<'male' | 'female'>;
   role: FormControl<'admin' | 'farmer' | 'vet' | 'technician'>;
+  rsbsaNumber?: FormControl<string>
 }

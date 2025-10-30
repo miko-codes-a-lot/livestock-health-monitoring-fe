@@ -48,7 +48,7 @@ export class InsurancePolicyForm implements OnInit {
   // livestockGroups: LivestockGroup[] = [];
   livestockGroups: { _id: string; groupName: string }[] = [];
 
-  user: UserDto | null = null; 
+  user: UserDto | null = null;
 
 
   @Input()
@@ -73,7 +73,8 @@ export class InsurancePolicyForm implements OnInit {
 
   rxform!: FormGroup<RxInsurancePolicyForm>;
   insurancePolicy: InsurancePolicy[] = [];
-  farmers: { id: string; name: string }[] = [];
+  farmers: { _id: string; name: string }[] = [];
+  filteredGroups: { _id: string; name: string }[] = [];
   filteredBreeds: { value: string; label: string }[] = [];
 
   constructor(
@@ -105,6 +106,11 @@ export class InsurancePolicyForm implements OnInit {
       // this.loadProfilePicture(user._id);
       this.rxform.patchValue(this.initDoc);
     }
+
+    this.rxform.get('farmer')?.valueChanges.subscribe(value => {
+      this.onFarmerChange(value);
+    });
+
   }
 
   private initializeForm(): void {
@@ -133,29 +139,62 @@ export class InsurancePolicyForm implements OnInit {
 
   }
 
-  private loadFarmers(): void {
-    this.userService.getAll().subscribe(users => {
-      if (this.user?.role === 'farmer') {
-        // Only include the logged-in farmer
-        this.farmers = users
-          .filter(u => u._id === this.user?._id)
-          .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
-        
-        // Auto-select themselves
-        this.rxform.patchValue({ farmer: this.user._id });
-      } else {
-        // Admin or other roles: show all farmers
-        this.farmers = users
-          .filter(u => u.role === 'farmer')
-          .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
-      }
+  onFarmerChange(farmerId: string) {
+    if (!farmerId) {
+      this.filteredGroups = [];
+      return;
+    }
+    
+
+    this.livestockGroupService.getAll().subscribe(groups => {
+      this.filteredGroups = groups
+        .filter((b: any) => b.farmer?._id === farmerId)
+        .map((b: any) => ({
+            _id: b._id,
+            name: b.groupName 
+        }));
+      
+      this.rxform.get('livestockGroup')?.value;
+      // if (!this.filteredGroups.find(b => b._id === currentGroup)) {
+      //     this.rxform.get('livestockGroup')?.patchValue('' as any);
+      // }
     });
   }
+
+  private loadFarmers(): void {
+    this.userService.getAll().subscribe(users => {
+      this.farmers = users
+        .filter(u => u.role === 'farmer')
+        .map(u => ({
+          _id: String(u._id),
+          name: `${u.firstName} ${u.lastName}` 
+      }));
+      // this.tryPatchForm();
+    });
+  }
+
+  // private loadFarmers(): void {
+  //   this.userService.getAll().subscribe(users => {
+  //     if (this.user?.role === 'farmer') {
+  //       // Only include the logged-in farmer
+  //       this.farmers = users
+  //         .filter(u => u._id === this.user?._id)
+  //         .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+        
+  //       // Auto-select themselves
+  //       this.rxform.patchValue({ farmer: this.user._id });
+  //     } else {
+  //       // Admin or other roles: show all farmers
+  //       this.farmers = users
+  //         .filter(u => u.role === 'farmer')
+  //         .map(u => ({ id: u._id!, name: `${u.firstName} ${u.lastName}` }));
+  //     }
+  //   });
+  // }
 
   private loadInsurancePolicies(): void {
     this.insurancePolicyService.getAll().subscribe(policies => {
       this.insurancePolicy = policies;
-      console.log('policies', policies)
     });
   }
 

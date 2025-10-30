@@ -7,7 +7,8 @@
           (click)="onUpdate()"
           *ngIf="user?.role === 'farmer'"
           [disabled]="livestockGroup.status==='pending'
-          || livestockGroup.status==='approved'"
+          || livestockGroup.status==='approved'
+          || livestockGroup.status==='verified'"
         >Update</button>
       </mat-card-actions>
     </mat-card-header>
@@ -105,7 +106,7 @@
     <mat-card-actions class="approval-buttons" *ngIf="user?.role === 'farmer'">
       <button mat-raised-button color="primary" 
         (click)="toReview()"
-        [disabled]="livestockGroup.status === 'pending' || livestocks.length === 0"
+        [disabled]="livestockGroup.status === 'pending' || livestockGroup.status === 'verified' || livestocks.length === 0"
       >
         <mat-icon>send</mat-icon> Submit for Review?
       </button>
@@ -116,7 +117,7 @@
         mat-stroked-button
         color="warn"
         (click)="onReject()"
-        [disabled]="livestockGroup.status === 'rejected'"
+        [disabled]="livestockGroup.status === 'verified' || livestockGroup.status === 'rejected'"
       >
         <mat-icon>close</mat-icon> Reject
       </button>
@@ -125,7 +126,8 @@
         mat-raised-button
         color="primary"
         (click)="onApprove()"
-        [disabled]="livestockGroup.status === 'approved' || livestocks.length === 0"
+        [disabled]="
+        livestockGroup.status === 'verified' || livestockGroup.status === 'rejected' || livestocks.length === 0"
       >
         <mat-icon>check_circle</mat-icon> Verify
       </button>

@@ -5,7 +5,7 @@ export interface LivestockGroup {
   farmer: string;             // Reference to the farmer's ObjectId
   groupName: string;          // Name of the livestock group
   groupPhotos?: string[];      // Array of photo filenames or URLs
-  status: 'draft' | 'pending' | 'approved' | 'rejected'; // You can extend status if needed
+  status: 'draft' | 'pending' | 'approved' | 'rejected' | 'verified';
   createdAt: Date;            // Creation timestamp
   updatedAt: Date;            // Last update timestamp
   statusAt: Date;             // Timestamp when status was last updated

@@ -15,7 +15,7 @@ import { MatTableModule } from '@angular/material/table'; // <-- Import MatTable
 import { FullLivestockGroup } from '../../_shared/model/response/full-livestock-group';
 import { FullLivestock } from '../../_shared/model/response/full-livestock';
 
-export type LivestockGroupStatus = 'draft' | 'pending' | 'verified' | 'rejected';
+export type LivestockGroupStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'verified';
 @Component({
   selector: 'app-livestock-group-details',
   standalone: true,

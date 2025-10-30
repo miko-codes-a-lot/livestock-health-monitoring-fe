@@ -10,4 +10,5 @@ export interface RxClaimsForm {
   filedAt: FormControl<string>;                    // filed timestamp
   policy: FormControl<string>;                     // policy ID
   status: FormControl<'draft' | 'submitted' | 'approved' | 'rejected' | 'pending'>;
+  otherCauseOfDeath: FormControl<string>; 
 }

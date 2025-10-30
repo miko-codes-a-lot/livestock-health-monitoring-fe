@@ -1,86 +1,77 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { InsurancePolicy } from '../../_shared/model/insurance-policy';
 import { InsurancePolicyService } from '../../_shared/service/insurance-policy-service';
 import { UserDto } from '../../_shared/model/user-dto';
 import { AuthService } from '../../_shared/service/auth-service';
+import { GenericTableComponent } from '../../_shared/component/table/generic-table.component';
+
+interface ColumnDef<T> {
+  key: string;
+  label: string;
+  cell?: (element: T) => any;
+}
 
 @Component({
   selector: 'app-insurance-policy-list',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [CommonModule, MatProgressSpinnerModule, GenericTableComponent],
   templateUrl: './insurance-policy-list.html',
   styleUrls: ['./insurance-policy-list.css']
 })
-export class InsurancePolicyList {
-  insurancePolicies: InsurancePolicy[] = [];
+export class InsurancePolicyList implements OnInit {
+  dataSource = new MatTableDataSource<InsurancePolicy>();
   isLoading = false;
-  user: UserDto | null = null; 
+  user: UserDto | null = null;
 
-  // to continue here
-  displayedColumns = [
-    'policyNumber',
-    'provider',
-    'status',
-    'farmer',
-    'livestockGroup',
-    // 'startDate',
-    // 'endDate',
-    'action'
+  columnDefs: ColumnDef<InsurancePolicy>[] = [
+    { key: 'policyNumber', label: 'Policy Number' },
+    { key: 'provider', label: 'Provider' },
+    { key: 'status', label: 'Status' },
+    { 
+      key: 'livestockGroup', 
+      label: 'Livestock Group', 
+      cell: lp => {
+        if (!lp.livestockGroup) return 'N/A';
+        return typeof lp.livestockGroup === 'string'
+          ? lp.livestockGroup
+          : (lp.livestockGroup as any).groupName || 'N/A';
+      }
+    }
   ];
+
+  displayedColumnsKeys = [...this.columnDefs.map(c => c.key), 'actions'];
 
   constructor(
     private readonly insurancePolicyService: InsurancePolicyService,
     private readonly router: Router,
-    private readonly authService: AuthService,
+    private readonly authService: AuthService
   ) {}
 
   ngOnInit() {
     this.isLoading = true;
 
-    this.authService.currentUser$.subscribe({
-      next: (u) => {
-        if (u) {
-          this.user = u
-        }
-      }
-    })
+    this.authService.currentUser$.subscribe(u => this.user = u);
 
     this.insurancePolicyService.getAll().subscribe({
-      next: (insurancePolicy) => {
-          this.insurancePolicies = insurancePolicy;
-        
-          if (this.user?.role === 'farmer') {
-          // Show only the logged-in farmer's livestock groups
-          this.insurancePolicies = insurancePolicy.filter(
-            lg => this.isUserDto(lg.farmer) && lg.farmer._id === this.user?._id
+      next: (policies) => {
+        console.log('policies', policies)
+        if (this.user?.role === 'farmer') {
+          this.dataSource.data = policies.filter(
+            lp => {
+              typeof lp.farmer !== 'string' && lp.farmer === this.user?._id
+            }
           );
-            // this.livestockGroups = livestockGroups.filter(lg => lg.farmer?._id === this.user?._id);
-            console.log('this.livestockGroups', this.insurancePolicies)
-          } else {
-            // Show all for admin/other roles
-            this.insurancePolicies = insurancePolicy;
-          }
+        } else {
+          this.dataSource.data = policies;
+        }
       },
       error: (err) => alert(`Something went wrong: ${err}`)
-    }).add(() => (this.isLoading = false));
-  }
-
-  
-  isUserDto(farmer: string | UserDto): farmer is UserDto {
-    return typeof farmer !== 'string' && '_id' in farmer;
+    }).add(() => this.isLoading = false);
   }
 
   onCreate() {

@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -10,6 +9,8 @@ import { LivestockGroup } from '../../_shared/model/livestock-group';
 import { LivestockGroupService } from '../../_shared/service/livestock-group-service';
 import { UserDto } from '../../_shared/model/user-dto';
 import { AuthService } from '../../_shared/service/auth-service';
+import { GenericTableComponent } from '../../_shared/component/table/generic-table.component';
+import { MatTableDataSource } from '@angular/material/table';
 
 
 @Component({
@@ -17,25 +18,26 @@ import { AuthService } from '../../_shared/service/auth-service';
   standalone: true,
   imports: [
     CommonModule,
-    MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    GenericTableComponent
   ],
   templateUrl: './livestock-group-list.html',
   styleUrls: ['./livestock-group-list.css']
 })
-export class LivestockGroupList {
+export class LivestockGroupList implements OnInit {
   livestockGroups: LivestockGroup[] = [];
   isLoading = false;
+  user: UserDto | null = null;
 
-  user: UserDto | null = null; 
+  dataSource = new MatTableDataSource<LivestockGroup>();
 
-  displayedColumns = [
-    'groupName',
-    'farmer',
-    'status',
-    'action'
+  // Table config
+  displayedColumns = ['groupName', 'status', 'actions'];
+  columnDefs = [
+    { key: 'groupName', label: 'Group Name' },
+    { key: 'status', label: 'Status' },
   ];
 
   constructor(
@@ -48,40 +50,32 @@ export class LivestockGroupList {
     this.isLoading = true;
 
     this.authService.currentUser$.subscribe({
-      next: (u) => {
-        if (u) {
-          this.user = u
-        }
-      }
-    })
+      next: (u) => this.user = u ?? null
+    });
 
     this.livestockGroupService.getAll().subscribe({
-      next: (livestockGroups) => {
+      next: (groups) => {
+        let filteredGroups = groups;
         if (this.user?.role === 'farmer') {
-          // Show only the logged-in farmer's livestock groups
-        this.livestockGroups = livestockGroups.filter(
-          lg => this.isUserDto(lg.farmer) && lg.farmer._id === this.user?._id
-        );
-          // this.livestockGroups = livestockGroups.filter(lg => lg.farmer?._id === this.user?._id);
-          console.log('this.livestockGroups', this.livestockGroups)
+          filteredGroups = groups.filter(lg => this.isUserDto(lg.farmer) && lg.farmer._id === this.user?._id);
+
         } else {
-          // Show all for admin/other roles
-          this.livestockGroups = livestockGroups.filter(
-            ls => ls.status !== 'draft'
-          );
+          filteredGroups = groups.filter(lg => lg.status !== 'draft');
         }
+
+        this.dataSource.data = filteredGroups;  // ✅ set MatTableDataSource data
       },
-      error: (err) => alert(`Something went wrong: ${err}`)
-    }).add(() => (this.isLoading = false));
+      error: (err) => alert(`Something went wrong: ${err}`),
+    }).add(() => this.isLoading = false);
+  }
+  onCreate() {
+    this.router.navigate(['/livestock-group/create']);
   }
 
   isUserDto(farmer: string | UserDto): farmer is UserDto {
     return typeof farmer !== 'string' && '_id' in farmer;
   }
 
-  onCreate() {
-    this.router.navigate(['/livestock-group/create']);
-  }
 
   onDetails(id: string) {
     this.router.navigate(['/livestock-group/details', id]);

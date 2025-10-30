@@ -1,8 +1,8 @@
 export interface Livestock {
   _id?: string;
   tagNumber: string;
-  species: string;
-  breed: string;
+  species:  string 
+  breed: string 
   sex: 'male' | 'female';
   age: number;
   dateOfPurchase: string;

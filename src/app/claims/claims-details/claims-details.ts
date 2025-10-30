@@ -40,7 +40,7 @@ export class ClaimsDetails implements OnInit {
   speciesName = '';
   animalTag: string | null = null;
   policy: string | null = null;
-  photoUrls: string[] = [];
+  photoUrls?: string[] = [];
 
   fullScreenPhotoUrl: string | null = null;
   user: UserDto | null = null; 
@@ -88,6 +88,11 @@ export class ClaimsDetails implements OnInit {
           // then
           this.animalTag =  this.getField(claims.animal, 'tagNumber')
          
+          this.photoUrls = claims?.evidencePhotos?.map(p => this.getPhotoUrl(p));
+          if(claims?.evidencePhotos?.length) {
+            this.claimsService.getProfilePictures(claims.evidencePhotos)
+            .subscribe(urls => this.photoUrls = urls);
+          }
 
           // this.livestockService.getOne(claims.animal).subscribe(a => {
           //   // this.animalTag = a.tagNumber;

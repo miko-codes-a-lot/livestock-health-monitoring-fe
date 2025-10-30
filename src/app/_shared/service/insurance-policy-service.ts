@@ -21,7 +21,7 @@ export class InsurancePolicyService {
         startDate: now,                  
         endDate: now,                    
         policyDocument: '',          
-        status: 'pending',              
+        status: 'approved',              
       };
     }
 

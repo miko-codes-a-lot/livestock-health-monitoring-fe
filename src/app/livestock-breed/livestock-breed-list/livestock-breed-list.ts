@@ -1,36 +1,39 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { LivestockBreed } from '../../_shared/model/livestock-breed';
 import { LivestockBreedService } from '../../_shared/service/livestock-breed-service';
-
+import { GenericTableComponent } from '../../_shared/component/table/generic-table.component';
 
 @Component({
   selector: 'app-livestock-breed-list',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [CommonModule, GenericTableComponent],
   templateUrl: './livestock-breed-list.html',
-  styleUrls: ['./livestock-breed-list.css']
+  styleUrls: ['./livestock-breed-list.css'],
 })
-export class LivestockBreedList {
-  livestockBreeds: LivestockBreed[] = [];
+export class LivestockBreedList implements OnInit {
   isLoading = false;
+  dataSource = new MatTableDataSource<LivestockBreed>();
 
-  displayedColumns = [
-    'name',
-    'classification',
-    'action'
+  displayedColumns = ['name', 'classification', 'actions'];
+  columnDefs = [
+    { key: 'name', label: 'Name' },
+    { 
+      key: 'classification', 
+      label: 'Classification', 
+      cell: (e: LivestockBreed) => {
+        if (typeof e.classification === 'string') {
+          return e.classification; // string case
+        } else if (e.classification && 'name' in e.classification) {
+          return e.classification.name; // object case
+        } else {
+          return 'N/A'; // fallback
+        }
+      }
+    }
   ];
 
   constructor(
@@ -42,12 +45,44 @@ export class LivestockBreedList {
     this.isLoading = true;
 
     this.livestockBreedService.getAll().subscribe({
-      next: (livestockBreed) => {
-        this.livestockBreeds = livestockBreed;
-        console.log('this.livestockBreed ', livestockBreed); // ✅ real data is here
+      next: (breeds) => {
+        this.dataSource.data = breeds;
+
+          // Sorting for nested classification
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            if (property === 'classification') {
+              if (typeof item.classification === 'string') {
+                return item.classification.toLowerCase();
+              } else if (item.classification && 'name' in item.classification) {
+                return item.classification.name.toLowerCase();
+              } else {
+                return '';
+              }
+            }
+            const value = (item as any)[property];
+            return typeof value === 'string' ? value.toLowerCase() : value;
+          };
+
+          // Filtering: name + classification
+          this.dataSource.filterPredicate = (item, filter: string) => {
+            const f = filter.toLowerCase();
+            
+            const nameMatch = item.name?.toLowerCase().includes(f) ?? false;
+
+            let classValue = '';
+            if (typeof item.classification === 'string') {
+              classValue = item.classification.toLowerCase();
+            } else if (item.classification && 'name' in item.classification) {
+              classValue = item.classification.name.toLowerCase();
+            }
+
+            return nameMatch || classValue.includes(f);
+          };
+
+        this.isLoading = false;
       },
-      error: (err) => alert(`Something went wrong: ${err}`)
-    }).add(() => (this.isLoading = false));
+      error: () => this.isLoading = false
+    });
   }
 
   onCreate() {

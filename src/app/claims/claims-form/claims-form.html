@@ -6,10 +6,34 @@
       </mat-card-header>
 
       <mat-card-content>
+        <!-- Animal Photos Section -->
+        <div class="form-row animal-photos-section">
+          <label class="section-label">Evidence Photos</label>
+
+          <!-- New previews -->
+          <div *ngIf="previewPhotos.length > 0" class="photos-container">
+            <div class="animal-photos-preview">
+              <div class="photo-card" *ngFor="let preview of previewPhotos">
+                <img
+                  [src]="preview"
+                  alt="Photo preview"
+                  class="animal-photo"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload Button -->
+          <label for="animalPhotos" class="upload-btn">
+            <span>Upload Photos</span>
+            <input id="animalPhotos" type="file" (change)="onFilesSelected($event)" multiple hidden />
+          </label>
+        </div>
+
         <!-- Animal Selection -->
         <div class="form-row">
 
-          <mat-form-field appearance="outline" class="half-width">
+          <!-- <mat-form-field appearance="outline" class="half-width">
             <mat-label>Farmer</mat-label>
             <mat-select 
               formControlName="farmer" 
@@ -17,11 +41,11 @@
               <mat-option *ngFor="let f of farmers" [value]="f.id">{{ f.name }}</mat-option>
             </mat-select>
             <mat-error *ngIf="farmer.hasError('required')">Farmer is required.</mat-error>
-          </mat-form-field>
+          </mat-form-field> -->
           
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Livestock Group</mat-label>
-            <mat-select (selectionChange)="onLivestockGroupChange($event.value)">
+            <mat-select (selectionChange)="onLivestockGroupChange($event.value)" [value]="selectedGroup"  formControlName="livestockGroup">
               <mat-option *ngFor="let g of livestockGroups" [value]="g._id">
                 {{ g.groupName }}
               </mat-option>
@@ -50,7 +74,7 @@
               (selectionChange)="onCategoryChange($event.value)"
               required
             >
-              <mat-option *ngFor="let c of deathCategory" [value]="c.value">
+              <mat-option *ngFor="let c of deathCategory" [value]="c._id">
                 {{ c.label }}
               </mat-option>
             </mat-select>
@@ -68,6 +92,19 @@
               </mat-select>
             </mat-form-field>
          </div>
+
+        <div class="form-row" *ngIf="causeOfDeathCategory.value">
+            <ng-container *ngIf="isOtherCategorySelected()">
+                
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Specify Cause of Death</mat-label>
+                    <input matInput formControlName="otherCauseOfDeath" required /> 
+                    <mat-error *ngIf="otherCauseOfDeath.hasError('required')">
+                        Please specify the cause of death.
+                    </mat-error>
+                </mat-form-field>
+            </ng-container>
+        </div>
         <!-- Farmer and Filed At -->
         <div class="form-row">
           <mat-form-field appearance="outline" class="full-width" >
@@ -101,33 +138,6 @@
           </mat-form-field>
         </div>
 
-        <!-- Upload Evidence Photos -->
-        <div class="form-row animal-photos-section">
-          <label class="section-label">Evidence Photos</label>
-
-          <div *ngIf="previewPhotos.length > 0" class="photos-container">
-            <div class="animal-photos-preview">
-              <div class="photo-card" *ngFor="let preview of previewPhotos">
-                <img
-                  [src]="preview"
-                  alt="Photo preview"
-                  class="animal-photo"
-                />
-              </div>
-            </div>
-          </div>
-
-          <label for="evidencePhotos" class="upload-btn">
-            <span>Upload Photos</span>
-            <input
-              id="evidencePhotos"
-              type="file"
-              (change)="onFilesSelected($event)"
-              multiple
-              hidden
-            />
-          </label>
-        </div>
       </mat-card-content>
 
       <mat-card-actions align="end">

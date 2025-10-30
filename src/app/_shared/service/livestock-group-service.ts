@@ -6,6 +6,7 @@ import { FullLivestockGroup } from '../model/response/full-livestock-group';
 import { FullLivestock } from '../model/response/full-livestock';
 import { Livestock } from '../model/livestock';
 
+
 @Injectable({
   providedIn: 'root'
 })

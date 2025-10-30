@@ -10,4 +10,5 @@ export interface MortalityCause {
   createdAt: string;       // ISO date string
   updatedAt: string;       // ISO date string
   __v?: number;            // Mongoose version key
+  label: string;
 }

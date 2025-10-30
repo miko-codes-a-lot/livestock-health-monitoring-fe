@@ -130,7 +130,7 @@ export class LivestockForm implements OnInit {
       isDeceased: [l.isDeceased],
       isInsured: [l.isInsured],
       livestockGroup: [l.livestockGroup, Validators.required],
-      farmer: [l.farmer, Validators.required],
+      farmer: [l.farmer || '', Validators.required],
       status: [l.status],
       animalPhotos: [l.animalPhotos || []]
     });

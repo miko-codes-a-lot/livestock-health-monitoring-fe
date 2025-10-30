@@ -1,36 +1,52 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { Claims } from '../../_shared/model/claims';
 import { ClaimsService } from '../../_shared/service/claims-service';
 import { UserDto } from '../../_shared/model/user-dto';
 import { AuthService } from '../../_shared/service/auth-service';
+import { GenericTableComponent } from '../../_shared/component/table/generic-table.component';
+
+interface ColumnDef<T> {
+  key: string;
+  label: string;
+  cell?: (element: T) => any;
+}
 
 @Component({
   selector: 'app-claims-list',
   standalone: true,
   imports: [
     CommonModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
     MatProgressSpinnerModule,
+    GenericTableComponent
   ],
   templateUrl: './claims-list.html',
   styleUrls: ['./claims-list.css']
 })
-export class ClaimsList {
-  claims: Claims[] = [];
+export class ClaimsList implements OnInit {
+  dataSource = new MatTableDataSource<Claims>();
   isLoading = false;
+  user: UserDto | null = null;
 
-  user: UserDto | null = null; 
+  columnDefs: ColumnDef<Claims>[] = [
+    { 
+      key: 'animal', 
+      label: 'Tag Number (Animal)', 
+      cell: c => {
+        const animalObj = c.animal as any;
+        return animalObj?.tagNumber || 'N/A';
+      }
+    },
+    { key: 'causeOfDeath', label: 'Cause of Death' },
+    { key: 'dateOfDeath', label: 'Date of Death', cell: c => new Date(c.dateOfDeath).toLocaleDateString() },
+    { key: 'status', label: 'Status' }
+  ];
 
-  displayedColumns: string[] = ['animal', 'farmer', 'causeOfDeath', 'dateOfDeath', 'status', 'action'];
+  displayedColumnsKeys = [...this.columnDefs.map(c => c.key), 'actions'];
 
   constructor(
     private readonly claimsService: ClaimsService,
@@ -41,29 +57,17 @@ export class ClaimsList {
   ngOnInit() {
     this.isLoading = true;
 
-    this.authService.currentUser$.subscribe({
-      next: (u) => {
-        if (u) {
-          this.user = u
-        }
-      }
-    })
+    this.authService.currentUser$.subscribe(u => this.user = u ?? null);
 
     this.claimsService.getAll().subscribe({
       next: (claims) => {
-        this.claims = claims;
-
+        console.log('claims', claims)
         if (this.user?.role === 'farmer') {
-          // Show only the logged-in farmer's livestock groups
-          this.claims = claims.filter(
+          this.dataSource.data = claims.filter(
             c => this.isUserDto(c.farmer) && c.farmer._id === this.user?._id
           );
-          // this.livestockGroups = livestockGroups.filter(lg => lg.farmer?._id === this.user?._id);
         } else {
-          // Show all for admin/other roles
-          this.claims = claims.filter(
-            c => c.status !== 'draft'
-          );
+          this.dataSource.data = claims.filter(c => c.status !== 'draft');
         }
       },
       error: (err) => alert(`Something went wrong: ${err}`)
