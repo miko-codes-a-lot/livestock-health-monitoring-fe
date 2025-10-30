@@ -89,11 +89,21 @@
 
           <mat-form-field appearance="outline" class="third-width">
             <mat-label>Date of Purchase</mat-label>
-            <input matInput formControlName="dateOfPurchase" type="date" />
+            <input matInput [matDatepicker]="vacPicker" formControlName="dateOfPurchase" />
+             <mat-datepicker-toggle matSuffix [for]="vacPicker"></mat-datepicker-toggle>
+            <mat-datepicker #vacPicker></mat-datepicker>
             <mat-error *ngIf="dateOfPurchase.hasError('required')">
               Date of Purchase is required.
             </mat-error>
           </mat-form-field>
+
+          <!-- <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Date of Purchase</mat-label>
+            <input matInput formControlName="dateOfPurchase" type="date" />
+            <mat-error *ngIf="dateOfPurchase.hasError('required')">
+              Date of Purchase is required.
+            </mat-error>
+          </mat-form-field> -->
         </div>
 
         <!-- Row 3: Farmer, Livestock Group -->

@@ -17,6 +17,8 @@ import { LivestockClassificationService } from '../../_shared/service/livestock-
 import { LivestockBreedService } from '../../_shared/service/livestock-breed-service';
 import { UserDto } from '../../_shared/model/user-dto';
 import { AuthService } from '../../_shared/service/auth-service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-livestock-form',
@@ -29,7 +31,9 @@ import { AuthService } from '../../_shared/service/auth-service';
     MatSelectModule,
     MatButtonModule,
     MatCardModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   templateUrl: './livestock-form.html',
   styleUrls: ['./livestock-form.css']
@@ -50,6 +54,7 @@ export class LivestockForm implements OnInit {
   set initDoc(value: Livestock) {
     this._initDoc = value;
     if (this.rxform && value) {
+
       this.rxform.patchValue(value);
       this.onSpeciesChange(value.species);
       this.existingPhotos = value.animalPhotos || [];
@@ -126,7 +131,7 @@ export class LivestockForm implements OnInit {
       breed: [l.breed, Validators.required],
       sex: [l.sex, Validators.required],
       age: [l.age, [Validators.required, Validators.min(0)]],
-      dateOfPurchase: ['2026-10-30', Validators.required],
+      dateOfPurchase: [l.dateOfPurchase, Validators.required],
       isDeceased: [l.isDeceased],
       isInsured: [l.isInsured],
       livestockGroup: [l.livestockGroup, Validators.required],
