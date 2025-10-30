@@ -156,6 +156,7 @@ export class ClaimsForm implements OnInit {
       policy: [this.l.policy, Validators.required],
       status: [this.l.status || 'draft'],
       otherCauseOfDeath: [''],
+      // livestockGroup: ['']
     });
 
     this.rxform.get('species')?.valueChanges.subscribe(value => {
@@ -210,6 +211,7 @@ export class ClaimsForm implements OnInit {
 
     if (this.initDoc.filedAt) {
       patchData.filedAt = new Date(this.initDoc.filedAt).toISOString().split('T')[0];
+      console.log('patchData.filedAt', patchData.filedAt)
     }
 
     this.rxform.patchValue(patchData);
@@ -229,7 +231,6 @@ export class ClaimsForm implements OnInit {
 
         // Check if the loaded category is the 'Others please specify' option
         if (selectedCategory?.label === 'Other (Please Specify)') {
-            // Since 'causeOfDeath' holds the free-text string in this case, 
             // patch the new 'otherCauseOfDeath' control with it.
             this.rxform.controls.otherCauseOfDeath?.setValue(this.initDoc.causeOfDeath);
         } else {
@@ -292,12 +293,16 @@ export class ClaimsForm implements OnInit {
 
   private loadLivestockGroups(): void {
     this.livestockGroupService.getAll().subscribe(groups => {
+      console.log('groups', groups)
+      console.log('l.farmer', this.user?._id)
       this.livestockGroups = groups
       .filter((l: any) => l.farmer._id === this.user?._id)
         .map((l: any) => ({
             _id: l._id,
             groupName: l.groupName
         }));
+
+      console.log('livestockGroups', this.livestockGroups);
     });
   }
 

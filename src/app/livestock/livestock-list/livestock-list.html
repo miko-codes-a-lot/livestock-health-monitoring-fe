@@ -2,6 +2,7 @@
   [title]="'Livestocks'"
   [createButtonLabel]="'Create Livestock'"
   [displayedColumns]="displayedColumnsKeys"
+  [canCreate]="canCreate"
   [columnDefs]="columnDefs"
   [dataSource]="dataSource"
   [isLoading]="isLoading"
@@ -9,4 +10,18 @@
   (details)="onDetails($event)"
   (update)="onUpdate($event)"
 >
+  <ng-template #actions let-element>
+    <button mat-icon-button color="accent" (click)="onDetails(element._id!)">
+      <mat-icon>visibility</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="onUpdate(element._id!)"
+      *ngIf="user?.role === 'farmer'"
+      [disabled]="element.status === 'pending' || element.status === 'approved'"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+  </ng-template>
 </app-generic-table>

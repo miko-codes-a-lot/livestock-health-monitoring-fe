@@ -9,6 +9,8 @@ import { InsurancePolicyService } from '../../_shared/service/insurance-policy-s
 import { UserDto } from '../../_shared/model/user-dto';
 import { AuthService } from '../../_shared/service/auth-service';
 import { GenericTableComponent } from '../../_shared/component/table/generic-table.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 interface ColumnDef<T> {
   key: string;
@@ -19,7 +21,7 @@ interface ColumnDef<T> {
 @Component({
   selector: 'app-insurance-policy-list',
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule, GenericTableComponent],
+  imports: [CommonModule, MatProgressSpinnerModule, GenericTableComponent, MatIconModule, MatButtonModule],
   templateUrl: './insurance-policy-list.html',
   styleUrls: ['./insurance-policy-list.css']
 })
@@ -59,12 +61,9 @@ export class InsurancePolicyList implements OnInit {
 
     this.insurancePolicyService.getAll().subscribe({
       next: (policies) => {
-        console.log('policies', policies)
         if (this.user?.role === 'farmer') {
           this.dataSource.data = policies.filter(
-            lp => {
-              typeof lp.farmer !== 'string' && lp.farmer === this.user?._id
-            }
+            lp => this.isUserDto(lp.farmer) && lp.farmer._id === this.user?._id
           );
         } else {
           this.dataSource.data = policies;
@@ -72,6 +71,10 @@ export class InsurancePolicyList implements OnInit {
       },
       error: (err) => alert(`Something went wrong: ${err}`)
     }).add(() => this.isLoading = false);
+  }
+
+  isUserDto(farmer: string | UserDto): farmer is UserDto {
+    return typeof farmer !== 'string' && '_id' in farmer;
   }
 
   onCreate() {
@@ -84,5 +87,9 @@ export class InsurancePolicyList implements OnInit {
 
   onUpdate(id: string) {
     this.router.navigate(['/insurance-policy/update', id]);
+  }
+
+  get canCreate(): boolean {
+    return !!this.user && this.user.role === 'technician';
   }
 }

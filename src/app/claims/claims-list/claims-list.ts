@@ -9,6 +9,8 @@ import { ClaimsService } from '../../_shared/service/claims-service';
 import { UserDto } from '../../_shared/model/user-dto';
 import { AuthService } from '../../_shared/service/auth-service';
 import { GenericTableComponent } from '../../_shared/component/table/generic-table.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 interface ColumnDef<T> {
   key: string;
@@ -22,7 +24,9 @@ interface ColumnDef<T> {
   imports: [
     CommonModule,
     MatProgressSpinnerModule,
-    GenericTableComponent
+    GenericTableComponent,
+    MatIconModule,
+    MatButtonModule
   ],
   templateUrl: './claims-list.html',
   styleUrls: ['./claims-list.css']
@@ -88,5 +92,9 @@ export class ClaimsList implements OnInit {
 
   onUpdate(id: string) {
     this.router.navigate(['/claims/update', id]);
+  }
+
+  get canCreate(): boolean {
+    return !!this.user && this.user.role === 'farmer';
   }
 }

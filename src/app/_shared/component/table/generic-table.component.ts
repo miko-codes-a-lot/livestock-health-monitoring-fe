@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit, inject, ContentChild, TemplateRef  } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -28,11 +28,14 @@ export class GenericTableComponent<T> implements AfterViewInit {
   @Input() dataSource = new MatTableDataSource<T>();
   @Input() isLoading = false;
 
+  @Input() canCreate: boolean | (() => boolean) = true; 
+
   @Output() details = new EventEmitter<any>();
   @Output() update = new EventEmitter<any>();
   @Output() create = new EventEmitter<any>();
   @Output() markAsRead = new EventEmitter<any>();
 
+  @ContentChild('actions', { read: TemplateRef }) actionsTemplate?: TemplateRef<any>;
 
   private _liveAnnouncer = inject(LiveAnnouncer);
 
@@ -95,5 +98,12 @@ export class GenericTableComponent<T> implements AfterViewInit {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  isCreateDisabled(): boolean {
+    if (typeof this.canCreate === 'function') {
+      return !this.canCreate();
+    }
+    return !this.canCreate;
   }
 }

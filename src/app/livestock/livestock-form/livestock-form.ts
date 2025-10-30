@@ -126,7 +126,7 @@ export class LivestockForm implements OnInit {
       breed: [l.breed, Validators.required],
       sex: [l.sex, Validators.required],
       age: [l.age, [Validators.required, Validators.min(0)]],
-      dateOfPurchase: [l.dateOfPurchase, Validators.required],
+      dateOfPurchase: ['2026-10-30', Validators.required],
       isDeceased: [l.isDeceased],
       isInsured: [l.isInsured],
       livestockGroup: [l.livestockGroup, Validators.required],

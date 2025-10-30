@@ -3,10 +3,26 @@
   [createButtonLabel]="'Create Policy'"
   [displayedColumns]="displayedColumnsKeys"
   [columnDefs]="columnDefs"
+  [canCreate]="canCreate"
   [dataSource]="dataSource"
   [isLoading]="isLoading"
   (create)="onCreate()"
   (details)="onDetails($event)"
   (update)="onUpdate($event)"
 >
+
+  <ng-template #actions let-element>
+    <button mat-icon-button color="accent" (click)="onDetails(element._id!)">
+      <mat-icon>visibility</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="onUpdate(element._id!)"
+      *ngIf="user?.role === 'technician'"
+      [disabled]="element.status === 'pending' || element.status === 'approved'"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+  </ng-template>
 </app-generic-table>

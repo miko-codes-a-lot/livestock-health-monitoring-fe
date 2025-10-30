@@ -9,6 +9,9 @@ import { LivestockService } from '../../_shared/service/livestock-service';
 import { UserDto } from '../../_shared/model/user-dto';
 import { AuthService } from '../../_shared/service/auth-service';
 import { GenericTableComponent } from '../../_shared/component/table/generic-table.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+
 
 interface ColumnDef<T> {
   key: string;
@@ -22,7 +25,9 @@ interface ColumnDef<T> {
   imports: [
     CommonModule,
     MatProgressSpinnerModule,
-    GenericTableComponent
+    GenericTableComponent,
+    MatIconModule,
+    MatButtonModule
   ],
   templateUrl: './livestock-list.html',
   styleUrls: ['./livestock-list.css']
@@ -89,5 +94,9 @@ export class LivestockList implements OnInit {
 
   onUpdate(id: string) {
     this.router.navigate(['/livestock/update', id]);
+  }
+
+  get canCreate(): boolean {
+    return !!this.user && this.user.role === 'farmer';
   }
 }

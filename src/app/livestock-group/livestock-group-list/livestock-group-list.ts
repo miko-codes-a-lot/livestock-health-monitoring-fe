@@ -84,4 +84,8 @@ export class LivestockGroupList implements OnInit {
   onUpdate(id: string) {
     this.router.navigate(['/livestock-group/update', id]);
   }
+
+  get canCreate(): boolean {
+    return !!this.user && this.user.role === 'farmer';
+  }
 }

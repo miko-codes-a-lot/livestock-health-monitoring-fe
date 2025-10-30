@@ -1,6 +1,7 @@
 <app-generic-table
   [title]="'Livestock Groups'"
   [createButtonLabel]="'Create Livestock'"
+  [canCreate]="canCreate"
   (create)="onCreate()"
   [displayedColumns]="displayedColumns"
   [columnDefs]="columnDefs"
