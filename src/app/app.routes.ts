@@ -28,7 +28,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     path: 'user-settings',
     // data: { role: 'admin' },
-    loadChildren: () => import('./user-settings/user-settings.route').then(m => m.USER_SETTINGS_ROUTES),
+    loadChildren: () => import('./user-settings/user-settings.routes').then(m => m.USER_SETTINGS_ROUTES),
   },
   {
     canActivate: [AuthGuard],

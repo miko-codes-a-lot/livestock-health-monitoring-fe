@@ -14,5 +14,7 @@ export interface UserDto {
   }
   gender: 'male' | 'female'
   role: 'admin' | 'farmer' | 'vet' |'technician',
-  rsbsaNumber?: string
+  rsbsaNumber?: string,
+  updatedAt?: string,
+  createdAt?: string
 }

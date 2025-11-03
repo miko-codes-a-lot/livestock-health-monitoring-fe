@@ -87,7 +87,7 @@ export class App {
         // get back in this later
         // hide side nave when user settings
         const url = event.urlAfterRedirects;
-        this.showSideNav = !url.startsWith('/admin/user-settings');
+        this.showSideNav = !url.startsWith('/user-settings');
         this.updateTopNavVisibility(event.urlAfterRedirects);
     });
   }
@@ -100,7 +100,7 @@ export class App {
   }
 
   goToUserSettings() {
-    this.router.navigate(['/admin/user-settings/index'])
+    this.router.navigate(['/user-settings/index'])
   }
 
   onClickLogout() {

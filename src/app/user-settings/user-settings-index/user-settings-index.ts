@@ -1,150 +1,135 @@
-import { Component, OnInit, ViewChild, TemplateRef  } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { Chart, registerables } from 'chart.js';
-import { RouterLink, Router } from '@angular/router';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ChangeDetectorRef } from '@angular/core';
 
 import { AuthService } from '../../_shared/service/auth-service';
 import { UserService } from '../../_shared/service/user-service';
-
-
-// Register Chart.js components
-Chart.register(...registerables);
+import { UserDto } from '../../_shared/model/user-dto';
 
 @Component({
   selector: 'app-user-settings-index',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatSelectModule,
+    RouterLink,
+    MatDialogModule,
+  ],
   templateUrl: './user-settings-index.html',
   styleUrl: './user-settings-index.css',
-  imports: [MatCardModule, MatDividerModule, ReactiveFormsModule, MatInputModule, MatFormFieldModule, MatIconModule, MatSelectModule, CommonModule, RouterLink, MatDialogModule]
 })
 export class UserSettingsIndex implements OnInit {
   @ViewChild('avatarModal') avatarModal!: TemplateRef<any>;
-  profileForm!: FormGroup;
-  // avatarUrl: string = 'assets/images/default-dentist.png'; // default profile pic
+  user!: UserDto;
   avatarUrl: string | null = null;
-
-  user = {
-    _id: '',
-    firstName: '',
-    middleName: '',
-    lastName: '',
-    emailAddress: '',
-    address: '',
-    role: '',
-    username: '',
-    mobileNumber: '',
-    profilePicture: '',
-    createdAt: '',
-    updatedAt: '',
-  };
-
-  isLoading = false
-
-  selectedDays = new Set<string>();
-
   selectedFile: File | null = null;
+  isLoading = false;
 
   constructor(
-    private fb: FormBuilder,
     private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly router: Router,
-    private dialog: MatDialog,
-    private cdr: ChangeDetectorRef  // <-- inject
+    private readonly dialog: MatDialog,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
-
-  openAvatarModal() {
-    this.dialog.open(this.avatarModal);
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe({
+      next: (user) => {
+        if (user) {
+          this.user = user;
+          // if (user.profilePicture) this.loadProfilePicture(user._id!);
+        }
+      },
+    });
   }
 
-  closeAvatarModal() {
+  /** Opens the avatar upload modal */
+  openAvatarModal(): void {
+    this.dialog.open(this.avatarModal, {
+      width: '400px',
+      panelClass: 'avatar-dialog',
+    });
+  }
+
+  closeAvatarModal(): void {
     this.dialog.closeAll();
     this.selectedFile = null;
   }
 
-  onUpload() {
-  if (!this.selectedFile) return;
-  console.log('this.selectedFile', this.selectedFile)
-    // console.log('result index TS', result)
-    // TODO: call API to save file
-
-    // to activate/use
-    // this.closeAvatarModal();
-  }
-
-  ngOnInit(): void {
-
-    // change the format to E.164
-    // const mobileNumber = this.profileForm.get('mobileNumber');
-    // if (mobileNumber) {
-    //   applyPHMobilePrefix(mobileNumber)
-    // }
-    this.authService.currentUser$.subscribe({
-      next: (user) => {
-        console.log('current user: ', user)
-        if(user) {
-          // this.user = {
-          //   _id: user._id,
-          //   firstName: user.firstName,
-          //   middleName: user.middleName,
-          //   lastName: user.lastName,
-          //   emailAddress: user.emailAddress,
-          //   address: user.address,
-          //   role: user.role,
-          //   username: user.username,
-          //   mobileNumber: user.mobileNumber,
-          //   createdAt: user.createdAt,
-          //   updatedAt: user.updatedAt
-          // }
-        }
-      }
-    });
-  }
-
-  editUser () {
-    console.log('edit page')
-    this.router.navigate(['/admin/user-settings/update'])
-  }
-
-
-  logout() {
-    this.isLoading = true
-    this.authService.logout()
-      .subscribe({
-        next: () => this.router.navigate(['/admin/login']),
-        error: (err) => alert(`Something went wrong: ${err}`)
-      })
-      .add(() => this.isLoading = false)
-  }
-
-  triggerFileInput() {
-    console.log('trigger file input')
-  }
-
-  // Load the actual profile picture from backend
-  loadProfilePicture(userId: string) {
+  /** Loads the user's actual avatar image from backend */
+  loadProfilePicture(userId: string): void {
     // this.userService.getProfilePicture(userId).subscribe({
-    //   next: (url) => this.avatarUrl = url,
-    //   error: () => this.avatarUrl = null
+    //   next: (url) => {
+    //     this.avatarUrl = url;
+    //     this.cdr.detectChanges();
+    //   },
+    //   error: () => (this.avatarUrl = null),
     // });
   }
-  // original
-  onAvatarChange(event: any): void {
-    const file = event.target.files[0];
+
+  /** Preview and select avatar file */
+  onAvatarChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
     if (file) {
       this.selectedFile = file;
       const reader = new FileReader();
-      reader.onload = () => this.avatarUrl = reader.result as string;
+      reader.onload = () => {
+        this.avatarUrl = reader.result as string;
+        this.cdr.detectChanges();
+      };
       reader.readAsDataURL(file);
     }
+  }
+
+  /** Upload the selected avatar to the backend */
+  onUpload(): void {
+    if (!this.selectedFile || !this.user?._id) return;
+    this.isLoading = true;
+
+    // this.userService.uploadProfilePicture(this.user._id, this.selectedFile).subscribe({
+    //   next: () => {
+    //     alert('✅ Profile picture updated successfully!');
+    //     this.closeAvatarModal();
+    //     this.isLoading = false;
+    //   },
+    //   error: (err) => {
+    //     console.error('Upload failed', err);
+    //     alert('❌ Failed to upload profile picture.');
+    //     this.isLoading = false;
+    //   },
+    // });
+  }
+
+  /** Redirects to edit page */
+  editUser(): void {
+    this.router.navigate(['/user-settings/update']);
+  }
+
+  /** Logs out the user */
+  logout(): void {
+    this.isLoading = true;
+    this.authService
+      .logout()
+      .subscribe({
+        next: () => this.router.navigate(['/login']),
+        error: (err) => alert(`Logout failed: ${err}`),
+      })
+      .add(() => (this.isLoading = false));
   }
 }

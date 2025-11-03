@@ -1,0 +1,155 @@
+<mat-card class="account-card">
+  <mat-card-content>
+    <form [formGroup]="profileForm" (ngSubmit)="onSave()" class="account-form">
+
+      <!-- Profile Header -->
+      <section class="section profile-section">
+        <h2 class="section-title">My Account</h2>
+        <p class="section-subtitle">Manage your profile details and preferences.</p>
+
+        <div class="avatar-container">
+          <img [src]="avatarUrl" alt="Profile Picture" class="avatar" />
+          <label class="avatar-upload">
+            <input type="file" (change)="onAvatarChange($event)" accept="image/*" hidden />
+            <button mat-stroked-button color="primary" type="button">Change Photo</button>
+          </label>
+        </div>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Full Name -->
+      <section class="section">
+        <h2 class="section-title">Full Name</h2>
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="firstName" />
+            <mat-error>
+              <app-form-control-errors [control]="profileForm.get('firstName')"></app-form-control-errors>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Middle Name</mat-label>
+            <input matInput formControlName="middleName" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="lastName" />
+            <mat-error>
+              <app-form-control-errors [control]="profileForm.get('lastName')"></app-form-control-errors>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Account Info -->
+      <section class="section">
+        <h2 class="section-title">Account Information</h2>
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Username</mat-label>
+            <input matInput formControlName="username" />
+            <mat-error>
+              <app-form-control-errors [control]="profileForm.get('username')"></app-form-control-errors>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Email Address</mat-label>
+            <input matInput type="email" formControlName="emailAddress" />
+            <mat-error>
+              <app-form-control-errors [control]="profileForm.get('emailAddress')"></app-form-control-errors>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Mobile Number</mat-label>
+            <input matInput type="tel" formControlName="mobileNumber" />
+            <mat-error>
+              <app-form-control-errors [control]="profileForm.get('mobileNumber')"></app-form-control-errors>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Address Info -->
+      <section class="section" formGroupName="address">
+        <h2 class="section-title">Address</h2>
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Province</mat-label>
+            <input matInput formControlName="province" />
+            <mat-error>
+              <app-form-control-errors [control]="profileForm.get('address.province')"></app-form-control-errors>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Municipality</mat-label>
+            <input matInput formControlName="municipality" />
+            <mat-error>
+              <app-form-control-errors [control]="profileForm.get('address.municipality')"></app-form-control-errors>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Barangay</mat-label>
+            <input matInput formControlName="barangay" />
+            <mat-error>
+              <app-form-control-errors [control]="profileForm.get('address.barangay')"></app-form-control-errors>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Other Info -->
+      <section class="section">
+        <h2 class="section-title">Other Details</h2>
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Gender</mat-label>
+            <mat-select formControlName="gender">
+              <mat-option value="male">Male</mat-option>
+              <mat-option value="female">Female</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role">
+              <mat-option value="admin">Admin</mat-option>
+              <mat-option value="farmer">Farmer</mat-option>
+              <mat-option value="vet">Veterinarian</mat-option>
+              <mat-option value="technician">Technician</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>RSBSA Number</mat-label>
+            <input matInput formControlName="rsbsaNumber" />
+          </mat-form-field>
+        </div>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Buttons -->
+      <div class="button-group">
+        <button mat-raised-button color="primary" type="submit" [disabled]="!profileForm.valid || isLoading">
+          {{ isLoading ? 'Saving...' : 'Save Changes' }}
+        </button>
+        <button mat-stroked-button color="warn" type="button" (click)="cancelEdit()">Cancel</button>
+      </div>
+
+    </form>
+  </mat-card-content>
+</mat-card>

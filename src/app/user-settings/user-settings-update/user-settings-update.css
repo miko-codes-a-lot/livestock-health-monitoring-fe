@@ -1,26 +1,30 @@
+/* === CONTAINER === */
 .account-card {
   max-width: 900px;
   margin: 40px auto;
-  padding: 36px;
+  padding: 40px;
   border-radius: 20px;
   background: #fff;
-  box-shadow: 0 14px 32px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .account-card:hover {
-  box-shadow: 0 20px 48px rgba(0,0,0,0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12);
 }
 
+/* === SECTION TITLES === */
 .section {
-  margin: 28px 0;
+  margin: 32px 0;
 }
 
 .section-title {
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 600;
+  color: #303f9f;
   margin-bottom: 6px;
-  color: #3949ab;
+  letter-spacing: 0.3px;
 }
 
 .section-subtitle {
@@ -29,14 +33,16 @@
   margin-bottom: 18px;
 }
 
+/* === PROFILE === */
 .profile-section {
   text-align: center;
+  margin-bottom: 24px;
 }
 
 .profile-picture {
   display: flex;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .avatar {
@@ -44,19 +50,23 @@
   height: 110px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #3949ab;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 3px solid #3f51b5;
+  box-shadow: 0 4px 16px rgba(63, 81, 181, 0.2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .avatar:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 20px rgba(63, 81, 181, 0.3);
 }
 
 .default-avatar {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
   background: linear-gradient(135deg, #8e24aa, #d81b60);
   color: #fff;
   font-size: 38px;
@@ -71,6 +81,7 @@
   color: #616161;
 }
 
+/* === FORM GRID === */
 .form-grid {
   display: flex;
   flex-wrap: wrap;
@@ -79,6 +90,7 @@
 
 .field {
   flex: 1;
+  min-width: 240px;
 }
 
 .full-width {
@@ -89,13 +101,7 @@
   flex: 0 0 calc(50% - 10px);
 }
 
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
+/* === SCHEDULE === */
 .schedule {
   display: flex;
   flex-direction: column;
@@ -103,24 +109,32 @@
 }
 
 .hour-card {
-  padding: 16px;
+  padding: 18px;
   border-radius: 12px;
-  box-shadow: 0 2px 14px rgba(0,0,0,0.06);
-  background: #f9f9f9;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  background: #fafafa;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hour-card:hover {
+  background: #f5f5f5;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 .hour-grid {
   display: flex;
-  gap: 16px;
   flex-wrap: wrap;
+  gap: 16px;
 }
 
+/* === ERRORS === */
 .schedule-errors mat-error {
   display: block;
   font-size: 12px;
   color: #f44336;
 }
 
+/* === BUTTONS === */
 .button-group {
   display: flex;
   justify-content: flex-end;
@@ -134,11 +148,12 @@
   border-radius: 8px;
   font-weight: 500;
   padding: 10px 22px;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .save-btn:hover {
   background: linear-gradient(135deg, #1a237e, #0d1033);
+  transform: translateY(-2px);
 }
 
 .logout-btn {
@@ -147,13 +162,16 @@
   background-color: transparent;
   border-radius: 8px;
   padding: 10px 22px;
+  transition: all 0.2s ease;
 }
 
 .logout-btn:hover {
   background-color: #d32f2f;
   color: #fff;
+  transform: translateY(-2px);
 }
 
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
   .form-grid {
     flex-direction: column;
@@ -163,5 +181,11 @@
   }
   .profile-picture {
     flex-direction: column;
+  }
+  .account-card {
+    padding: 24px;
+  }
+  .section-title {
+    font-size: 20px;
   }
 }
