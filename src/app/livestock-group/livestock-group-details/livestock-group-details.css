@@ -1,37 +1,119 @@
-.photo-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.9);
+.details-container {
+  padding: 1.5rem;
   display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 1050;
-  cursor: pointer;
 }
 
-.text-capitalize {
-  text-transform: capitalize;
-}
-
-.livestock-list {
-  margin: 20px 0;
-}
-
-.livestock-list h3 {
-  font-weight: 500;
-  font-size: 1.1em;
-  margin-bottom: 12px;
-}
-
-.livestock-list table {
+.livestock-card {
   width: 100%;
+  max-width: 960px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.mat-column-tagNumber {
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fafafa;
+  padding: 1rem 1.5rem;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: #333;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-size: 1rem;
   font-weight: 500;
+  color: #333;
+}
+
+.status-chip {
+  text-transform: capitalize;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.status-chip.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-chip.verified {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-chip.rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.section-divider {
+  border-bottom: 1px solid #eee;
+  margin: 1.5rem 0;
+}
+
+.section-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: #444;
+}
+
+.photo-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.animal-photo {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.animal-photo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.clean-table th {
+  background-color: #fafafa;
+  font-weight: 600;
+}
+
+.clean-table td,
+.clean-table th {
+  padding: 10px 12px;
 }
 
 .empty-list-message {
@@ -39,23 +121,104 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 24px;
-  margin: 20px 0;
-  background-color: #f9f9f9;
-  border: 1px dashed #ddd;
+  padding: 20px;
+  margin-top: 16px;
+  background: #f9f9f9;
+  border: 1px dashed #ccc;
   border-radius: 8px;
   color: #666;
-  font-style: italic;
 }
 
-.clickable-link {
-  color: #3f51b5;
-  cursor: pointer;
-  text-decoration: none;
-  font-weight: 500;
-  transition: text-decoration 0.2s ease-in-out;
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #555;
 }
 
-.clickable-link:hover {
-  text-decoration: underline;
+.photo-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  cursor: zoom-out;
+  padding: 20px;
+}
+
+.full-screen-photo {
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  object-fit: contain;
+  transition: transform 0.3s ease-in-out;
+}
+
+.full-screen-photo:hover {
+  transform: scale(1.02);
+}
+
+/* Approval Buttons */
+/* Approval Buttons */
+.approval-buttons {
+  display: flex;
+  justify-content: center; /* center horizontally */
+  gap: 12px;               /* spacing between buttons */
+  padding: 1rem 1.5rem;
+  background: #fafafa;
+}
+
+.approval-buttons button {
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  text-transform: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Primary buttons (Approve / Submit) */
+.approval-buttons button[color='primary']:not(:disabled) {
+  background-color: #3f51b5 !important;
+  color: white !important;
+}
+
+.approval-buttons button[color='primary']:not(:disabled):hover {
+  background-color: #35469c !important;
+  transform: scale(1.03);
+}
+
+/* Warn button (Reject) - only red when enabled */
+.approval-buttons button[color='warn']:not(:disabled) {
+  background-color: #e53935 !important;
+  color: white !important;
+  border: none;
+}
+
+.approval-buttons button[color='warn']:not(:disabled):hover {
+  background-color: #d32f2f !important;
+  transform: scale(1.03);
+}
+
+/* Disabled buttons stay default grey */
+.approval-buttons button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+@media (max-width: 768px) {
+  .full-screen-photo {
+    max-width: 95vw;
+    max-height: 70vh;
+  }
 }

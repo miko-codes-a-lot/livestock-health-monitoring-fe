@@ -1,10 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { AuthService } from '../_shared/service/auth-service';
 import { AnalyticsService } from '../_shared/service/analytics-service';
+import { MortalityCause } from '../_shared/model/mortality-cause';
+import { MortalityCauseService } from '../_shared/service/mortality-cause-service';
 
 interface DashboardStats {
   totalLivestock: number;
@@ -82,6 +85,9 @@ export class Dashboard {
     healthRecordsThisMonth: 0
   };
 
+  mortalityCauses: MortalityCause[] = [];
+  
+
   farmerStats: FarmerStats = {
     myLivestock: 0,
     myClaims: 0,
@@ -95,6 +101,7 @@ export class Dashboard {
   constructor(
     private readonly authService: AuthService,
     private readonly analyticsService: AnalyticsService,
+    private readonly mortalityCauseService: MortalityCauseService,
   ) {}
 
   ngOnInit(): void {
@@ -130,9 +137,7 @@ export class Dashboard {
 
     this.analyticsService.getData().subscribe({
       next: data => {
-        console.log('Analytics data received:', data);
         this.analyticsData = data;
-
         // Update stats based on role
         if (this.role === 'farmer') {
           this.farmerStats = (data as FarmerAnalyticsData).stats;
@@ -159,16 +164,19 @@ export class Dashboard {
     this.charts.clear();
   }
 
-  private initializeCharts(): void {
+  private async initializeCharts(): Promise<any> {
     if (!this.analyticsData) return;
 
     if (this.role === 'admin' || this.role === 'technician') {
       const data = this.analyticsData as AdminAnalyticsData;
+      // fix here
+      const mortalityName = await this.getMortalityName(data.mortalityCauses);
+
       this.createLivestockBySpeciesChart(data.livestockBySpecies);
       this.createClaimsByStatusChart(data.claimsByStatus);
       this.createHealthRecordsTrendChart(data.monthlyHealthRecords);
       this.createBodyConditionChart(data.bodyConditions);
-      this.createMortalityCausesChart(data.mortalityCauses);
+      this.createMortalityCausesChart(mortalityName);
       this.createLivestockByLocationChart(data.livestockByLocation);
       this.createClaimsTrendChart(data.claimsTrend);
     } else if (this.role === 'farmer') {
@@ -178,6 +186,25 @@ export class Dashboard {
       this.createFarmerHealthTrendChart(data.monthlyHealthRecords);
       this.createFarmerInsuranceChart(data.insuranceCoverage);
     }
+  }
+
+  private async getMortalityName(mortalityCauses: any): Promise<any> {
+    if (!mortalityCauses || !Array.isArray(mortalityCauses.labels)) return;
+      try {
+        const causes = await firstValueFrom(this.mortalityCauseService.getAll());
+        const idToName = new Map<string, string>(
+          causes.map((c: any) => [ (c._id ?? c.id).toString(), c.label ])
+        );
+
+        mortalityCauses.labels = mortalityCauses.labels.map((id: string) =>
+          idToName.get(id) ?? id ?? 'Unknown'
+        );
+
+        return mortalityCauses; // ✅ return updated object
+      } catch (err) {
+        console.error('Failed to load mortality causes', err);
+        return mortalityCauses;
+      }
   }
 
   private createLivestockBySpeciesChart(chartData: ChartData): void {
@@ -299,7 +326,7 @@ export class Dashboard {
   private createMortalityCausesChart(chartData: ChartData): void {
     const canvas = document.getElementById('mortalityCausesChart') as HTMLCanvasElement;
     if (!canvas) return;
-
+    console.log('chartData', chartData)
     const config: ChartConfiguration = {
       type: 'bar',
       data: {

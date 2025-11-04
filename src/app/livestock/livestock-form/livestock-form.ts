@@ -214,7 +214,10 @@ export class LivestockForm implements OnInit {
     
     this.livestockGroupService.getAll().subscribe(groups => {
       this.filteredGroups = groups
-        .filter((b: any) => b.farmer?._id === farmerId)
+        .filter((b: any) => 
+          b.farmer?._id === farmerId && 
+          (b.status === 'draft' || b.status === 'rejected')
+        )
         .map((b: any) => ({
             _id: b._id,
             groupName: b.groupName 

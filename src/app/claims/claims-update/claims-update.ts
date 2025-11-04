@@ -61,6 +61,7 @@ export class ClaimsUpdate implements OnInit {
         error: (err) => {
           alert(err.error.message)
           console.error('Update failed', err);
+          this.isLoading = false;
           // alert(`Update failed: ${err.message || err}`);
         },
         complete: () => this.isLoading = false

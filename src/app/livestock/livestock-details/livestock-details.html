@@ -8,7 +8,7 @@
           (click)="onUpdate()"
           *ngIf="user?.role === 'farmer'"
           [disabled]="livestock.status === 'pending'
-          || livestock.status === 'approved'"
+          || livestock.status === 'verified'"
         >Update</button> 
       </mat-card-actions>
     </mat-card-header>

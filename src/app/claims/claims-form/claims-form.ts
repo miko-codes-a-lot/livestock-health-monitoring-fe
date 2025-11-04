@@ -55,6 +55,8 @@ export class ClaimsForm implements OnInit {
   filteredGroups: { _id: string; groupName: string }[] = [];
   selectedGroup: string | null = null;
 
+  private userLoaded = false;
+  private groupsLoaded = false;
 
   @Input()
   set initDoc(value: Claims) {
@@ -135,6 +137,7 @@ export class ClaimsForm implements OnInit {
       next: (u) => {
         if (u) {
           this.user = u
+          this.tryInitializeGroupSelection();
         }
       }
     })
@@ -242,7 +245,15 @@ export class ClaimsForm implements OnInit {
     // Show existing uploaded photos
     if (this.initDoc.evidencePhotos?.length) {
       this.existingPhotos = this.initDoc.evidencePhotos;
-      this.previewPhotos = [...this.existingPhotos];
+      this.claimsService.getProfilePictures(this.existingPhotos).subscribe({
+        next: (urls) => {
+          this.previewPhotos = urls;
+        },
+        error: (err) => {
+          console.error('Failed to load photo previews', err);
+          this.previewPhotos = [];
+        }
+      });
     }
   }
 
@@ -293,20 +304,34 @@ export class ClaimsForm implements OnInit {
 
   private loadLivestockGroups(): void {
     this.livestockGroupService.getAll().subscribe(groups => {
-      console.log('groups', groups)
-      console.log('l.farmer', this.user?._id)
       this.livestockGroups = groups
-      .filter((l: any) => l.farmer._id === this.user?._id)
+        .filter(
+          (l: any) => l.farmer._id === this.user?._id && l.status === 'verified'
+        )
         .map((l: any) => ({
-            _id: l._id,
-            groupName: l.groupName
+          _id: l._id,
+          groupName: l.groupName
         }));
 
-      console.log('livestockGroups', this.livestockGroups);
+      this.groupsLoaded = true;
+      this.tryInitializeGroupSelection();
     });
   }
 
-  
+  private tryInitializeGroupSelection(): void {
+    // Ensure both user and groups are loaded, and initDoc exists
+    if (!this.userLoaded || !this.groupsLoaded || !this._initDoc) return;
+
+    const animalObj = typeof this._initDoc.animal === 'object' && this._initDoc.animal !== null
+      ? (this._initDoc.animal as any)
+      : null;
+
+    if (animalObj?.livestockGroup) {
+      this.selectedGroup = animalObj.livestockGroup;
+      this.onLivestockGroupChange(animalObj.livestockGroup);
+    }
+  }
+
   onLivestockGroupChange(livestockGroupId: string) {
     if (!livestockGroupId) {
       this.filteredAnimals = [];
@@ -314,25 +339,26 @@ export class ClaimsForm implements OnInit {
       return;
     }
 
-    // this is what I need
+    // normalize object or string
+    const groupId = typeof livestockGroupId === 'object'
+      ? (livestockGroupId as any)._id
+      : livestockGroupId;
+
     this.livestockService.getAll().subscribe(livestocks => {
       this.filteredAnimals = livestocks
-        .filter((l: any) => l.livestockGroup === livestockGroupId)
+        .filter((l: any) => l.livestockGroup?._id === groupId || l.livestockGroup === groupId)
         .map((l: any) => ({
-            _id: l._id,
-            name: `${l.tagNumber} - ${l.breed.name} ${l.species.name}` 
+          _id: l._id,
+          name: `${l.tagNumber} - ${l.breed.name} ${l.species.name}`
         }));
-
 
       const currentAnimal = this.rxform.get('animal')?.value;
       if (!this.filteredAnimals.find(b => b._id === currentAnimal)) {
-          this.rxform.get('animal')?.patchValue('');
+        this.rxform.get('animal')?.patchValue('');
       }
 
-      this.loadInsurancePolicy(livestockGroupId, this.user?._id)
-
+      this.loadInsurancePolicy(groupId, this.user?._id);
     });
-    
   }
 
   // this is what i need

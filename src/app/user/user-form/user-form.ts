@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,7 +31,7 @@ import { AuthService } from '../../_shared/service/auth-service';
   templateUrl: './user-form.html',
   styleUrls: ['./user-form.css']
 })
-export class UserForm implements OnInit {
+export class UserForm implements OnInit, OnChanges {
   @Input() isLoading = false;
   @Input() user?: UserDto;
   @Input() addresses: AddressDto[] = []; // City/town list
@@ -68,6 +68,13 @@ export class UserForm implements OnInit {
       rsbsaNumber: ''
     };
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['addresses'] && this.user && this.user.address) {
+      // ✅ Only run when addresses are loaded & user is defined
+      this.autoSelectBarangay(this.user.address.municipality, this.user.address.barangay);
+    }
+  }
+
   ngOnInit(): void {
     
     // 1. Get the logged-in user's role FIRST
@@ -76,6 +83,7 @@ export class UserForm implements OnInit {
           if (u) {
             // 💡 FIX: Store the role in the new property, NOT this.user
             this.loggedInUserRole = u.role;
+            // this.autoSelectBarangay(u.address.municipality, u.address.barangay);
           }
           this.setAvailableRoles(); 
         }
@@ -83,7 +91,6 @@ export class UserForm implements OnInit {
 
       if (this.user?.role === 'farmer') { // Check if the user being edited is a farmer
         this.isRoleFarmer = true;
-        // ... rest of farmer specific logic (rsbsaNumber control)
       }
 
     this.initializeForm();
@@ -107,39 +114,53 @@ export class UserForm implements OnInit {
       }
   }
 
-      private setAvailableRoles(): void {
-          type RoleOption = { 
-              value: 'admin' | 'farmer' | 'technician', 
-              label: string 
-          };
-          const allRoles: RoleOption[] = [
-              { value: 'admin', label: 'Admin' },
-              { value: 'technician', label: 'Technician' },
-              { value: 'farmer', label: 'Farmer' }
-          ];
+  autoSelectBarangay(municipalityName: string, barangayName: string) {
+    // Find the municipality in the address list
+    const municipality = this.addresses.find(a => a.name === municipalityName);
+    if (municipality) {
+      // Populate barangay dropdown
+      this.barangays = municipality.children || [];
 
-          // Check the role of the LOGGED-IN user
-          if (this.loggedInUserRole === 'technician') { // 💡 FIX IS HERE
-              this.availableRoles = allRoles.filter(role => role.value === 'farmer');
-              
-              // Auto-select 'farmer' and disable the dropdown if in CREATE mode (no user being edited)
-              if (!this.user) { // Check if @Input() user is NOT defined (i.e., Create Mode)
-                  this.rxform.controls.role.setValue('farmer');
-                  this.rxform.controls.role.disable(); // Technician can only create a farmer
-              } else {
-                  // If editing, technician can view the current role, but cannot change it 
-                  // unless the current role is already 'farmer' (and you'll likely want to disable change anyway)
-                  this.rxform.controls.role.disable();
-              }
+      // Wait a tick to ensure form controls are ready before setting barangay
+      setTimeout(() => {
+        this.rxform.get('address.barangay')?.setValue(barangayName);
+      });
+    }
+  }
 
-          } else if (this.loggedInUserRole === 'admin') { // 💡 FIX IS HERE
-              this.availableRoles = allRoles;
-              this.rxform.controls.role.enable(); // Admins can change roles
+  private setAvailableRoles(): void {
+      type RoleOption = { 
+          value: 'admin' | 'farmer' | 'technician', 
+          label: string 
+      };
+      const allRoles: RoleOption[] = [
+          { value: 'admin', label: 'Admin' },
+          { value: 'technician', label: 'Technician' },
+          { value: 'farmer', label: 'Farmer' }
+      ];
+
+      // Check the role of the LOGGED-IN user
+      if (this.loggedInUserRole === 'technician') { // 💡 FIX IS HERE
+          this.availableRoles = allRoles.filter(role => role.value === 'farmer');
+          
+          // Auto-select 'farmer' and disable the dropdown if in CREATE mode (no user being edited)
+          if (!this.user) { // Check if @Input() user is NOT defined (i.e., Create Mode)
+              this.rxform.controls.role.setValue('farmer');
+              this.rxform.controls.role.disable(); // Technician can only create a farmer
           } else {
-              // ... (other roles or default)
-              this.availableRoles = allRoles;
+              // If editing, technician can view the current role, but cannot change it 
+              // unless the current role is already 'farmer' (and you'll likely want to disable change anyway)
+              this.rxform.controls.role.disable();
           }
+
+      } else if (this.loggedInUserRole === 'admin') { // 💡 FIX IS HERE
+          this.availableRoles = allRoles;
+          this.rxform.controls.role.enable(); // Admins can change roles
+      } else {
+          // ... (other roles or default)
+          this.availableRoles = allRoles;
       }
+  }
 
   private initializeForm(): void {
     // const u: UserDto = this.user ?? {

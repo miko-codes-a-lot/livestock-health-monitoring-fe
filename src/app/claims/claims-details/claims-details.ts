@@ -16,6 +16,10 @@ import { LivestockClassificationService } from '../../_shared/service/livestock-
 import { AuthService } from '../../_shared/service/auth-service';
 import { MatIconModule } from '@angular/material/icon';
 import { UserDto } from '../../_shared/model/user-dto';
+import { MortalityCauseService } from '../../_shared/service/mortality-cause-service';
+import { firstValueFrom } from 'rxjs';
+
+
 
 @Component({
   selector: 'app-claims-details',
@@ -41,6 +45,8 @@ export class ClaimsDetails implements OnInit {
   animalTag: string | null = null;
   policy: string | null = null;
   photoUrls?: string[] = [];
+  causeOfDeathCategoryLabel: string = ''
+  causeOfDeathLabel: string = ''
 
   fullScreenPhotoUrl: string | null = null;
   user: UserDto | null = null; 
@@ -55,6 +61,7 @@ export class ClaimsDetails implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly authService: AuthService,
+    private readonly mortalityCauseService: MortalityCauseService,
   ) {}
 
   ngOnInit(): void {
@@ -73,6 +80,7 @@ export class ClaimsDetails implements OnInit {
       next: (claims) => {
         this.claims = claims;
         // Farmer
+        this.convertMortalityLabels(this.claims)
         if (claims.farmer) {
           let farmerId: string;
 
@@ -125,6 +133,31 @@ export class ClaimsDetails implements OnInit {
       },
       error: (err) => alert(`Something went wrong: ${err}`),
     }).add(() => (this.isLoading = false));
+  }
+
+  private async convertMortalityLabels(claim: any): Promise<any> {
+    try {
+      const causesList = await firstValueFrom(this.mortalityCauseService.getAll());
+
+      // Map each category _id → items (list of sub-causes)
+      const categoryMap = new Map<string, any>();
+      for (const cause of causesList) {
+        if(cause._id){
+          categoryMap.set((cause._id).toString(), cause);
+        }
+      }
+
+      // Convert causeOfDeathCategory (id → label)
+      const category = categoryMap.get(claim.causeOfDeathCategory);
+
+      this.causeOfDeathCategoryLabel = category ? category.label : 'Unknown Category';
+      // Convert causeOfDeath (value → label)
+      const causeItem = category?.items?.find((item: any) => item.value === claim.causeOfDeath);
+      this.causeOfDeathLabel = causeItem ? causeItem.label : 'Unknown Cause';
+
+    } catch (error) {
+      console.error('Error converting mortality labels:', error);
+    }
   }
 
   getField(field: any, prop: string): any {

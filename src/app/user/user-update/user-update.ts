@@ -46,7 +46,10 @@ export class UserUpdate {
 
   onSubmit(user: UserDto) {
     this.userService.update(this.id, user).subscribe({
-      next: data => this.router.navigate(['/user/details', data._id], { replaceUrl: true }),
+      next: data => {
+        alert('User Successfully Updated!');
+        this.router.navigate(['/user/details', data._id], { replaceUrl: true })
+      },
       error: err => console.log(`Something went wrong: ${err}`)
     })
   }

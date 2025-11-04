@@ -52,7 +52,7 @@ export class UserSettingsIndex implements OnInit {
       next: (user) => {
         if (user) {
           this.user = user;
-          // if (user.profilePicture) this.loadProfilePicture(user._id!);
+          if (user.profilePicture) this.loadProfilePicture(user._id!);
         }
       },
     });
@@ -73,13 +73,14 @@ export class UserSettingsIndex implements OnInit {
 
   /** Loads the user's actual avatar image from backend */
   loadProfilePicture(userId: string): void {
-    // this.userService.getProfilePicture(userId).subscribe({
-    //   next: (url) => {
-    //     this.avatarUrl = url;
-    //     this.cdr.detectChanges();
-    //   },
-    //   error: () => (this.avatarUrl = null),
-    // });
+    this.userService.getProfilePicture(userId).subscribe({
+      next: (url) => {
+        this.avatarUrl = url;
+        console.log('this.avatarUrl', this.avatarUrl)
+        this.cdr.detectChanges();
+      },
+      error: () => (this.avatarUrl = null),
+    });
   }
 
   /** Preview and select avatar file */
@@ -102,18 +103,18 @@ export class UserSettingsIndex implements OnInit {
     if (!this.selectedFile || !this.user?._id) return;
     this.isLoading = true;
 
-    // this.userService.uploadProfilePicture(this.user._id, this.selectedFile).subscribe({
-    //   next: () => {
-    //     alert('✅ Profile picture updated successfully!');
-    //     this.closeAvatarModal();
-    //     this.isLoading = false;
-    //   },
-    //   error: (err) => {
-    //     console.error('Upload failed', err);
-    //     alert('❌ Failed to upload profile picture.');
-    //     this.isLoading = false;
-    //   },
-    // });
+    this.userService.uploadProfilePicture(this.user._id, this.selectedFile).subscribe({
+      next: () => {
+        alert('Profile picture updated successfully!');
+        this.closeAvatarModal();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Upload failed', err);
+        alert('Failed to upload profile picture.');
+        this.isLoading = false;
+      },
+    });
   }
 
   /** Redirects to edit page */

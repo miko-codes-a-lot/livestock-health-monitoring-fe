@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError, map } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { UserDto } from '../model/user-dto';
 import { HttpClient } from '@angular/common/http';
 
@@ -129,6 +130,28 @@ export class UserService {
 
   createPublic(user: UserDto): Observable<UserDto> {
     return this.http.post<UserDto>(`${this.baseUrl}/register`, user);
+  }
+
+  uploadProfilePicture(userId: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    const url = `${this.baseUrl}/${userId}/pictures`;
+
+    return this.http.put(url, formData, { withCredentials: true }).pipe(
+      catchError((error) => {
+        console.error('Upload failed', error); // logs any failure
+        return throwError(() => error);        // rethrow to the component
+      })
+    );
+  }
+
+  getProfilePicture(userId: string): Observable<string> {
+    const url = `${this.baseUrl}/${userId}/picture`;
+
+    return this.http.get(url, { responseType: 'blob', withCredentials: true }).pipe(
+      map(blob => URL.createObjectURL(blob))
+    );
   }
 
   // update(id: string, user: UserDto): Observable<UserDto> {

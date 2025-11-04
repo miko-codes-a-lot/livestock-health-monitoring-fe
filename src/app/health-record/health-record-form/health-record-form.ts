@@ -43,6 +43,7 @@ export class HealthRecordForm implements OnInit {
   @Input()
   set initDoc(value: HealthRecord) {
     this._initDoc = value;
+    console.log('this._initDoc = value;', this._initDoc)
     if (this.rxform && value) {
       // run fetch from animal
       this.tryPatchForm();
@@ -180,10 +181,12 @@ export class HealthRecordForm implements OnInit {
 
     this.livestockGroupService.getAll().subscribe(groups => {
       this.filteredGroups = groups
-        .filter((b: any) => b.farmer?._id === farmerId)
+        .filter((b: any) => 
+          b.farmer?._id === farmerId && b.status === 'verified'
+        )
         .map((b: any) => ({
-            _id: b._id,
-            name: b.groupName 
+          _id: b._id,
+          name: b.groupName
         }));
       
       this.rxform.get('livestockGroup')?.value;
@@ -232,7 +235,8 @@ export class HealthRecordForm implements OnInit {
       symptomsObserved: value.symptomsObserved || '',
       notes: value.notes || '',
       treatmentGiven: value.treatmentGiven || '',
-      technician: value.technician?._id || value.technician || ''
+      technician: value.technician?._id || value.technician || '',
+      vitaminsAdministered: value.vitaminsAdministered || ''
     });
   }
 
@@ -285,7 +289,6 @@ export class HealthRecordForm implements OnInit {
     if (!this._initDoc || this.animals.length === 0 || this.technicians.length === 0) return;
 
     const patchData: any = { ...this._initDoc };
-
     // Handle animal object or ID
     patchData.animal =
       patchData.animal && typeof patchData.animal === 'object' && '_id' in patchData.animal

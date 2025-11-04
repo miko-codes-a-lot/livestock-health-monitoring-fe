@@ -16,5 +16,6 @@ export interface UserDto {
   role: 'admin' | 'farmer' | 'vet' |'technician',
   rsbsaNumber?: string,
   updatedAt?: string,
-  createdAt?: string
+  createdAt?: string,
+  profilePicture?: string
 }

@@ -148,7 +148,9 @@ export class InsurancePolicyForm implements OnInit {
 
     this.livestockGroupService.getAll().subscribe(groups => {
       this.filteredGroups = groups
-        .filter((b: any) => b.farmer?._id === farmerId)
+        .filter(
+          (b: any) => b.farmer?._id === farmerId && b.status === 'verified'
+        )
         .map((b: any) => ({
             _id: b._id,
             name: b.groupName 
