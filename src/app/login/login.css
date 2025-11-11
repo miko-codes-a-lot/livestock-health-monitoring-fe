@@ -3,74 +3,106 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #3f51b5, #1a237e);
-  font-family: Arial, sans-serif;
+  background: #55B047;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
 .login-card {
-  background: white;
-  padding: 30px 40px;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  background: #fff;
+  padding: 40px 45px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   width: 360px;
   text-align: center;
+  color: #333;
+}
+
+.login-logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 20px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  filter: drop-shadow(0 3px 6px rgba(75, 46, 25, 0.4));
 }
 
 .login-card h2 {
   margin-bottom: 20px;
-  color: #3f51b5;
+  color: #4B2E19;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   text-align: left;
 }
 
 label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #333;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #4B2E19;
 }
 
 input {
-  width: 100%;
-  padding: 10px 12px;
+  width: 96%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 14px;
-  transition: border-color 0.3s;
+  background: #fff;
+  color: #333;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 input:focus {
-  border-color: #3f51b5;
+  border-color: #55B047;
+  box-shadow: 0 0 6px rgba(85, 176, 71, 0.4);
   outline: none;
 }
 
 button {
   width: 100%;
   padding: 12px;
-  background: #3f51b5;
-  color: white;
+  background: #55B047;
+  color: #fff;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 600;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, transform 0.2s;
 }
 
 button:hover:enabled {
-  background: #2c387e;
+  background: #4aa43c;
+  transform: translateY(-2px);
 }
 
 button:disabled {
-  background: #9fa8da;
+  background: #a9d89b;
   cursor: not-allowed;
 }
 
 .error-message {
-  color: red;
-  margin: 8px 0;
+  color: #c62828;
+  margin: 10px 0;
   font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Optional subtle green shadow on the card */
+.login-card:hover {
+  box-shadow: 0 8px 22px rgba(85, 176, 71, 0.3);
+}
+
+@media (max-width: 400px) {
+  .login-card {
+    width: 90%;
+    padding: 30px 25px;
+  }
 }

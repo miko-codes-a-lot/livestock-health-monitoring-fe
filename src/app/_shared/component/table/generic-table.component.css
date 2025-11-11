@@ -1,3 +1,12 @@
+:root {
+  --my-green: #55B047;
+  --my-light-green: #6EDE5D;
+  --my-light-brown: #695140;
+  --my-dark-brown: #4B2E19;
+  --my-lighter-brown: #7B4B27;
+}
+
+/* === PAGE CONTAINER === */
 .page-container {
   padding: 2rem;
   margin: 0 auto;
@@ -9,61 +18,68 @@
   margin-bottom: 16px;
   font-size: 1.8rem;
   font-weight: 600;
-  color: #333;
+  color: #4B2E19; /* darker brown text */
 }
 
-.actions {
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: flex-start;
-  gap: 0.5rem;
-}
 
-mat-form-field {
-  width: 100%;
-  margin-bottom: 16px;
-}
-
+/* === TABLE === */
 .user-table-container {
   overflow-x: auto;
   border-radius: 8px;
   background-color: #fff;
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   padding: 1rem;
 }
 
-.custom-table {
+.user-table-container table.custom-table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0 8px; /* space between rows */
+  border-spacing: 0 8px;
 }
 
-.mat-header-cell {
+.user-table-container .mat-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--light-brown);
+  color: #fff;
+}
+
+.user-table-container .mat-header-cell {
   font-weight: 600;
-  color: #555;
-  background-color: #f5f5f5;
   padding: 12px 16px;
   border-bottom: none;
 }
 
-.mat-cell {
+.user-table-container .mat-cell {
   padding: 12px 16px;
-  color: #333;
+  color: var(--dark-brown);
 }
 
-.mat-row {
-  transition: background-color 0.2s;
-  cursor: default;
+.user-table-container .mat-row:hover {
+  background-color: rgba(110, 222, 93, 0.1);
 }
 
-.mat-row:hover {
-  background-color: #f0f4ff;
+.user-table-container a {
+  text-decoration: none;
+  transition: all 0.2s;
 }
 
-button.mat-raised-button {
-  min-width: 90px;
+.user-table-container a.message-link {
+  color: var(--dark-brown);
+  font-weight: 500;
 }
 
+.user-table-container a:hover {
+  text-decoration: underline;
+}
+
+/* === PAGINATOR === */
+.mat-paginator {
+  color: var(--dark-brown);
+}
+
+/* === SPINNER === */
 .spinner-container {
   display: flex;
   justify-content: center;
@@ -74,39 +90,21 @@ button.mat-raised-button {
   padding: 1rem;
 }
 
-/* Paginator styling */
-mat-paginator {
-  margin-top: 16px;
+/* Default state */
+button.mat-raised-button {
+  background-color: var(--green) !important;
+  color: #fff !important; /* ensure white text */
+  border-radius: 6px;
+  font-weight: 500;
+  text-transform: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* Sticky header */
-.mat-header-row {
-  position: sticky;
-  top: 0;
-  z-index: 10;
+/* === ACTION BUTTONS === */
+.actions {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.5rem;
 }
-
-/* Links in cells */
-.user-table-container a {
-  color: #1976d2;
-  text-decoration: none;
-}
-
-.user-table-container a:hover {
-  text-decoration: underline;
-}
-.user-table-container td a.message-link {
-  color: #000;
-  font-weight: 500;      
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.user-table-container td a.message-link:hover {
-  text-decoration: underline;  
-  text-underline-offset: 2px;
-  text-decoration-thickness: 1px;
-}
-
 

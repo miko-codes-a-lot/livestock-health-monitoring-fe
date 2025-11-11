@@ -1,6 +1,8 @@
 <div class="login-container">
   <div class="login-card">
-    <h2>Livestock Health Monitoring</h2>
+    <img src="assets/images/logo.png" alt="logo" class="login-logo">
+
+    <!-- <h2>Livestock Health Monitoring</h2> -->
     <form [formGroup]="rxform" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="username">Username</label>
@@ -12,7 +14,6 @@
         <input type="password" placeholder="Enter password" formControlName="password">
       </div>
 
-      <!-- Error message -->
       <div *ngIf="errorMessage" class="error-message">
         {{ errorMessage }}
       </div>

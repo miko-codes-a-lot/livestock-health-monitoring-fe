@@ -2,6 +2,7 @@
 .example-container {
   height: 100vh;
   width: 100%;
+  font-family: 'Roboto', sans-serif;
 }
 
 /* === TOP NAVIGATION === */
@@ -14,8 +15,7 @@
   justify-content: space-between;
   padding: 0 1rem;
   height: 64px;
-  font-family: 'Roboto', sans-serif;
-  background-color: #1976d2;
+  background-color: #55B047; /* primary green */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -25,13 +25,14 @@
   align-items: center;
   font-size: 1.25rem;
   font-weight: 500;
-  color: #fff;
+  color: #fff; /* white text */
   transition: opacity 0.3s ease;
 }
 
 .dashboard-title .title-icon {
   margin-right: 0.5rem;
   font-size: 1.6rem;
+  color: #fff; /* white text */
 }
 
 .dashboard-title:hover {
@@ -56,13 +57,75 @@
 /* === SIDEBAR === */
 mat-drawer {
   width: 250px;
+  background-color: #fff;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.05);
+}
+
+/* Sidebar toolbar */
+.sidebar-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  height: 140px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Sidebar logo */
+.sidebar-logo {
+  width: 90px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.sidebar-logo:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* === SIDENAV LINKS === */
+.nav-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  color: #4B2E19; /* dark brown text */
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 8px;
+}
+
+.nav-link:hover {
+  background-color: #6EDE5D; /* lighter green hover */
+  color: #4B2E19;
+  cursor: pointer;
+}
+
+.nav-link.active {
+  background-color: #55B047; /* primary green active */
+  color: #fff;
+  font-weight: bold;
+}
+
+.nav-icon {
+  margin-right: 12px;
+  font-size: 20px;
 }
 
 /* === USER DROPDOWN BUTTON === */
 .user-button {
   display: flex;
   align-items: center;
-  color: #fff;
+  color: #4B2E19; /* dark brown */
   text-transform: none;
   border-radius: 50px;
   padding: 0.25rem 0.75rem;
@@ -70,7 +133,7 @@ mat-drawer {
 }
 
 .user-button:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(85, 176, 71, 0.15); /* translucent green hover */
   transform: translateY(-1px);
 }
 
@@ -78,7 +141,7 @@ mat-drawer {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(75, 46, 25, 0.15); /* translucent brown */
   border-radius: 50%;
   width: 36px;
   height: 36px;
@@ -86,13 +149,13 @@ mat-drawer {
 }
 
 .user-avatar mat-icon {
-  color: #fff;
+  color: #4B2E19; /* brown icon */
   font-size: 26px;
 }
 
 .dropdown-arrow {
   font-size: 22px;
-  color: #fff;
+  color: #4B2E19; /* brown */
   margin-left: 2px;
 }
 
@@ -107,7 +170,6 @@ mat-drawer {
   animation: fadeInMenu 0.2s ease-in-out;
 }
 
-/* Fade-in animation for menu */
 @keyframes fadeInMenu {
   from {
     opacity: 0;
@@ -119,12 +181,12 @@ mat-drawer {
   }
 }
 
-/* Header */
+/* User menu header */
 .user-menu .menu-header {
   display: flex;
   align-items: center;
   padding: 14px 16px;
-  background: linear-gradient(135deg, #1976d2, #2196f3);
+  background: linear-gradient(135deg, #55B047, #4B2E19); /* green to brown gradient */
   color: #fff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
@@ -152,4 +214,12 @@ mat-drawer {
 
 .user-menu .menu-info {
   display: flex;
+}
+
+.user-avatar mat-icon {
+  color: #fff; /* makes icon white */
+}
+
+.dropdown-arrow {
+  color: #fff; /* makes icon white */
 }
