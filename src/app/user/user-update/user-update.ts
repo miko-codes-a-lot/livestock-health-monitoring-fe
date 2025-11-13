@@ -50,7 +50,10 @@ export class UserUpdate {
         alert('User Successfully Updated!');
         this.router.navigate(['/user/details', data._id], { replaceUrl: true })
       },
-      error: err => console.log(`Something went wrong: ${err}`)
+      error: err => {
+        alert(err.error.message)
+        console.log(`Something went wrong: ${err}`)
+      }
     })
   }
 }

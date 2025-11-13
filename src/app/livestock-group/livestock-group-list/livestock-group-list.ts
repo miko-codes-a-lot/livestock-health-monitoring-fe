@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +11,11 @@ import { UserDto } from '../../_shared/model/user-dto';
 import { AuthService } from '../../_shared/service/auth-service';
 import { GenericTableComponent } from '../../_shared/component/table/generic-table.component';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
+import { configureTable } from '../../utils/table/configure-table';
+
+
 
 
 @Component({
@@ -34,11 +39,19 @@ export class LivestockGroupList implements OnInit {
   dataSource = new MatTableDataSource<LivestockGroup>();
 
   // Table config
-  displayedColumns = ['groupName', 'status', 'actions'];
+  displayedColumns = ['groupName', 'farmer.address.barangay', 'status', 'actions'];
   columnDefs = [
     { key: 'groupName', label: 'Group Name' },
+    {
+      key: 'farmer.address.barangay',
+      label: 'Barangay',
+      cell: (element: any) => element.farmer?.address.barangay || '—'
+    },
     { key: 'status', label: 'Status' },
   ];
+
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private readonly livestockGroupService: LivestockGroupService,
@@ -62,12 +75,25 @@ export class LivestockGroupList implements OnInit {
         } else {
           filteredGroups = groups.filter(lg => lg.status !== 'draft');
         }
-
-        this.dataSource.data = filteredGroups;  // ✅ set MatTableDataSource data
+        
+        this.dataSource.data = filteredGroups;
       },
       error: (err) => alert(`Something went wrong: ${err}`),
     }).add(() => this.isLoading = false);
   }
+
+  ngAfterViewInit() {
+    // sorting & filtering for nested fields
+    configureTable(this.dataSource, ['farmer.address.barangay'])
+  }
+
+  /**
+   * Helper to safely get nested values from an object using a path like "farmer.address.barangay"
+   */
+  private getNestedValue(obj: any, path: string): any {
+    return path.split('.').reduce((value, key) => value?.[key], obj);
+  }
+
   onCreate() {
     this.router.navigate(['/livestock-group/create']);
   }

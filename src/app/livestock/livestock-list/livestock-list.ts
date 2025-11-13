@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ComponentFactoryResolver, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -11,7 +11,9 @@ import { AuthService } from '../../_shared/service/auth-service';
 import { GenericTableComponent } from '../../_shared/component/table/generic-table.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
+import { configureTable } from '../../utils/table/configure-table';
 
 interface ColumnDef<T> {
   key: string;
@@ -40,17 +42,22 @@ export class LivestockList implements OnInit {
   columnDefs: ColumnDef<Livestock>[] = [
     { key: 'tagNumber', label: 'Tag Number' },
     { 
-      key: 'species', 
+      key: 'species.name',   
       label: 'Species', 
-      cell: (e) => typeof e.species === 'string' ? e.species : (e.species as any).name || 'N/A'
+      cell: (element: any) => element.species.name || '—'
     },
     { 
-      key: 'breed', 
+      key: 'breed.name', 
       label: 'Breed', 
-      cell: (e) => typeof e.breed === 'string' ? e.breed : (e.breed as any).name || 'N/A'
+      cell: (element: any) => element.breed.name || '—'
     },
     { key: 'sex', label: 'Sex' },
     { key: 'age', label: 'Age' },
+    {
+      key: 'farmer.address.barangay',
+      label: 'Barangay',
+      cell: (element: any) => element.farmer?.address.barangay || '—'
+    },
     { key: 'status', label: 'Status' },
   ];
 
@@ -62,6 +69,9 @@ export class LivestockList implements OnInit {
     private readonly authService: AuthService
   ) {}
 
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   ngOnInit() {
     this.isLoading = true;
 
@@ -72,7 +82,7 @@ export class LivestockList implements OnInit {
         let filtered: Livestock[];
         if (this.user?.role === 'farmer') {
           filtered = livestock.filter(
-            l => l.farmer === this.user?._id // farmer is string now
+            l => this.getFarmerId(l.farmer) === this.user?._id
           );
         } else {
           filtered = livestock.filter(l => l.status !== 'draft');
@@ -81,6 +91,16 @@ export class LivestockList implements OnInit {
       },
       error: (err) => alert(`Something went wrong: ${err}`)
     }).add(() => (this.isLoading = false));
+  }
+
+  ngAfterViewInit() {
+    // sorting & filtering for nested fields
+    configureTable(this.dataSource, ['farmer.address.barangay', 'species.name', 'breed.name'])
+  }
+
+
+  getFarmerId(farmer: string | { _id: string }) {
+    return typeof farmer === 'string' ? farmer : farmer._id;
   }
 
   // Event handlers for GenericTableComponent

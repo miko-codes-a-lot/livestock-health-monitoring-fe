@@ -13,7 +13,7 @@ import { AddressDto } from '../../_shared/model/address-dto';
 import { applyPHMobilePrefix } from '../../utils/forms/form-custom-format';
 import { passwordMatchValidator } from '../../utils/forms/form-custom-validator';
 import { AuthService } from '../../_shared/service/auth-service';
-
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-user-form',
@@ -26,7 +26,8 @@ import { AuthService } from '../../_shared/service/auth-service';
     MatSelectModule,
     MatButtonModule,
     MatCardModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatIconModule,
   ],
   templateUrl: './user-form.html',
   styleUrls: ['./user-form.css']
@@ -40,6 +41,9 @@ export class UserForm implements OnInit, OnChanges {
   availableRoles: Array<{ value: 'admin' | 'farmer' | 'technician', label: string }> = [];
 
   loggedInUserRole: 'admin' | 'farmer' | 'vet' | 'technician' = 'admin';
+
+  hidePassword = true;
+  hideConfirmPassword = true;
 
   barangays: AddressDto[] = [];
   municipalities: AddressDto[] = [];
@@ -78,40 +82,44 @@ export class UserForm implements OnInit, OnChanges {
   ngOnInit(): void {
     
     // 1. Get the logged-in user's role FIRST
-      this.authService.currentUser$.subscribe({
-        next: (u) => {
-          if (u) {
-            // 💡 FIX: Store the role in the new property, NOT this.user
-            this.loggedInUserRole = u.role;
-            // this.autoSelectBarangay(u.address.municipality, u.address.barangay);
-          }
-          this.setAvailableRoles(); 
+    this.authService.currentUser$.subscribe({
+      next: (u) => {
+        if (u) {
+          // 💡 FIX: Store the role in the new property, NOT this.user
+          this.loggedInUserRole = u.role;
+          // this.autoSelectBarangay(u.address.municipality, u.address.barangay);
         }
-      });
-
-      if (this.user?.role === 'farmer') { // Check if the user being edited is a farmer
-        this.isRoleFarmer = true;
+        this.setAvailableRoles();
       }
+    });
+
+     // Check if the user being edited is a farmer
+    if (this.user?.role === 'farmer') {
+      this.isRoleFarmer = true;
+
+    }
 
     this.initializeForm();
     this.setAvailableRoles();
-     if (this.user) {
+    this.addRsbsaNumber();
+  }
+
+  addRsbsaNumber () {
+    if (this.user) {
       this.rxform.patchValue(this.user);
+      // Check if the role is 'farmer'
+      if (this.user.role === 'farmer') {
+        this.isRoleFarmer = true;
 
-        // Check if the role is 'farmer'
-        if (this.user.role === 'farmer') {
-          this.isRoleFarmer = true;
-
-          // Add rsbsaNumber control if it doesn't exist yet
-          if (!this.rxform.get('rsbsaNumber')) {
-            (this.rxform as FormGroup<any>).addControl(
-              'rsbsaNumber',
-              this.fb.control(this.user.rsbsaNumber || '', Validators.required)
-            );
-          }
+        // Add rsbsaNumber control if it doesn't exist yet
+        if (!this.rxform.get('rsbsaNumber')) {
+          (this.rxform as FormGroup<any>).addControl(
+            'rsbsaNumber',
+            this.fb.control(this.user.rsbsaNumber || '', Validators.required)
+          );
         }
-
       }
+    }
   }
 
   autoSelectBarangay(municipalityName: string, barangayName: string) {
@@ -142,7 +150,6 @@ export class UserForm implements OnInit, OnChanges {
       // Check the role of the LOGGED-IN user
       if (this.loggedInUserRole === 'technician') { // 💡 FIX IS HERE
           this.availableRoles = allRoles.filter(role => role.value === 'farmer');
-          
           // Auto-select 'farmer' and disable the dropdown if in CREATE mode (no user being edited)
           if (!this.user) { // Check if @Input() user is NOT defined (i.e., Create Mode)
               this.rxform.controls.role.setValue('farmer');

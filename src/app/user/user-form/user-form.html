@@ -49,15 +49,41 @@
           @if (!user?._id) {
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Password</mat-label>
-              <input matInput formControlName="password" type="password" />
+              <input
+                matInput
+                formControlName="password"
+                [type]="hidePassword ? 'password' : 'text'"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hidePassword = !hidePassword"
+                [attr.aria-label]="'Toggle password visibility'"
+              >
+                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
               <mat-error *ngIf="rxform.get('password')?.hasError('required')">
                 Password is required.
               </mat-error>
             </mat-form-field>
-
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Confirm Password</mat-label>
-              <input matInput formControlName="passwordConfirm" type="password" />
+              <input matInput
+                formControlName="passwordConfirm"
+                type="password"
+                [type]="hideConfirmPassword ? 'password' : 'text'"  
+              />
+
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hideConfirmPassword = !hideConfirmPassword"
+                [attr.aria-label]="'Toggle password visibility'"
+              >
+                <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
               <mat-error
                 *ngIf="
                   rxform.get('passwordConfirm')?.touched &&
@@ -154,7 +180,7 @@
               <mat-label>RSBSA Number</mat-label>
               <input matInput formControlName="rsbsaNumber" type="text" />
               <mat-error *ngIf="rxform.get('rsbsaNumber')?.hasError('required')">
-                Email is required.
+                RSBSA is required.
               </mat-error>
             </mat-form-field>
           </div>
