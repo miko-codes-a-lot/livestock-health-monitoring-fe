@@ -96,7 +96,6 @@ export class UserForm implements OnInit, OnChanges {
      // Check if the user being edited is a farmer
     if (this.user?.role === 'farmer') {
       this.isRoleFarmer = true;
-
     }
 
     this.initializeForm();
@@ -110,12 +109,11 @@ export class UserForm implements OnInit, OnChanges {
       // Check if the role is 'farmer'
       if (this.user.role === 'farmer') {
         this.isRoleFarmer = true;
-
         // Add rsbsaNumber control if it doesn't exist yet
         if (!this.rxform.get('rsbsaNumber')) {
           (this.rxform as FormGroup<any>).addControl(
             'rsbsaNumber',
-            this.fb.control(this.user.rsbsaNumber || '', Validators.required)
+            this.fb?.control(this.user.rsbsaNumber || '', Validators.required)
           );
         }
       }
@@ -150,6 +148,14 @@ export class UserForm implements OnInit, OnChanges {
       // Check the role of the LOGGED-IN user
       if (this.loggedInUserRole === 'technician') { // 💡 FIX IS HERE
           this.availableRoles = allRoles.filter(role => role.value === 'farmer');
+            this.isRoleFarmer = true
+
+            if (!this.rxform.get('rsbsaNumber')) {
+              (this.rxform as FormGroup<any>).addControl(
+                'rsbsaNumber',
+                this.fb.control(this.u.rsbsaNumber || '', Validators.required)
+              );
+            }
           // Auto-select 'farmer' and disable the dropdown if in CREATE mode (no user being edited)
           if (!this.user) { // Check if @Input() user is NOT defined (i.e., Create Mode)
               this.rxform.controls.role.setValue('farmer');
