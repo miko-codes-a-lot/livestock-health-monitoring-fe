@@ -164,3 +164,62 @@ h3 {
     grid-template-columns: 1fr;
   }
 }
+
+/* Health Records Specifics */
+.health-records-section {
+  margin-bottom: 24px;
+}
+
+.no-records {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #888;
+  font-style: italic;
+  padding: 10px 0;
+}
+
+/* Adjust Grid for inside the accordion */
+.mini-grid {
+  margin-top: 16px;
+  gap: 16px;
+}
+
+/* Style specific to Expansion Panel */
+.record-panel {
+  background-color: #fff !important;
+  box-shadow: none !important;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 8px;
+}
+
+.record-panel mat-expansion-panel-header {
+  background-color: #fafafa;
+  border-bottom: 1px solid transparent;
+}
+
+.record-panel.mat-expanded mat-expansion-panel-header {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.record-date {
+  font-weight: 600;
+  color: #3949ab;
+}
+
+mat-panel-description {
+  color: #555;
+  font-weight: 500;
+}
+
+/* Utility for long text in grid */
+.full-width {
+  grid-column: 1 / -1; /* Spans both columns */
+}
+
+/* Overwrite generic detail-item for inside panel if needed */
+.mini-grid .detail-item {
+  padding: 12px 16px; /* Slightly smaller padding for nested items */
+  background-color: #fff;
+  border: 1px solid #eee;
+}

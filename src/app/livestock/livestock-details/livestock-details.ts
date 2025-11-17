@@ -11,6 +11,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserDto } from '../../_shared/model/user-dto';
 import { AuthService } from '../../_shared/service/auth-service';
 import { FullLivestock } from '../../_shared/model/response/full-livestock';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @Component({
@@ -21,7 +23,9 @@ import { FullLivestock } from '../../_shared/model/response/full-livestock';
     MatCardModule,
     MatButtonModule,
     MatDividerModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatExpansionModule,
+    MatIconModule,
   ],
   templateUrl: './livestock-details.html',
   styleUrls: ['./livestock-details.css']

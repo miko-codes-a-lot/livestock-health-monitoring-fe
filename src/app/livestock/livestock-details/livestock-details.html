@@ -4,12 +4,8 @@
       <mat-card-title>Livestock Details</mat-card-title>
       <mat-card-actions align="end">
         <!-- *ngIf="user?.role === 'farmer'" -->
-        <button mat-raised-button color="primary"
-          (click)="onUpdate()"
-          *ngIf="user?.role === 'farmer'"
-          [disabled]="livestock.status === 'pending'
-          || livestock.status === 'verified'"
-        >Update</button> 
+        <button mat-raised-button color="primary" (click)="onUpdate()" *ngIf="user?.role === 'farmer'" [disabled]="livestock.status === 'pending'
+          || livestock.status === 'verified'">Update</button>
       </mat-card-actions>
     </mat-card-header>
 
@@ -75,23 +71,93 @@
 
       <mat-divider class="divider-space"></mat-divider>
 
-    <div class="livestock-photos" *ngIf="photoUrls.length > 0">
-      <h3>Animal Photos</h3>
-      <div class="photo-gallery animal-photos-preview">
-        <img
-          *ngFor="let url of photoUrls"
-          [src]="url"
-          alt="Animal Photo"
-          class="animal-photo"
-          (click)="openPhoto(url)"
-        />
+      <div class="livestock-photos" *ngIf="photoUrls.length > 0">
+        <h3>Animal Photos</h3>
+        <div class="photo-gallery animal-photos-preview">
+          <img *ngFor="let url of photoUrls" [src]="url" alt="Animal Photo" class="animal-photo"
+            (click)="openPhoto(url)" />
+        </div>
       </div>
-    </div>
 
-    <!-- Fullscreen overlay -->
+      <!-- Fullscreen overlay -->
       <div class="photo-overlay" *ngIf="fullScreenPhotoUrl" (click)="closePhoto()">
         <img [src]="fullScreenPhotoUrl" alt="Full Screen Photo" class="full-screen-photo">
       </div>
+
+      <mat-divider class="divider-space"></mat-divider>
+
+      <div class="health-records-section">
+        <h3>Health History</h3>
+
+        <div *ngIf="!livestock.healthRecords?.length" class="no-records">
+          <mat-icon>history_toggle_off</mat-icon>
+          <p>No health records found for this animal.</p>
+        </div>
+
+        <mat-accordion multi>
+          <mat-expansion-panel *ngFor="let record of livestock.healthRecords" class="record-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <span class="record-date">{{ record.visitDate | date:'mediumDate' }}</span>
+              </mat-panel-title>
+              <mat-panel-description>
+                {{ record.diagnosis || 'Routine Checkup' }}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="details-grid mini-grid">
+              
+              <!-- <div class="detail-item" *ngIf="record.technician">
+                <span class="label">Technician</span>
+                <span class="value">{{ technicianNames[record.technician] || 'Loading...' }}</span>
+              </div> -->
+
+              <div class="detail-item">
+                <span class="label">Weight</span>
+                <span class="value">{{ record.weightKg ? record.weightKg + ' kg' : '—' }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="label">Body Condition</span>
+                <span class="value text-capitalize">{{ record.bodyCondition || '—' }}</span>
+              </div>
+
+              <div class="detail-item" *ngIf="record.vaccinationDate">
+                <span class="label">Vaccination Date</span>
+                <span class="value">{{ record.vaccinationDate | date:'mediumDate' }}</span>
+              </div>
+              
+               <div class="detail-item" *ngIf="record.dewormingDate">
+                <span class="label">Deworming Date</span>
+                <span class="value">{{ record.dewormingDate | date:'mediumDate' }}</span>
+              </div>
+
+              <div class="detail-item full-width" *ngIf="record.symptomsObserved">
+                <span class="label">Symptoms</span>
+                <span class="value">{{ record.symptomsObserved }}</span>
+              </div>
+
+              <div class="detail-item full-width" *ngIf="record.treatmentGiven">
+                <span class="label">Treatment</span>
+                <span class="value">{{ record.treatmentGiven }}</span>
+              </div>
+              
+               <div class="detail-item full-width" *ngIf="record.vitaminsAdministered">
+                <span class="label">Vitamins</span>
+                <span class="value">{{ record.vitaminsAdministered }}</span>
+              </div>
+
+              <div class="detail-item full-width" *ngIf="record.notes">
+                <span class="label">Notes</span>
+                <span class="value">{{ record.notes }}</span>
+              </div>
+
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+
+      <mat-divider class="divider-space"></mat-divider>
     </mat-card-content>
   </mat-card>
 

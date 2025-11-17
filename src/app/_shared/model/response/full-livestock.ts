@@ -1,5 +1,6 @@
 import { LivestockBreed } from "../livestock-breed";
 import { LivestockClassification } from "../livestock-classification";
+import { HealthRecordSimple } from "./health-record-simple";
 
 export interface FullLivestock {
   _id?: string;
@@ -16,4 +17,5 @@ export interface FullLivestock {
   isDeceased: boolean;
   status: 'pending' | 'approved' | 'rejected' | string;
   statusAt?: string;
+  healthRecords: HealthRecordSimple[];
 }
