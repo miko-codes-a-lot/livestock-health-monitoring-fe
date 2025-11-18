@@ -19,7 +19,7 @@
       mat-icon-button
       color="primary"
       (click)="onUpdate(element._id!)"
-      [disabled]="['pending', 'declined'].includes(element.scheduleStatus)"
+      [disabled]="['pending', 'declined'].includes(element.scheduleStatus) || user?.role === 'farmer'"
     >
       <mat-icon>edit</mat-icon>
     </button>

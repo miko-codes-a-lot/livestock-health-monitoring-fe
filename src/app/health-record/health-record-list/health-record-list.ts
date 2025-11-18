@@ -67,18 +67,19 @@ export class HealthRecordList implements OnInit {
 
     this.healthRecordService.getAll().subscribe({
       next: (records) => {
-       setTimeout(()=> {
-
-       }, 2000)
         this.scheduleService.getAll().subscribe({
           next: (schedules) => {
             // Create a map for fast lookups
             const scheduleMap = new Map(
                schedules.map((s: any) => [s.healthRecord._id, s])   // or whatever key matches
             );
-
+            let recordsData = records
+            // console.log('records', records.animal.farmer)
+            if(this.user?.role === 'farmer') {
+              recordsData = records.filter((r) => r.animal.farmer === this.user?._id )
+            }
             // Add new property to each record
-            this.dataSource.data = records.map(r => {
+            this.dataSource.data = recordsData.map(r => {
               if (r._id) {
                 const match = scheduleMap.get(r._id);  // match using your ID
                 return {

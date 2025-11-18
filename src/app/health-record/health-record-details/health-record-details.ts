@@ -9,7 +9,8 @@ import { HealthRecord } from '../../_shared/model/health-record';
 import { UserService } from '../../_shared/service/user-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ScheduleService } from '../../_shared/service/schedule-service';
-
+import { AuthService } from '../../_shared/service/auth-service';
+import { UserDto } from '../../_shared/model/user-dto';
 
 @Component({
   selector: 'app-health-record-details',
@@ -28,6 +29,7 @@ export class HealthRecordDetails implements OnInit {
   healthRecord?: HealthRecord;
   technicianName = '';
   isUpdateDisabled = false;
+  user: UserDto | null = null;
 
   constructor(
     private readonly healthRecordService: HealthRecordService,
@@ -35,11 +37,16 @@ export class HealthRecordDetails implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly scheduleService: ScheduleService,
+    private readonly authService: AuthService,
   ) {}
 
     ngOnInit(): void {
     this.isLoading = true;
+
     const id = this.route.snapshot.params['id'];
+    this.authService.currentUser$.subscribe({
+      next: (u) => this.user = u ?? null
+    });
 
     this.healthRecordService.getOne(id).subscribe({
       next: (healthRecord) => {
@@ -51,7 +58,7 @@ export class HealthRecordDetails implements OnInit {
             .subscribe((schedules: any[]) => {
               // Check if there is any schedule with 'pending' or 'declined' for this health record
               this.isUpdateDisabled = schedules
-                .some(s => s.healthRecord._id === healthRecord._id && ['pending', 'declined'].includes(s.status));
+                .some(s => (s.healthRecord._id === healthRecord._id && ['pending', 'declined'].includes(s.status)) || this.user?.role === 'farmer');
 
               this.healthRecord = healthRecord;
             })
@@ -62,7 +69,6 @@ export class HealthRecordDetails implements OnInit {
             this.technicianName = `${f.firstName} ${f.lastName}`;
           });
 
-          console.log('this.isUpdateDisabled', this.isUpdateDisabled)
         }
       },
       error: (err) => alert(`Something went wrong: ${err}`),
