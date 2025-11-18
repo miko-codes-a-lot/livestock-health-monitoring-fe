@@ -30,7 +30,10 @@ export class HealthRecordCreate {
   onSubmit(healthRecord: any) {
     this.healthRecordService.create(healthRecord).subscribe({
       next: data => this.router.navigate(['/health-record/details', data._id], { replaceUrl: true }),
-      error: err => console.log(`Something went wrong: ${err}`)
+      error: err => {
+        console.log(`Something went wrong: ${err}`)
+        alert(err.error.message)
+      }
     })
   }
 }

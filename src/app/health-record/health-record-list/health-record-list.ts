@@ -7,6 +7,12 @@ import { MatTableDataSource } from '@angular/material/table';
 import { HealthRecord } from '../../_shared/model/health-record';
 import { HealthRecordService } from '../../_shared/service/health-record-service';
 import { GenericTableComponent } from '../../_shared/component/table/generic-table.component';
+import { UserDto } from '../../_shared/model/user-dto';
+import { AuthService } from '../../_shared/service/auth-service';
+import { ScheduleService } from '../../_shared/service/schedule-service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+
 
 interface ColumnDef<T> {
   key: string;
@@ -20,7 +26,9 @@ interface ColumnDef<T> {
   imports: [
     CommonModule,
     MatProgressSpinnerModule,
-    GenericTableComponent
+    GenericTableComponent,
+    MatIconModule,
+    MatButtonModule
   ],
   templateUrl: './health-record-list.html',
   styleUrls: ['./health-record-list.css']
@@ -28,6 +36,7 @@ interface ColumnDef<T> {
 export class HealthRecordList implements OnInit {
   dataSource = new MatTableDataSource<HealthRecord>();
   isLoading = false;
+  user: UserDto | null = null;
 
   columnDefs: ColumnDef<HealthRecord>[] = [
     { key: 'animal', label: 'Animal', cell: r => r.animal?.tagNumber || 'N/A' },
@@ -44,16 +53,50 @@ export class HealthRecordList implements OnInit {
 
   constructor(
     private readonly healthRecordService: HealthRecordService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly authService: AuthService,
+    private readonly scheduleService: ScheduleService,
   ) {}
 
   ngOnInit() {
     this.isLoading = true;
 
+    this.authService.currentUser$.subscribe({
+      next: (u) => this.user = u ?? null
+    });
+
     this.healthRecordService.getAll().subscribe({
-      next: (records) => this.dataSource.data = records,
+      next: (records) => {
+       setTimeout(()=> {
+
+       }, 2000)
+        this.scheduleService.getAll().subscribe({
+          next: (schedules) => {
+            // Create a map for fast lookups
+            const scheduleMap = new Map(
+               schedules.map((s: any) => [s.healthRecord._id, s])   // or whatever key matches
+            );
+
+            // Add new property to each record
+            this.dataSource.data = records.map(r => {
+              if (r._id) {
+                const match = scheduleMap.get(r._id);  // match using your ID
+                return {
+                  ...r,
+                  scheduleStatus: match ? match.status : null,
+                  scheduleId: match ? match._id : null
+                };
+              }
+
+              return r
+            });
+
+            
+          }
+        }).add(() => (this.isLoading = false))
+      },
       error: (err) => alert(`Something went wrong: ${err}`)
-    }).add(() => (this.isLoading = false));
+    });
   }
 
   onCreate() {
@@ -67,4 +110,9 @@ export class HealthRecordList implements OnInit {
   onUpdate(id: string) {
     this.router.navigate(['/health-record/update', id]);
   }
+
+  get canCreate(): boolean {
+    return !!this.user && ['technician','admin'].includes(this.user.role);
+  }
+
 }

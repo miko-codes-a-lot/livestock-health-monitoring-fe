@@ -1,0 +1,129 @@
+.details-container {
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+  background-color: #f5f6fa;
+}
+
+.user-card {
+  width: 100%;
+  max-width: 850px; /* wider card */
+  padding: 24px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  background-color: #fff;
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+mat-card-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #3949ab;
+}
+
+mat-card-actions button {
+  font-size: 0.95rem;
+  padding: 6px 18px;
+  border-radius: 6px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 36px;
+  margin-top: 20px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  background-color: #fafafa;
+  padding: 16px 20px;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.detail-item:hover {
+  background-color: #f0f1f6;
+}
+
+.label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+.value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.text-capitalize {
+  text-transform: capitalize;
+}
+
+.divider-space {
+  margin: 28px 0;
+}
+
+h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #3f51b5;
+  margin-bottom: 12px;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 80px;
+  color: #555;
+  gap: 12px;
+  font-size: 1rem;
+}
+
+/* Approval Buttons */
+.approval-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  margin: 1.5rem 0;
+}
+
+.approval-buttons button {
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+/* Make Reject button clearly red */
+.approval-buttons button[color='warn']:not(:disabled) {
+  background-color: #e53935 !important;
+  color: white !important;
+  border: none;
+}
+
+.approval-buttons button[color='warn']:not(:disabled):hover {
+  background-color: #d32f2f !important;
+}
+
+@media (max-width: 768px) {
+  .user-card {
+    max-width: 95%;
+    padding: 20px;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+}

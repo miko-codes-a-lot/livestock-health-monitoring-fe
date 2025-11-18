@@ -38,7 +38,7 @@ export class UserForm implements OnInit, OnChanges {
   @Input() addresses: AddressDto[] = []; // City/town list
   @Output() onSubmit = new EventEmitter<UserDto>();
 
-  availableRoles: Array<{ value: 'admin' | 'farmer' | 'technician', label: string }> = [];
+  availableRoles: Array<{ value: 'admin' | 'farmer' | 'technician' | 'vet', label: string }> = [];
 
   loggedInUserRole: 'admin' | 'farmer' | 'vet' | 'technician' = 'admin';
 
@@ -136,13 +136,14 @@ export class UserForm implements OnInit, OnChanges {
 
   private setAvailableRoles(): void {
       type RoleOption = { 
-          value: 'admin' | 'farmer' | 'technician', 
+          value: 'admin' | 'farmer' | 'technician' | 'vet', 
           label: string 
       };
       const allRoles: RoleOption[] = [
           { value: 'admin', label: 'Admin' },
           { value: 'technician', label: 'Technician' },
-          { value: 'farmer', label: 'Farmer' }
+          { value: 'farmer', label: 'Farmer' },
+          { value: 'vet', label: 'Veterinarian' }
       ];
 
       // Check the role of the LOGGED-IN user

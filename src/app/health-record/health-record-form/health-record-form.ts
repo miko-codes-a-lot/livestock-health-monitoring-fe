@@ -107,7 +107,6 @@ export class HealthRecordForm implements OnInit {
     })
 
     // if update, use the animal data (_id, farmer._id, livestockGroup._id)load the data to farmer, livestock group, and animal
-    console.log('initDoc', this.initDoc)
     this.tryPatchForm();
   }
 

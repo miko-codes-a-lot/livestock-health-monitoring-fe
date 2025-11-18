@@ -16,8 +16,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { configureTable } from '../../utils/table/configure-table';
 
 
-
-
 @Component({
   selector: 'app-livestock-group-list',
   standalone: true,

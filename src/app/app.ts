@@ -59,15 +59,20 @@ export class App {
       next: (user) => {
           if (user) {
             this.user = user
-
+            let exactRole = `/dashboard/${user.role}`
+              if(user.role === 'vet') {
+                exactRole = `/dashboard/veterinarian`
+              }
+              console.log('exactRole', exactRole)
               this.menuItems = [
-                { label: 'Dashboard', icon: 'dashboard', link: `/dashboard/${user.role}`, roles: ['admin', 'farmer', 'technician'] },
+                { label: 'Dashboard', icon: 'dashboard', link: exactRole, roles: ['admin', 'farmer', 'technician', 'vet'] },
                 { label: 'User', icon: 'group', link: '/user', roles: ['admin', 'technician']  },
                 { label: 'Livestock Classification', icon: 'category', link: '/livestock-classification', roles: ['admin', 'technician']  },
                 { label: 'Livestock Breed', icon: 'pets', link: '/livestock-breed', roles: ['admin', 'technician']  },
                 { label: 'Livestock Group', icon: 'groups', link: '/livestock-group', roles: ['admin', 'technician', 'farmer']  },
                 { label: 'Livestock', icon: 'grass', link: '/livestock', roles: ['admin', 'technician', 'farmer']  },
-                { label: 'Health Record', icon: 'medical_services', link: '/health-record', roles: ['admin', 'technician']  },
+                { label: 'Health Record', icon: 'medical_services', link: '/health-record', roles: ['admin', 'technician', 'vet']  },
+                { label: 'Schedule', icon: 'event_note', link: '/schedule', roles: ['admin', 'technician', 'vet']  },
                 { label: 'Insurance Policy', icon: 'verified_user', link: '/insurance-policy', roles: ['admin', 'technician', 'farmer']  },
                 { label: 'Claims', icon: 'assignment', link: '/claims', roles: ['admin', 'technician', 'farmer']  },
               ];

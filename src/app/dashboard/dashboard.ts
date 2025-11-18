@@ -167,7 +167,7 @@ export class Dashboard {
   private async initializeCharts(): Promise<any> {
     if (!this.analyticsData) return;
 
-    if (this.role === 'admin' || this.role === 'technician') {
+    if (this.role === 'admin' || this.role === 'technician' || this.role === 'vet') {
       const data = this.analyticsData as AdminAnalyticsData;
       // fix here
       const mortalityName = await this.getMortalityName(data.mortalityCauses);

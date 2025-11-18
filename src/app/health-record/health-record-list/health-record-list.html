@@ -1,6 +1,7 @@
 <app-generic-table
   [title]="'Health Records'"
   [createButtonLabel]="'Create Record'"
+  [canCreate]="canCreate"
   [displayedColumns]="displayedColumnsKeys"
   [columnDefs]="columnDefs"
   [dataSource]="dataSource"
@@ -9,4 +10,19 @@
   (details)="onDetails($event)"
   (update)="onUpdate($event)"
 >
+
+   <ng-template #actions let-element>
+    <button mat-icon-button color="accent" (click)="onDetails(element._id!)">
+      <mat-icon>visibility</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="onUpdate(element._id!)"
+      [disabled]="['pending', 'declined'].includes(element.scheduleStatus)"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+  </ng-template>
+
 </app-generic-table>

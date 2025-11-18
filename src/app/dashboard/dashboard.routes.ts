@@ -18,6 +18,10 @@ export const DASHBOARD_ROUTES: Routes = [
         path: 'technician',
         loadComponent: () => import('./dashboard-veterinarian/dashboard-veterinarian').then(m => m.DashboardVeterinarian),
       },
+      {
+        path: 'veterinarian',
+        loadComponent: () => import('./dashboard-veterinarian/dashboard-veterinarian').then(m => m.DashboardVeterinarian),
+      },
     ]
   }
 ]

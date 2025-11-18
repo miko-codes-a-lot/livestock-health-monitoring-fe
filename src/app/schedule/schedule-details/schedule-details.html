@@ -1,1 +1,89 @@
-<p>schedule-details works!</p>
+<div class="details-container">
+  <mat-card *ngIf="schedule; else loading" class="schedule-card">
+    <mat-card-header>
+      <mat-card-title>Schedule Details</mat-card-title>
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary"
+          (click)="onUpdate()"
+          *ngIf="user?.role === 'vet' || user?.role === 'technician'"
+          [disabled]="['approved', 'pending'].includes(schedule.status)"
+        >
+          Update
+        </button>
+      </mat-card-actions>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <div class="details-grid">
+
+        <!-- Animal Summary -->
+        <div class="detail-item">
+          <span class="label">Animal:</span>
+          <span class="value">{{ animal || '—' }}</span>
+        </div>
+
+        <!-- Animal Summary -->
+        <div class="detail-item">
+          <span class="label">Health Record:</span>
+          <span class="value">{{ healthRecordDetails || '—' }}</span>
+        </div>
+
+        <!-- Assigned Vet -->
+        <div class="detail-item">
+          <span class="label">Assigned Vet:</span>
+          <span class="value">{{ vetName || '—' }}</span>
+        </div>
+
+        <!-- Schedule Type -->
+        <div class="detail-item">
+          <span class="label">Type:</span>
+          <span class="value text-capitalize">{{ schedule.type }}</span>
+        </div>
+
+        <!-- Scheduled Date -->
+        <div class="detail-item">
+          <span class="label">Scheduled Date:</span>
+          <span class="value">{{ schedule.scheduledDate | date:'mediumDate' }}</span>
+        </div>
+
+        <!-- Requested By -->
+        <div class="detail-item">
+          <span class="label">Requested By:</span>
+          <span class="value">{{ requestedBy }}</span>
+        </div>
+
+        <!-- Status -->
+        <div class="detail-item">
+          <span class="label">Status:</span>
+          <span class="value text-capitalize">{{ schedule.status }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions class="approval-buttons" *ngIf="user?.role === 'vet' && !actionNotPermitted()">
+      <button mat-stroked-button color="warn" (click)="onReject()"
+      >
+        <mat-icon>close</mat-icon> Decline
+      </button>
+      <button mat-raised-button color="primary" (click)="onApprove()"
+      >
+        <mat-icon>check_circle</mat-icon> Approve
+      </button>
+    </mat-card-actions>
+    <mat-card-actions class="approval-buttons" else>
+      <button [disabled]="schedule.status === 'completed'" mat-raised-button color="primary" (click)="onComplete()"
+      >
+        <mat-icon>check_circle</mat-icon> Mark as Completed?
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+
+  <ng-template #loading>
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Fetching schedule details...</p>
+    </div>
+  </ng-template>
+</div>
