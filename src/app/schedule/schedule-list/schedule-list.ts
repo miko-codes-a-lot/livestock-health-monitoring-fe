@@ -58,12 +58,15 @@ export class ScheduleList implements OnInit {
 
     this.scheduleService.getAll().subscribe({
       next: (schedules) => {
+        console.log('schedules', schedules)
         if(this.user?.role === 'vet') {
           this.dataSource.data = schedules.filter((s) => 
             this.isUserDto(s.assignedVet) && s.assignedVet._id === this.user?._id
           );
         }else if(this.user?.role === 'technician') {
           this.dataSource.data = schedules.filter((s) => s.createdBy === this.user?._id);
+        }else if(this.user?.role === 'farmer') {
+          this.dataSource.data = schedules.filter((s: any) => s.animal.farmer === this.user?._id);
         } else {
           // if admin display all
           this.dataSource.data = schedules

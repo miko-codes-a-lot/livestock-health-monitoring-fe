@@ -6,7 +6,7 @@
         <button mat-raised-button color="primary"
           (click)="onUpdate()"
           *ngIf="user?.role === 'vet' || user?.role === 'technician'"
-          [disabled]="['approved', 'pending'].includes(schedule.status)"
+          [disabled]="['approved', 'pending', 'completed', 'declined'].includes(schedule.status)"
         >
           Update
         </button>
@@ -71,8 +71,8 @@
         <mat-icon>check_circle</mat-icon> Approve
       </button>
     </mat-card-actions>
-    <mat-card-actions class="approval-buttons" else>
-      <button [disabled]="schedule.status === 'completed'" mat-raised-button color="primary" (click)="onComplete()"
+    <mat-card-actions class="approval-buttons" *ngIf="user?.role === 'vet' && schedule.status === 'approved'">
+      <button mat-raised-button color="primary" (click)="onComplete()"
       >
         <mat-icon>check_circle</mat-icon> Mark as Completed?
       </button>

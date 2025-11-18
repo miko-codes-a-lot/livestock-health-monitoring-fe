@@ -58,7 +58,7 @@ export class HealthRecordDetails implements OnInit {
             .subscribe((schedules: any[]) => {
               // Check if there is any schedule with 'pending' or 'declined' for this health record
               this.isUpdateDisabled = schedules
-                .some(s => (s.healthRecord._id === healthRecord._id && ['pending', 'declined'].includes(s.status)) || this.user?.role === 'farmer');
+                .some(s => (s.healthRecord._id === healthRecord._id && ['pending', 'declined', 'completed'].includes(s.status)) || this.user?.role === 'farmer');
 
               this.healthRecord = healthRecord;
             })
