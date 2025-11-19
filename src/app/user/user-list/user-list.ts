@@ -68,6 +68,8 @@ export class UserList implements OnInit, AfterViewInit {
     this.authService.currentUser$.subscribe(currentUser => {
       this.user = currentUser ?? null;
 
+      if (currentUser == null) return;
+
       this.userService.getAll().subscribe({
         next: users => {
           let filteredUsers = users;
