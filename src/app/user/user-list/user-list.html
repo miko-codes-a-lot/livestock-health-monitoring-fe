@@ -1,4 +1,112 @@
+<!-- only if admin -->
+<!-- Only visible for admin -->
+<div *ngIf="user?.role === 'admin'" class="container">
+
+  <!-- Top actions -->
+  <div class="top-actions">
+    <button mat-flat-button color="primary" (click)="onCreate()">
+      <mat-icon>person_add</mat-icon>
+      Create User
+    </button>
+
+    <!-- Global search bar -->
+    <mat-form-field appearance="outline" class="search-bar">
+      <mat-label>Search all users</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Search by name, email...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <!-- Grouped tables per barangay -->
+  <div *ngFor="let group of groupedUsers; let i = index" class="barangay-group">
+    <mat-card class="barangay-card">
+
+      <mat-card-title>Barangay: {{ group.barangay }}</mat-card-title>
+
+      <!-- Table-specific search -->
+      <mat-form-field appearance="outline" class="table-search-bar">
+        <mat-label>Search this table</mat-label>
+        <input matInput (keyup)="applyFilterPerTable($event, i)" placeholder="Search users...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="group.dataSource" matSort class="user-table mat-elevation-z2">
+
+          <!-- Name -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+            <td mat-cell *matCellDef="let u">{{ u.firstName }} {{ u.lastName }}</td>
+          </ng-container>
+
+          <!-- Email -->
+          <ng-container matColumnDef="emailAddress">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+            <td mat-cell *matCellDef="let u">{{ u.emailAddress }}</td>
+          </ng-container>
+
+          <!-- Mobile -->
+          <ng-container matColumnDef="mobileNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Mobile</th>
+            <td mat-cell *matCellDef="let u">{{ u.mobileNumber }}</td>
+          </ng-container>
+
+          <!-- Address -->
+          <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
+            <td mat-cell *matCellDef="let u">{{ u.address.municipality }}, {{ u.address.province }}</td>
+          </ng-container>
+
+          <!-- Gender -->
+          <ng-container matColumnDef="gender">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Gender</th>
+            <td mat-cell *matCellDef="let u">{{ u.gender }}</td>
+          </ng-container>
+
+          <!-- Role -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+            <td mat-cell *matCellDef="let u">{{ u.role }}</td>
+          </ng-container>
+
+          <!-- Username -->
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
+            <td mat-cell *matCellDef="let u">{{ u.username }}</td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let u">
+              <button mat-icon-button color="primary" matTooltip="View details" (click)="onDetails(u._id)">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" matTooltip="Edit user" (click)="onUpdate(u._id)">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 20]"
+        showFirstLastButtons>
+      </mat-paginator>
+    </mat-card>
+  </div>
+</div>
+
+
+<!-- NON-ADMIN: generic table -->
+ <!-- this is for technician -->
 <app-generic-table
+  *ngIf="user?.role !== 'admin'"
   [title]="'Users'"
   [createButtonLabel]="'Create User'"
   [displayedColumns]="displayedColumns"

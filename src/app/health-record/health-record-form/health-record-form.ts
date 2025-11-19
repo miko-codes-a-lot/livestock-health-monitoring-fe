@@ -160,7 +160,12 @@ export class HealthRecordForm implements OnInit {
   private loadFarmers(): void {
     this.userService.getAll().subscribe(users => {
       this.farmers = users
-        .filter(u => u.role === 'farmer')
+        .filter(u => {
+          if(this.user?.role === 'technician') {
+            return u.role === 'farmer' && u.address.barangay === this.user?.address.barangay
+          }
+          return u.role === 'farmer'
+        })
         .map(u => ({
           _id: String(u._id),
           name: `${u.firstName} ${u.lastName}` 

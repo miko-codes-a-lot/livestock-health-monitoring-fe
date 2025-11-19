@@ -139,15 +139,21 @@
               </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="half-width">
+            <mat-form-field appearance="outline" class="third-width" *ngIf="loggedInUserRole === 'technician' && !user; else selectBarangay">
               <mat-label>Barangay</mat-label>
-              <mat-select formControlName="barangay">
-                <mat-option value="">-- Select Barangay --</mat-option>
-                @for (barangay of barangays; track barangay.name) {
-                  <mat-option [value]="barangay.name">{{ barangay.name }}</mat-option>
-                }
-              </mat-select>
+              <input matInput [disabled]="true" [value]="technicianBarangay" type="text" />
             </mat-form-field>
+            <ng-template #selectBarangay>
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Barangay</mat-label>
+                <mat-select formControlName="barangay">
+                  <mat-option value="">-- Select Barangay --</mat-option>
+                  @for (barangay of barangays; track barangay.name) {
+                    <mat-option [value]="barangay.name">{{ barangay.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </ng-template>
           </div>
 
           <!-- Gender & Role -->

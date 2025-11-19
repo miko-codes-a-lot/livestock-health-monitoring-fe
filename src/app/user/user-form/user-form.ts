@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -49,6 +49,7 @@ export class UserForm implements OnInit, OnChanges {
   municipalities: AddressDto[] = [];
 
   isRoleFarmer: boolean = false;
+  technicianBarangay: string = '';
 
 
   rxform!: FormGroup<RxUserForm>;
@@ -56,6 +57,7 @@ export class UserForm implements OnInit, OnChanges {
   constructor(
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
+    private readonly cd: ChangeDetectorRef
   ) {}
 
     u: UserDto = this.user ?? {
@@ -80,14 +82,29 @@ export class UserForm implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    
+    this.initializeForm();
     // 1. Get the logged-in user's role FIRST
     this.authService.currentUser$.subscribe({
       next: (u) => {
         if (u) {
           // 💡 FIX: Store the role in the new property, NOT this.user
           this.loggedInUserRole = u.role;
-          // this.autoSelectBarangay(u.address.municipality, u.address.barangay);
+          // Technician restriction
+          if (this.loggedInUserRole === 'technician') {
+            // 1. Set municipality without triggering valueChanges
+            this.rxform.get('address.municipality')?.setValue(u.address.municipality, { emitEvent: false });
+
+            // 2. Populate barangays list
+            const municipality = this.addresses.find(a => a.name === u.address.municipality);
+            this.barangays = municipality?.children ?? [];
+            this.technicianBarangay = u.address.barangay
+            // 3. Set the barangay
+            // this.rxform.get('address.barangay')?.setValue(u.address.barangay);
+
+            // 4. Disable fields
+            this.rxform.get('address.municipality')?.disable();
+            this.rxform.get('address.barangay')?.disable();
+          }
         }
         this.setAvailableRoles();
       }
@@ -98,7 +115,6 @@ export class UserForm implements OnInit, OnChanges {
       this.isRoleFarmer = true;
     }
 
-    this.initializeForm();
     this.setAvailableRoles();
     this.addRsbsaNumber();
   }
@@ -126,7 +142,6 @@ export class UserForm implements OnInit, OnChanges {
     if (municipality) {
       // Populate barangay dropdown
       this.barangays = municipality.children || [];
-
       // Wait a tick to ensure form controls are ready before setting barangay
       setTimeout(() => {
         this.rxform.get('address.barangay')?.setValue(barangayName);
@@ -248,7 +263,7 @@ export class UserForm implements OnInit, OnChanges {
       address: {
         province: this.address.controls.province.value,
         municipality: this.address.controls.municipality.value,
-        barangay: this.address.controls.barangay.value,
+        barangay: this.loggedInUserRole === 'technician' ? this.technicianBarangay : this.address.controls.barangay.value,
       },
       gender: this.gender.value,
       role: this.role.value,
