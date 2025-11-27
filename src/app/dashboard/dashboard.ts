@@ -230,8 +230,9 @@ export class Dashboard {
         }
       }
     };
-
-    this.charts.set('livestockBySpecies', new Chart(canvas, config));
+    console.log('config admin', config)
+    this.createOrUpdateChart('livestockBySpecies', canvas, config);
+    // this.charts.set('livestockBySpecies', new Chart(canvas, config));
   }
 
   private createClaimsByStatusChart(chartData: ChartData): void {
@@ -260,8 +261,8 @@ export class Dashboard {
         }
       }
     };
-
-    this.charts.set('claimsByStatus', new Chart(canvas, config));
+    this.createOrUpdateChart('claimsByStatus', canvas, config);
+    // this.charts.set('claimsByStatus', new Chart(canvas, config));
   }
 
   private createHealthRecordsTrendChart(chartData: ChartData): void {
@@ -292,8 +293,8 @@ export class Dashboard {
         }
       }
     };
-
-    this.charts.set('healthRecordsTrend', new Chart(canvas, config));
+    this.createOrUpdateChart('healthRecordsTrend', canvas, config);
+    // this.charts.set('healthRecordsTrend', new Chart(canvas, config));
   }
 
   private createBodyConditionChart(chartData: ChartData): void {
@@ -319,8 +320,9 @@ export class Dashboard {
         }
       }
     };
+    this.createOrUpdateChart('bodyCondition', canvas, config);
 
-    this.charts.set('bodyCondition', new Chart(canvas, config));
+    // this.charts.set('bodyCondition', new Chart(canvas, config));
   }
 
   private createMortalityCausesChart(chartData: ChartData): void {
@@ -350,8 +352,9 @@ export class Dashboard {
         }
       }
     };
+    this.createOrUpdateChart('mortalityCauses', canvas, config);
 
-    this.charts.set('mortalityCauses', new Chart(canvas, config));
+    // this.charts.set('mortalityCauses', new Chart(canvas, config));
   }
 
   private createLivestockByLocationChart(chartData: ChartData): void {
@@ -382,8 +385,9 @@ export class Dashboard {
         }
       }
     };
+    this.createOrUpdateChart('livestockByLocation', canvas, config);
 
-    this.charts.set('livestockByLocation', new Chart(canvas, config));
+    // this.charts.set('livestockByLocation', new Chart(canvas, config));
   }
 
   private createClaimsTrendChart(trendData: TrendData): void {
@@ -422,11 +426,13 @@ export class Dashboard {
         }
       }
     };
+    this.createOrUpdateChart('claimsTrend', canvas, config);
 
-    this.charts.set('claimsTrend', new Chart(canvas, config));
+    // this.charts.set('claimsTrend', new Chart(canvas, config));
   }
 
   private createFarmerLivestockChart(chartData: ChartData): void {
+    console.log('chartData farmer: ', chartData)
     const canvas = document.getElementById('farmerLivestockChart') as HTMLCanvasElement;
     if (!canvas) return;
 
@@ -449,8 +455,21 @@ export class Dashboard {
         }
       }
     };
+    console.log('farmer config', config)
+    this.createOrUpdateChart('farmerLivestock', canvas, config);
+  }
 
-    this.charts.set('farmerLivestock', new Chart(canvas, config));
+  private createOrUpdateChart(key: string, canvas: HTMLCanvasElement, config: ChartConfiguration): void {
+    // Destroy existing chart on same key
+    const existingChart = this.charts.get(key);
+    if (existingChart) {
+      existingChart.destroy();
+      this.charts.delete(key);
+    }
+
+    // Create new chart
+    const chart = new Chart(canvas, config);
+    this.charts.set(key, chart);
   }
 
   private createFarmerClaimsChart(chartData: ChartData): void {
@@ -479,8 +498,9 @@ export class Dashboard {
         }
       }
     };
+    this.createOrUpdateChart('farmerClaims', canvas, config);
 
-    this.charts.set('farmerClaims', new Chart(canvas, config));
+    // this.charts.set('farmerClaims', new Chart(canvas, config));
   }
 
   private createFarmerHealthTrendChart(chartData: ChartData): void {
@@ -511,8 +531,9 @@ export class Dashboard {
         }
       }
     };
+    this.createOrUpdateChart('farmerHealthTrend', canvas, config);
 
-    this.charts.set('farmerHealthTrend', new Chart(canvas, config));
+    // this.charts.set('farmerHealthTrend', new Chart(canvas, config));
   }
 
   private createFarmerInsuranceChart(chartData: ChartData): void {
@@ -538,7 +559,8 @@ export class Dashboard {
         }
       }
     };
+    this.createOrUpdateChart('farmerInsurance', canvas, config);
 
-    this.charts.set('farmerInsurance', new Chart(canvas, config));
+    // this.charts.set('farmerInsurance', new Chart(canvas, config));
   }
 }

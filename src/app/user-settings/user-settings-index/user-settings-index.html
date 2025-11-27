@@ -111,7 +111,7 @@
     </div>
   </mat-card>
 
-  <a class="return-dashboard" [routerLink]="'/dashboard/' + user.role">
+  <a class="return-dashboard"    [routerLink]="['/dashboard', (user.role === 'vet' ? 'veterinarian' : user.role)]">
     <mat-icon>arrow_back</mat-icon> Return to Dashboard
   </a>
 </div>

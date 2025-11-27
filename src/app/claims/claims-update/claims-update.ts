@@ -55,6 +55,7 @@ export class ClaimsUpdate implements OnInit {
       )
       .subscribe({
         next: () => {
+          this.processStatus(claimsId, 'pending')
           alert('Claim updated successfully!');
           this.router.navigate(['/claims/details', claimsId], { replaceUrl: true });
         },
@@ -65,6 +66,25 @@ export class ClaimsUpdate implements OnInit {
           // alert(`Update failed: ${err.message || err}`);
         },
         complete: () => this.isLoading = false
+      });
+  }
+
+  processStatus(claimsId: string, statusValue: string, customMessage?: string) {
+    this.claimsService.updateStatus(claimsId, {status: statusValue})
+      .subscribe({
+        next: (res) => {
+          if(customMessage) {
+            alert(customMessage)
+          } else {
+            alert(`Claim Successfully ${statusValue}`)
+          }
+          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            this.router.navigate(['/claims/details', claimsId]);
+          });
+        },
+        error: (err) => {
+          console.error('Error updating status:', err);
+        }
       });
   }
 
