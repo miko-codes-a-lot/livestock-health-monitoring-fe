@@ -1,3 +1,6 @@
+/* ============= */
+/* FORM WRAPPER  */
+/* ============= */
 .form-container {
   padding: 24px;
   display: flex;
@@ -9,6 +12,9 @@
   max-width: 700px;
 }
 
+/* ============= */
+/* WIDTH HELPERS */
+/* ============= */
 .full-width {
   width: 100%;
 }
@@ -21,6 +27,9 @@
   width: 31%;
 }
 
+/* ========================= */
+/* FORM GROUP LAYOUT (ROW)   */
+/* ========================= */
 .name-group,
 .gender-role-group,
 .address-group {
@@ -30,14 +39,21 @@
   align-items: flex-start;
 }
 
+/* ============= */
+/* LOADING STATE */
+/* ============= */
 .loading-state {
   text-align: center;
   margin-top: 60px;
   color: #555;
 }
 
+/* ============= */
+/* MATERIAL CARD */
+/* ============= */
 mat-card {
   padding: 16px;
+  border-radius: 12px;
 }
 
 mat-card-title {
@@ -45,6 +61,39 @@ mat-card-title {
   font-weight: 600;
 }
 
+/* ============================= */
+/* RESPONSIVE — MOBILE FRIENDLY  */
+/* ============================= */
+@media (max-width: 768px) {
+  /* Full width on smaller screens */
+  .half-width,
+  .third-width {
+    width: 100%;
+  }
 
+  mat-card {
+    padding: 12px;
+  }
 
+  mat-card-title {
+    font-size: 1.1rem;
+  }
 
+  /* Proper spacing for each group */
+  .name-group,
+  .gender-role-group,
+  .address-group {
+    gap: 12px;
+  }
+
+  .loading-state {
+    margin-top: 40px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+  mat-card-title {
+    font-size: 1rem;
+  }
+}

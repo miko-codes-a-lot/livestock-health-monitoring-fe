@@ -43,7 +43,6 @@ export class Login {
     this.errorMessage = ''; // reset error
     this.authService.login(this.username.value, this.password.value).subscribe({
       next: (r) => {
-        console.log('r', r)
           this.authService['currentUserSubject'].next(r.user);
           this.router.navigate(['/dashboard'])
       },

@@ -14,6 +14,7 @@ import { MatCardModule } from '@angular/material/card';
 import { forkJoin } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 @Component({
@@ -28,7 +29,9 @@ import { MatButtonModule } from '@angular/material/button';
     MatInputModule,
     MatCardModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatProgressSpinnerModule
+
   ],
   templateUrl: './user-list.html',
   styleUrls: ['./user-list.css']
@@ -39,6 +42,7 @@ export class UserList implements OnInit, AfterViewInit {
   users: UserDto[] = [];
   isLoading = false;
   user: UserDto | null = null;
+  isMobile = false; // add this
 
   displayedColumns = ['username', 'emailAddress', 'mobileNumber', 'address', 'gender', 'role', 'actions'];
   columnDefs = [
@@ -64,6 +68,9 @@ export class UserList implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.isLoading = true;
+
+    this.updateIsMobile();
+    window.addEventListener('resize', () => this.updateIsMobile());
 
     this.authService.currentUser$.subscribe(currentUser => {
       this.user = currentUser ?? null;
@@ -155,6 +162,18 @@ export class UserList implements OnInit, AfterViewInit {
   applyFilterPerTable(event: Event, index: number) {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
     this.groupedUsers[index].dataSource.filter = filterValue;
+  }
+
+  private updateIsMobile() {
+    this.isMobile = window.innerWidth <= 768; // or your breakpoint
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('resize', () => this.updateIsMobile());
+  }
+
+  getCellValue(u: UserDto, col: any) {
+    return col.cell ? col.cell(u) : (u as any)[col.key]; // safe here
   }
 
 }

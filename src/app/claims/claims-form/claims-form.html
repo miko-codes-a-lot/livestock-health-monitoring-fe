@@ -24,10 +24,12 @@
           </div>
 
           <!-- Upload Button -->
-          <label for="animalPhotos" class="upload-btn">
-            <span>Upload Photos</span>
-            <input id="animalPhotos" type="file" (change)="onFilesSelected($event)" multiple hidden />
-          </label>
+          <div class="upload-container">
+            <label for="animalPhotos" class="upload-btn">
+              <span>Upload Photos</span>
+              <input id="animalPhotos" type="file" (change)="onFilesSelected($event)" multiple hidden />
+            </label>
+          </div>
         </div>
 
         <!-- Animal Selection -->

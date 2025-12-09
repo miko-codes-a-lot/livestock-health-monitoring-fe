@@ -4,7 +4,7 @@
   [displayedColumns]="displayedColumnsKeys"
   [canCreate]="canCreate"
   [columnDefs]="columnDefs"
-  [dataSource]="dataSource"
+  [data]="dataSource.data"
   [isLoading]="isLoading"
   (create)="onCreate()"
   (details)="onDetails($event)"

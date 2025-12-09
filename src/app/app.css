@@ -223,3 +223,39 @@ mat-drawer {
 .dropdown-arrow {
   color: #fff; /* makes icon white */
 }
+
+
+/* MOBILE RULES */
+@media (max-width: 768px) {
+
+  mat-drawer {
+    width: 200px !important;
+  }
+
+  .top-nav {
+    height: 56px;
+    padding: 0 0.5rem;
+  }
+
+  .dashboard-title {
+    font-size: 1rem;
+  }
+
+  .title-icon {
+    font-size: 20px;
+  }
+
+  .main-content {
+    padding: 4px;
+  }
+
+  /* hide desktop user button */
+  .user-button {
+    display: none !important;
+  }
+
+  /* mobile user icon */
+  .user-button-mobile {
+    color: white;
+  }
+}

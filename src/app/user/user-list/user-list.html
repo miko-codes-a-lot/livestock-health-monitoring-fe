@@ -2,80 +2,50 @@
 <!-- Only visible for admin -->
 <div *ngIf="user?.role === 'admin'" class="container">
 
-  <!-- Top actions -->
-  <div class="top-actions">
-    <button mat-flat-button color="primary" (click)="onCreate()">
-      <mat-icon>person_add</mat-icon>
-      Create User
-    </button>
+  <!-- updated user button and search -->
+  <div class="header-bar">
+    <h2 class="page-title">Users</h2>
 
-    <!-- Global search bar -->
-    <mat-form-field appearance="outline" class="search-bar">
-      <mat-label>Search all users</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Search by name, email...">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
+    <div class="right">
+      <!-- SEARCH -->
+      <div class="search-wrapper">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Search all Users">
+        </mat-form-field>
+      </div>
+
+      <!-- CREATE BUTTON -->
+      <button mat-flat-button color="primary" class="create-btn" (click)="onCreate()">
+        <mat-icon>add</mat-icon>
+        Create User
+      </button>
+    </div>
   </div>
 
-  <!-- Grouped tables per barangay -->
-  <div *ngFor="let group of groupedUsers; let i = index" class="barangay-group">
+  <!-- Grouped tables/cards per barangay -->
+  <div *ngFor="let group of groupedUsers; let gi = index" class="barangay-group">
+
     <mat-card class="barangay-card">
 
       <mat-card-title>Barangay: {{ group.barangay }}</mat-card-title>
 
-      <!-- Table-specific search -->
+      <!-- Table search -->
       <mat-form-field appearance="outline" class="table-search-bar">
         <mat-label>Search this table</mat-label>
-        <input matInput (keyup)="applyFilterPerTable($event, i)" placeholder="Search users...">
+        <input matInput (keyup)="applyFilterPerTable($event, gi)" placeholder="Search users...">
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
 
-      <div class="table-container">
+      <!-- DESKTOP TABLE -->
+      <div class="table-container" *ngIf="!isMobile">
         <table mat-table [dataSource]="group.dataSource" matSort class="user-table mat-elevation-z2">
 
-          <!-- Name -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-            <td mat-cell *matCellDef="let u">{{ u.firstName }} {{ u.lastName }}</td>
+          <ng-container *ngFor="let col of columnDefs" [matColumnDef]="col.key">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ col.label }}</th>
+            <td mat-cell *matCellDef="let u">{{ getCellValue(u, col) }}</td>
           </ng-container>
 
-          <!-- Email -->
-          <ng-container matColumnDef="emailAddress">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
-            <td mat-cell *matCellDef="let u">{{ u.emailAddress }}</td>
-          </ng-container>
-
-          <!-- Mobile -->
-          <ng-container matColumnDef="mobileNumber">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Mobile</th>
-            <td mat-cell *matCellDef="let u">{{ u.mobileNumber }}</td>
-          </ng-container>
-
-          <!-- Address -->
-          <ng-container matColumnDef="address">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
-            <td mat-cell *matCellDef="let u">{{ u.address.municipality }}, {{ u.address.province }}</td>
-          </ng-container>
-
-          <!-- Gender -->
-          <ng-container matColumnDef="gender">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Gender</th>
-            <td mat-cell *matCellDef="let u">{{ u.gender }}</td>
-          </ng-container>
-
-          <!-- Role -->
-          <ng-container matColumnDef="role">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
-            <td mat-cell *matCellDef="let u">{{ u.role }}</td>
-          </ng-container>
-
-          <!-- Username -->
-          <ng-container matColumnDef="username">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
-            <td mat-cell *matCellDef="let u">{{ u.username }}</td>
-          </ng-container>
-
-          <!-- Actions -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Actions</th>
             <td mat-cell *matCellDef="let u">
@@ -91,13 +61,41 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
+
+        <mat-paginator [pageSize]="5" [pageSizeOptions]="[5,10,20]" showFirstLastButtons #paginator></mat-paginator>
       </div>
 
-      <mat-paginator
-        [pageSize]="5"
-        [pageSizeOptions]="[5, 10, 20]"
-        showFirstLastButtons>
-      </mat-paginator>
+      <!-- MOBILE CARDS -->
+      <div class="mobile-card-container" *ngIf="isMobile">
+        <div class="mobile-card" *ngFor="let u of group.dataSource.filteredData">
+          <div class="mobile-card-header">
+            {{ u.firstName }} {{ u.lastName }}
+          </div>
+          <div class="mobile-card-body">
+            <div class="row" *ngFor="let col of columnDefs">
+              <span class="label">{{ col.label }}:</span>
+              <span class="value">{{ getCellValue(u, col) }}</span>
+            </div>
+            <div class="row">
+              <span class="label">Actions:</span>
+              <span class="value">
+                <button mat-icon-button color="primary" (click)="onDetails(u._id!)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="onUpdate(u._id!)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading overlay -->
+      <div class="table-loading-overlay" *ngIf="isLoading">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+
     </mat-card>
   </div>
 </div>
@@ -111,7 +109,7 @@
   [createButtonLabel]="'Create User'"
   [displayedColumns]="displayedColumns"
   [columnDefs]="columnDefs"
-  [dataSource]="dataSource"
+  [data]="dataSource.data"
   [isLoading]="isLoading"
   (create)="onCreate()"
   (details)="onDetails($event)"

@@ -231,7 +231,10 @@
     flex-direction: column;
   }
   .profile-picture {
-    flex-direction: column;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center;    
+    margin: 0 auto 16px auto;  
   }
   .account-card {
     padding: 24px;

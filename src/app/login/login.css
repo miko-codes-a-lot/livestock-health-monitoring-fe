@@ -1,3 +1,4 @@
+/* === CONTAINER === */
 .login-container {
   display: flex;
   justify-content: center;
@@ -5,35 +6,37 @@
   height: 100vh;
   background: #55B047;
   font-family: "Segoe UI", Arial, sans-serif;
+  padding: 0 10px; /* ensures padding on very small screens */
+  box-sizing: border-box;
 }
 
+/* === CARD === */
 .login-card {
   background: #fff;
-  padding: 40px 45px;
+  padding: 40px 35px;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   width: 360px;
+  max-width: 100%;
   text-align: center;
   color: #333;
+  transition: box-shadow 0.3s ease;
 }
 
+.login-card:hover {
+  box-shadow: 0 8px 22px rgba(85, 176, 71, 0.3);
+}
+
+/* === LOGO === */
 .login-logo {
   width: 120px;
   height: auto;
-  margin-bottom: 20px;
+  margin: 0 auto 20px auto;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
   filter: drop-shadow(0 3px 6px rgba(75, 46, 25, 0.4));
 }
 
-.login-card h2 {
-  margin-bottom: 20px;
-  color: #4B2E19;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
+/* === FORM === */
 .form-group {
   margin-bottom: 16px;
   text-align: left;
@@ -47,10 +50,8 @@ label {
 }
 
 input {
-  width: 96%;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 12px;
+  width: 100%;
+  padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 14px;
@@ -65,6 +66,7 @@ input:focus {
   outline: none;
 }
 
+/* === BUTTON === */
 button {
   width: 100%;
   padding: 12px;
@@ -88,6 +90,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* === ERROR MESSAGE === */
 .error-message {
   color: #c62828;
   margin: 10px 0;
@@ -95,14 +98,25 @@ button:disabled {
   text-align: center;
 }
 
-/* Optional subtle green shadow on the card */
-.login-card:hover {
-  box-shadow: 0 8px 22px rgba(85, 176, 71, 0.3);
-}
-
-@media (max-width: 400px) {
+/* === MOBILE RESPONSIVENESS === */
+@media (max-width: 480px) {
   .login-card {
-    width: 90%;
-    padding: 30px 25px;
+    width: 100%;
+    padding: 30px 20px;
+  }
+
+  .login-logo {
+    width: 100px;
+    margin-bottom: 16px;
+  }
+
+  input {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  button {
+    font-size: 15px;
+    padding: 10px;
   }
 }

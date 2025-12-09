@@ -15,7 +15,6 @@
 
 .half-width {
   width: 48%;
-  /* margin-right: 2%; */
 }
 
 .third-width {
@@ -32,11 +31,16 @@
 
 mat-card {
   padding: 16px;
+  border-radius: 12px;
 }
 
 mat-card-title {
   font-size: 1.25rem;
   font-weight: 600;
+}
+
+mat-error {
+  font-size: 0.75rem;
 }
 
 .loading-state {
@@ -45,7 +49,7 @@ mat-card-title {
   color: #555;
 }
 
-/* --- Animal Photos Section --- */
+/* --- Animal Photos Section (if any) --- */
 .animal-photos-section {
   display: flex;
   flex-direction: column;
@@ -82,7 +86,7 @@ mat-card-title {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 4px; /* keeps your original style */
+  border-radius: 4px;
 }
 
 .remove-btn {
@@ -116,4 +120,43 @@ mat-card-title {
 
 .upload-btn:hover {
   background-color: #303f9f;
+}
+
+/* ======================= */
+/* MOBILE RESPONSIVENESS   */
+/* ======================= */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .half-width,
+  .third-width {
+    width: 100%;
+  }
+
+  mat-card {
+    padding: 16px 12px;
+  }
+
+  mat-card-title {
+    font-size: 1.15rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-row {
+    gap: 8px;
+  }
+
+  mat-card {
+    padding: 12px 8px;
+  }
+
+  button[type="submit"] {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 8px 0;
+  }
 }

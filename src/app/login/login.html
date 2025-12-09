@@ -17,7 +17,9 @@
         {{ errorMessage }}
       </div>
 
-      <button type="submit" [disabled]="!rxform.valid || isLoading">Login</button>
+      <button type="submit" [disabled]="!rxform.valid || isLoading">
+        {{ isLoading ? 'Logging in...' : 'Login' }}
+      </button>
     </form>
   </div>
 </div>

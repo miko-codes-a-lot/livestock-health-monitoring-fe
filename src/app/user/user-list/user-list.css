@@ -8,27 +8,86 @@
   gap: 25px;
 }
 
-/* Top actions layout */
-.top-actions {
+.header-bar {
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--dark-brown);
+}
+
+.create-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 50px;
+  padding: 0 16px;
+  white-space: nowrap;
+  border-radius: 15px;
+}
+
+.create-btn mat-icon {
+  margin-right: 6px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.search-wrapper {
+  display: flex;
+  flex: 1 1 auto;
+  max-width: 260px;
+}
+
+
+.search-field {
+  width: 100%;
+  height: 60px; /* match create button height */
+}
+
+.search-field .mat-form-field-wrapper {
+  height: 100%;
+}
+
+.search-field .mat-form-field-infix {
+  height: 100%;
+  display: flex;
   align-items: center;
 }
 
-/* Search bars */
-.search-bar,
-.table-search-bar {
-  width: 100%;
-  max-width: 300px;
+.search-field input.mat-input-element {
+  height: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
+  color: white;
 }
 
-.search-bar mat-icon,
-.table-search-bar mat-icon {
-  cursor: pointer;
-  color: #666;
+.search-field.mat-form-field-appearance-outline {
+  background-color: var(--primary-green);
+  border-radius: 15px;
 }
+
+.search-field.mat-form-field-appearance-outline .mat-form-field-outline {
+  border-radius: 15px;
+  border-color: var(--primary-green);
+}
+
+.search-field.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  border-color: var(--accent-green);
+}
+
+/* Create button */
 
 /* Barangay card */
 .barangay-card {
@@ -48,9 +107,10 @@
   color: #222;
 }
 
-/* Table container for horizontal scroll */
+/* Table container with horizontal scroll */
 .table-container {
   overflow-x: auto;
+  position: relative; /* for overlay */
 }
 
 /* Table styling */
@@ -64,6 +124,7 @@ table.user-table {
   font-weight: 600;
   background-color: #f0f0f0;
   color: #222;
+  padding: 10px 15px;
 }
 
 .user-table td.mat-cell {
@@ -80,19 +141,114 @@ mat-paginator {
   margin-top: 15px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .user-table {
-    min-width: 550px;
-  }
+/* Loading overlay */
+.table-loading-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: 10px;
 }
 
-@media (max-width: 480px) {
-  .user-table {
-    min-width: 400px;
+/* ======================= */
+/* Mobile styling          */
+@media (max-width: 768px) {
+  /* Hide desktop table */
+  .desktop-table {
+    display: none;
   }
 
-  .barangay-card mat-card-title {
-    font-size: 16px;
+  .header-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Mobile cards container */
+  .mobile-card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Individual card */
+  .mobile-card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .mobile-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  }
+
+  .mobile-card-header {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #222;
+  }
+
+  .mobile-card-body .row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+
+  .mobile-card-body .label {
+    font-weight: 500;
+    color: #555;
+    flex: 1 1 auto;
+  }
+
+  .mobile-card-body .value {
+    text-align: right;
+    flex: 1 1 auto;
+    color: #111;
+  }
+
+  /* Mobile action buttons */
+  .mobile-card-body .row .value button {
+    margin-left: 5px;
+  }
+
+  .right {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .search-wrapper,
+  .create-btn {
+    width: 100%;
+  }
+
+  .search-wrapper .search-field,
+  .create-btn {
+    justify-content: center;
+    height: 60px;
+  }
+
+  .search-wrapper .search-field,
+  .create-btn {
+    justify-content: center;
+    height: 60px;
+  }
+
+  /* Adjust card title font for very small screens */
+  @media (max-width: 480px) {
+    .mobile-card-header {
+      font-size: 0.9rem;
+    }
+    .barangay-card mat-card-title {
+      font-size: 16px;
+    }
   }
 }

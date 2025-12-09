@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit, inject, ContentChild, TemplateRef  } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit, inject, ContentChild, TemplateRef, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -9,101 +9,139 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
-
 
 @Component({
   selector: 'app-generic-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatProgressSpinnerModule, MatButtonModule, MatSort, MatSortModule, MatFormFieldModule, MatInputModule, MatIconModule, RouterLink ],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './generic-table.component.html',
   styleUrls: ['./generic-table.component.css']
 })
-export class GenericTableComponent<T> implements AfterViewInit {
+export class GenericTableComponent<T> implements OnInit, AfterViewInit, OnChanges {
+
   @Input() title = '';
   @Input() createButtonLabel = '';
   @Input() createButtonLink = '';
   @Input() displayedColumns: string[] = [];
-  @Input() columnDefs: { key: string; label: string; cell?: (element: T) => any }[] = [];
-  @Input() dataSource = new MatTableDataSource<T>();
+  @Input() columnDefs: { key: string; label: string; cell?: (el: T) => any }[] = [];
+  @Input() data: T[] = [];
   @Input() isLoading = false;
-
-  @Input() canCreate: boolean | (() => boolean) = true; 
+  @Input() canCreate: boolean | (() => boolean) = true;
 
   @Output() details = new EventEmitter<any>();
   @Output() update = new EventEmitter<any>();
   @Output() create = new EventEmitter<any>();
   @Output() markAsRead = new EventEmitter<any>();
 
-  @ContentChild('actions', { read: TemplateRef }) actionsTemplate?: TemplateRef<any>;
+  dataSource = new MatTableDataSource<T>();   // <-- FIX: No Input()
+  mobilePagedData: T[] = [];
 
-  private _liveAnnouncer = inject(LiveAnnouncer);
-
+  isMobile = window.innerWidth < 768;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort?: MatSort;
+  @ViewChild(MatSort) sort!: MatSort;
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    if (this.sort) {
-      this.dataSource.sort = this.sort;
+  @ContentChild('actions', { read: TemplateRef }) actionsTemplate?: TemplateRef<any>;
+  private live = inject(LiveAnnouncer);
+
+  ngOnInit() {
+    this.setupDisplayedColumns();
+    this.updateDataSource();
+
+    window.addEventListener("resize", () => {
+      this.isMobile = window.innerWidth < 768;
+      this.updateMobilePagedData();
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['data']) {
+      this.updateDataSource();
+      this.updateMobilePagedData();
+
+      if (this.paginator) this.paginator.firstPage();
     }
   }
 
-  onDetails(id: any) {
-    this.details.emit(id);
+  ngAfterViewInit() {
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+      this.paginator.page.subscribe(() => this.updateMobilePagedData());
+    }
+
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
+
+    this.updateMobilePagedData();
+    this.dataSource.connect().subscribe(() => this.updateMobilePagedData());
   }
 
-  onUpdate(id: any) {
-    this.update.emit(id);
+  private updateDataSource() {
+    this.dataSource.data = this.data || [];
+    this.dataSource.filterPredicate = (data: any, filter: string) =>
+      JSON.stringify(data).toLowerCase().includes(filter);
+
+    // re-attach paginator + sort AFTER data changes
+    if (this.paginator) this.dataSource.paginator = this.paginator;
+    if (this.sort) this.dataSource.sort = this.sort;
+
+    this.dataSource.data.forEach(r => (r as any).expanded = false);
   }
 
-  onCreate(id: any) {
-    this.update.emit(id);
-  }
-
-  onMarkAsRead(id: any) {
-    this.update.emit(id);
-  }
-
-  onDetailsClick(element: any) {
-    this.details.emit((element as any)._id);
-  }
-
-  onUpdateClick(element: any) {
-    this.update.emit((element as any)._id);
-  }
-
-  onCreateClick() {
-    this.create.emit();
-  }
-
-  onMarkAsReadClick(element: any) {
-    this.markAsRead.emit((element as any)._id);
-  }
-
-  getCellValue(col: any, element: any) {
-    // specialize for notifications
-    return col.cell ? col.cell(element) : (element as any)[col.key];
-  }
-
-  announceSortChange(sortState: Sort) {
-    if (sortState.direction) {
-      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
-    } else {
-      this._liveAnnouncer.announce('Sorting cleared');
+  private setupDisplayedColumns() {
+    if (this.columnDefs.length > 0) {
+      this.displayedColumns = this.columnDefs.map(c => c.key).concat('actions');
     }
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    const value = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = value;
+
+    this.paginator.firstPage();
+    this.updateMobilePagedData();
+  }
+
+  private updateMobilePagedData() {
+    if (!this.isMobile || !this.paginator) return;
+
+    const data = this.dataSource.filteredData;
+    const pageIndex = this.paginator.pageIndex ?? 0;
+    const pageSize = this.paginator.pageSize ?? 5;
+
+    this.mobilePagedData = data.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
+  }
+
+  announceSortChange(sortState: Sort) {
+    if (sortState.direction) {
+      this.live.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this.live.announce("Sorting cleared");
+    }
+  }
+
+  onDetailsClick(el: any) { this.details.emit(el._id); }
+  onUpdateClick(el: any) { this.update.emit(el._id); }
+  onCreateClick() { this.create.emit(); }
+  onMarkAsReadClick(el: any) { this.markAsRead.emit(el._id); }
+
+  getCellValue(col: any, el: any) {
+    return col.cell ? col.cell(el) : el[col.key];
   }
 
   isCreateDisabled(): boolean {
-    if (typeof this.canCreate === 'function') {
-      return !this.canCreate();
-    }
-    return !this.canCreate;
+    return typeof this.canCreate === "function" ? !this.canCreate() : !this.canCreate;
   }
 }
+

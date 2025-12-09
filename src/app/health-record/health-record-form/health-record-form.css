@@ -31,6 +31,7 @@
 
 mat-card {
   padding: 16px;
+  border-radius: 12px;
 }
 
 mat-card-title {
@@ -46,4 +47,48 @@ mat-error {
   text-align: center;
   margin-top: 60px;
   color: #555;
+}
+
+/* ======================= */
+/* MOBILE RESPONSIVENESS   */
+/* ======================= */
+@media (max-width: 768px) {
+  /* Stack fields vertically */
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Half-width and third-width inputs take full width */
+  .half-width,
+  .third-width {
+    width: 100%;
+  }
+
+  /* Adjust card padding */
+  mat-card {
+    padding: 16px 12px;
+  }
+
+  /* Slightly smaller font for titles on mobile */
+  mat-card-title {
+    font-size: 1.15rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Further spacing tweaks for smaller devices */
+  .form-row {
+    gap: 8px;
+  }
+
+  mat-card {
+    padding: 12px 8px;
+  }
+
+  button[type="submit"] {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 8px 0;
+  }
 }

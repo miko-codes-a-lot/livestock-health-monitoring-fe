@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule, MatDrawer } from '@angular/material/sidenav';
+import { MatListModule  } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +11,7 @@ import { NavComponent } from './_shared/component/nav/nav.component';
 import { AuthService } from './_shared/service/auth-service';
 import { CommonModule } from '@angular/common';
 import { UserDto } from './_shared/model/user-dto';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 // <-- Put the interface here
 interface MenuItem {
@@ -45,6 +46,7 @@ export class App {
   activeIcon = 'dashboard';  // default icon
   showTopNav = false;
   showSideNav = true;
+  isMobile = false;
 
   menuItems: MenuItem[] = []; // <-- use the interface type
 
@@ -52,7 +54,17 @@ export class App {
   constructor(
     private readonly authService: AuthService,
     private readonly router: Router,
-  ) {}
+    private breakpointObserver: BreakpointObserver
+  ) {
+    this.breakpointObserver.observe([Breakpoints.Handset])
+      .subscribe(result => {
+        this.isMobile = result.matches;
+      });
+  }
+
+  toggleDrawer(drawer: MatDrawer) {
+    if (this.isMobile) drawer.toggle();
+  }
 
   ngOnInit() {
     this.authService.currentUser$.subscribe({

@@ -1,27 +1,35 @@
+/* ===================== */
+/* FORM WRAPPER          */
+/* ===================== */
 .form-container {
   padding: 24px;
   display: flex;
   justify-content: center;
 }
 
-.livestock-form {
+.livestock-classification-form {
   width: 100%;
   max-width: 700px;
 }
 
+/* ===================== */
+/* WIDTH HELPERS         */
+/* ===================== */
 .full-width {
   width: 100%;
 }
 
 .half-width {
   width: 48%;
-  margin-right: 2%;
 }
 
 .third-width {
   width: 31%;
 }
 
+/* ===================== */
+/* FORM ROWS             */
+/* ===================== */
 .form-row {
   display: flex;
   flex-wrap: wrap;
@@ -30,8 +38,12 @@
   align-items: flex-start;
 }
 
+/* ===================== */
+/* MATERIAL CARD STYLING */
+/* ===================== */
 mat-card {
   padding: 16px;
+  border-radius: 12px;
 }
 
 mat-card-title {
@@ -39,13 +51,18 @@ mat-card-title {
   font-weight: 600;
 }
 
+/* ===================== */
+/* LOADING STATE         */
+/* ===================== */
 .loading-state {
   text-align: center;
   margin-top: 60px;
   color: #555;
 }
 
-/* --- Animal Photos Section --- */
+/* ==================================== */
+/* ANIMAL PHOTO SECTION (YOU KEEP THIS) */
+/* ==================================== */
 .animal-photos-section {
   display: flex;
   flex-direction: column;
@@ -82,7 +99,6 @@ mat-card-title {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 4px; /* keeps your original style */
 }
 
 .remove-btn {
@@ -116,4 +132,33 @@ mat-card-title {
 
 .upload-btn:hover {
   background-color: #303f9f;
+}
+
+/* ==================================== */
+/* RESPONSIVE — MOBILE OPTIMIZED        */
+/* ==================================== */
+@media (max-width: 768px) {
+  .half-width,
+  .third-width {
+    width: 100%;
+  }
+
+  .form-row {
+    gap: 12px;
+  }
+
+  mat-card {
+    padding: 12px;
+  }
+
+  mat-card-title {
+    font-size: 1.1rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  mat-card-title {
+    font-size: 1rem;
+  }
 }

@@ -1,55 +1,70 @@
 <mat-drawer-container class="example-container">
   <!-- Sidebar -->
-  <mat-drawer mode="side" [opened]="isLoggedIn && showSideNav" [disableClose]="true">
+  <mat-drawer
+    #drawer
+    [mode]="isMobile ? 'over' : 'side'"
+    [opened]="!isMobile && isLoggedIn && showSideNav"
+    class="sidebar">
+
     <mat-toolbar color="primary" class="sidebar-toolbar">
       <img src="assets/images/logo.png" alt="System Logo" class="sidebar-logo">
     </mat-toolbar>
 
-
-    <mat-list role="list">
-      <app-nav [disabled]="isLoading" [menuItems]="filteredMenuItems"></app-nav>
+    <mat-list>
+      <app-nav
+        [disabled]="isLoading"
+        [menuItems]="filteredMenuItems"
+        (menuClick)="isMobile ? drawer.close() : null">
+      </app-nav>
     </mat-list>
   </mat-drawer>
 
   <!-- Main content -->
   <mat-drawer-content>
-    <!-- Top Navigation Bar -->
-    <mat-toolbar color="primary" class="top-nav" *ngIf="showTopNav && showSideNav">
+    <!-- TOP NAV -->
+    <mat-toolbar *ngIf="isLoggedIn" color="primary" class="top-nav">
+
+      <!-- Hamburger only on mobile -->
+      <button *ngIf="isMobile" mat-icon-button (click)="drawer.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+
       <span class="dashboard-title">
         <mat-icon class="title-icon">{{ activeIcon }}</mat-icon>
         <span class="title-text">{{ activeTitle }}</span>
       </span>
+
       <span class="spacer"></span>
 
-      <!-- User Dropdown -->
-      <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
+      <!-- User Dropdown (icon only on mobile) -->
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-button-mobile" *ngIf="isMobile">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+
+      <!-- Full user button on desktop -->
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user-button" *ngIf="!isMobile">
         <div class="user-avatar">
           <mat-icon>account_circle</mat-icon>
         </div>
         <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
       </button>
 
-      <mat-menu #userMenu="matMenu" class="user-menu">
-        <div class="menu-header">
-          <div class="menu-avatar"></div>
-          <div class="menu-info"></div>
-        </div>
-
+      <mat-menu #userMenu="matMenu">
         <button mat-menu-item (click)="goToUserSettings()">
           <mat-icon>settings</mat-icon>
           <span>My Account</span>
         </button>
-
         <button mat-menu-item (click)="onClickLogout()">
           <mat-icon color="warn">logout</mat-icon>
           <span>Logout</span>
         </button>
       </mat-menu>
+
     </mat-toolbar>
 
-    <!-- Page Content -->
     <div class="main-content">
       <router-outlet></router-outlet>
     </div>
+
   </mat-drawer-content>
 </mat-drawer-container>
