@@ -136,11 +136,12 @@ export class LivestockList implements OnInit {
       const s = this.searchText.toLowerCase();
       data = data.filter(item => {
         const matchesTag = String(item.tagNumber).toLowerCase().includes(s);
-        const matchesSpecies = String(item.species || '').toLowerCase().includes(s);
-        const matchesBreed = String(item.breed || '').toLowerCase().includes(s);
-        const matchesFarmer = String(item.farmer || '').toLowerCase().includes(s);
+        const matchesSpecies = String(this.getSpeciesName(item.species) || '').toLowerCase().includes(s);
+        const matchesBreed = String(this.getBreedName(item.breed) || '').toLowerCase().includes(s);
+        const matchesBarangay = this.isUserDto(item.farmer) && item.farmer.address?.barangay?.toLowerCase().includes(s);
+        const matchesStatus = String(item.status).toLowerCase().includes(s);
 
-        return matchesTag || matchesSpecies || matchesBreed || matchesFarmer;
+        return matchesTag || matchesSpecies || matchesBreed || matchesBarangay || matchesStatus;
       });
     }
 
@@ -155,10 +156,6 @@ export class LivestockList implements OnInit {
     const start = this.pageIndex * this.pageSize;
     const end = start + this.pageSize;
     this.pagedData = data.slice(start, end);
-  }
-
-  private getNestedValue(obj: any, path: string): any {
-    return obj[path];
   }
 
   onPageChange(event: any) {

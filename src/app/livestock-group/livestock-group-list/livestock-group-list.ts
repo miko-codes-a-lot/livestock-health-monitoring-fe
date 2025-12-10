@@ -155,8 +155,9 @@ export class LivestockGroupList implements OnInit {
           const matchesGroupName = item.groupName.toLowerCase().includes(s);
 
           const matchesBarangay = item.farmer.address?.barangay?.toLowerCase().includes(s);
+          const matchesStatus = String(item.status).toLowerCase().includes(s);
 
-          return matchesBarangay || matchesGroupName;
+          return matchesBarangay || matchesGroupName || matchesStatus;
         }
 
         return null
