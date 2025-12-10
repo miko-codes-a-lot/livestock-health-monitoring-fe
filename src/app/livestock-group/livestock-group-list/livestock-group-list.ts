@@ -15,6 +15,13 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { configureTable } from '../../utils/table/configure-table';
 
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
+
+
 
 @Component({
   selector: 'app-livestock-group-list',
@@ -24,7 +31,12 @@ import { configureTable } from '../../utils/table/configure-table';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    GenericTableComponent
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    GenericTableComponent,
+    FormsModule
   ],
   templateUrl: './livestock-group-list.html',
   styleUrls: ['./livestock-group-list.css']
@@ -48,8 +60,15 @@ export class LivestockGroupList implements OnInit {
     { key: 'status', label: 'Status' },
   ];
 
+  searchText = '';
+  sortField = 'groupName';
+
+  pagedData: LivestockGroup[] = [];
+  pageSize = 5;
+  pageIndex = 0;
+
   @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
 
   constructor(
     private readonly livestockGroupService: LivestockGroupService,
@@ -75,13 +94,24 @@ export class LivestockGroupList implements OnInit {
         }
         
         this.dataSource.data = filteredGroups;
+
+        this.applyFilters();
       },
       error: (err) => alert(`Something went wrong: ${err}`),
     }).add(() => this.isLoading = false);
+
+    this.applyFilters();
+
   }
 
   ngAfterViewInit() {
     // sorting & filtering for nested fields
+
+    setTimeout(() => {
+      if (this.paginator) {
+        this.paginator.page.subscribe((event) => this.onPageChange(event));
+      }
+    });
     configureTable(this.dataSource, ['farmer.address.barangay'])
   }
 
@@ -112,4 +142,55 @@ export class LivestockGroupList implements OnInit {
   get canCreate(): boolean {
     return !!this.user && this.user.role === 'farmer';
   }
+
+  applyFilters() {
+    let data = [...this.dataSource.data];
+
+    // SEARCH
+    if (this.searchText.trim()) {
+      const s = this.searchText.toLowerCase();
+      data = data.filter(item => {
+
+        if(this.isUserDto(item.farmer)) {
+          const matchesGroupName = item.groupName.toLowerCase().includes(s);
+
+          const matchesBarangay = item.farmer.address?.barangay?.toLowerCase().includes(s);
+
+          return matchesBarangay || matchesGroupName;
+        }
+
+        return null
+
+      });
+    }
+
+    // SORT
+    data.sort((a, b) => {
+      const valA = (this.getNestedValue(a, this.sortField) || '').toString().toLowerCase();
+      const valB = (this.getNestedValue(b, this.sortField) || '').toString().toLowerCase();
+      return valA.localeCompare(valB);
+    });
+
+    // PAGINATION
+    const start = this.pageIndex * this.pageSize;
+    const end = start + this.pageSize;
+
+    this.pagedData = data.slice(start, end);
+  }
+
+  onPageChange(event: any) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.applyFilters();
+  }
+
+  onSearchChange() {
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  onSortChange() {
+    this.applyFilters();
+  }
+
 }

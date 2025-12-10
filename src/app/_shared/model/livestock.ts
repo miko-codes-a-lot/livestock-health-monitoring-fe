@@ -13,4 +13,5 @@ export interface Livestock {
   isDeceased: boolean;
   status: 'pending' | 'approved' | 'rejected' | string;
   statusAt?: string;
+  
 }

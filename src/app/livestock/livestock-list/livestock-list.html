@@ -1,27 +1,100 @@
-<app-generic-table
-  [title]="'Livestocks'"
-  [createButtonLabel]="'Create Livestock'"
-  [displayedColumns]="displayedColumnsKeys"
-  [canCreate]="canCreate"
-  [columnDefs]="columnDefs"
-  [data]="dataSource.data"
-  [isLoading]="isLoading"
-  (create)="onCreate()"
-  (details)="onDetails($event)"
-  (update)="onUpdate($event)"
->
-  <ng-template #actions let-element>
-    <button mat-icon-button color="accent" (click)="onDetails(element._id!)">
-      <mat-icon>visibility</mat-icon>
+@if(user?.role === 'farmer') {
+  <!-- ACTIONS BAR WITH CREATE BUTTON -->
+<div class="livestock-module-container">
+
+  <div class="actions-bar">
+    <button mat-raised-button color="primary" (click)="onCreate()" [disabled]="!canCreate">
+      Create Livestock
     </button>
-    <button
-      mat-icon-button
-      color="primary"
-      (click)="onUpdate(element._id!)"
-      *ngIf="user?.role === 'farmer'"
-      [disabled]="element.status === 'pending' || element.status === 'verified'"
-    >
-      <mat-icon>edit</mat-icon>
-    </button>
-  </ng-template>
-</app-generic-table>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search livestock</mat-label>
+      <input matInput [(ngModel)]="searchText" (input)="onSearchChange()">
+      <button *ngIf="searchText" matSuffix mat-icon-button (click)="searchText=''; onSearchChange();">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="sort-field">
+      <mat-label>Sort by</mat-label>
+      <mat-select [(ngModel)]="sortField" (selectionChange)="onSortChange()">
+        <mat-option value="tagNumber">Tag Number</mat-option>
+        <mat-option value="species">Species</mat-option>
+        <mat-option value="breed">Breed</mat-option>
+        <mat-option value="status">Status</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- LIVESTOCK CARDS -->
+  <div class="farmer-card-container">
+    @for(item of pagedData; track item._id) {
+      <div class="farmer-card">
+        <div class="row"><span class="label">Tag Number</span><span class="value">{{item.tagNumber}}</span></div>
+        <div class="row">
+          <span class="label">Species</span>
+          <span class="value">{{ getSpeciesName(item.species) }}</span>
+        </div>
+        <div class="row"><span class="label">Breed</span>
+            <span class="value">{{ getBreedName(item.breed) }}</span>
+        </div>
+        <div class="row"><span class="label">Barangay</span>
+          <span class="value">
+            {{  isUserDto(item.farmer) ? item.farmer.address.barangay : '—'}}
+          </span>
+        </div>
+        <div class="row"><span class="label">Status</span><span class="value status {{item.status}}">{{item.status | titlecase}}</span></div>
+
+        <div class="actions">
+          <button mat-icon-button color="accent" (click)="onDetails(item._id!)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="onUpdate(item._id!)" [disabled]="item.status === 'pending' || item.status === 'verified'">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <mat-paginator
+    [length]="dataSource.data.length"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[5, 10, 20]"
+    (page)="onPageChange($event)">
+  </mat-paginator>
+</div>
+
+} @else {
+  <app-generic-table
+    [title]="'Livestocks'"
+    [createButtonLabel]="'Create Livestock'"
+    [displayedColumns]="displayedColumnsKeys"
+    [canCreate]="canCreate"
+    [columnDefs]="columnDefs"
+    [data]="dataSource.data"
+    [isLoading]="isLoading"
+    (create)="onCreate()"
+    (details)="onDetails($event)"
+    (update)="onUpdate($event)"
+  >
+    <ng-template #actions let-element>
+      <button mat-icon-button color="accent" (click)="onDetails(element._id!)">
+        <mat-icon>visibility</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="onUpdate(element._id!)"
+        *ngIf="user?.role === 'farmer'"
+        [disabled]="element.status === 'pending' || element.status === 'verified'"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+    </ng-template>
+  </app-generic-table>
+}

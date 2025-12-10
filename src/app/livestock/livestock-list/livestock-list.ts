@@ -15,6 +15,12 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { configureTable } from '../../utils/table/configure-table';
 
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
+
 interface ColumnDef<T> {
   key: string;
   label: string;
@@ -29,7 +35,12 @@ interface ColumnDef<T> {
     MatProgressSpinnerModule,
     GenericTableComponent,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    FormsModule
   ],
   templateUrl: './livestock-list.html',
   styleUrls: ['./livestock-list.css']
@@ -39,26 +50,21 @@ export class LivestockList implements OnInit {
   isLoading = false;
   user: UserDto | null = null;
 
+  searchText = '';
+  sortField = 'tagNumber';
+
+  pagedData: Livestock[] = [];
+  pageSize = 5;
+  pageIndex = 0;
+
   columnDefs: ColumnDef<Livestock>[] = [
-    { key: 'tagNumber', label: 'Tag Number' },
-    { 
-      key: 'species.name',   
-      label: 'Species', 
-      cell: (element: any) => element.species.name || '—'
-    },
-    { 
-      key: 'breed.name', 
-      label: 'Breed', 
-      cell: (element: any) => element.breed.name || '—'
-    },
-    { key: 'sex', label: 'Sex' },
-    { key: 'age', label: 'Age' },
-    {
-      key: 'farmer.address.barangay',
-      label: 'Barangay',
-      cell: (element: any) => element.farmer?.address.barangay || '—'
-    },
-    { key: 'status', label: 'Status' },
+    { key: 'tagNumber', label: 'Tag Number', cell: el => el.tagNumber },
+    { key: 'species', label: 'Species', cell: el => el.species || '—' },
+    { key: 'breed', label: 'Breed', cell: el => el.breed || '—' },
+    { key: 'sex', label: 'Sex', cell: el => el.sex },
+    { key: 'age', label: 'Age', cell: el => el.age },
+    { key: 'farmer', label: 'Farmer', cell: el => el.farmer || '—' },
+    { key: 'status', label: 'Status', cell: el => el.status },
   ];
 
   displayedColumnsKeys = [...this.columnDefs.map(c => c.key), 'actions'];
@@ -88,6 +94,8 @@ export class LivestockList implements OnInit {
           filtered = livestock.filter(l => l.status !== 'draft');
         }
         this.dataSource.data = filtered;
+
+        this.applyFilters();
       },
       error: (err) => alert(`Something went wrong: ${err}`)
     }).add(() => (this.isLoading = false));
@@ -119,4 +127,66 @@ export class LivestockList implements OnInit {
   get canCreate(): boolean {
     return !!this.user && this.user.role === 'farmer';
   }
+
+  applyFilters() {
+    let data = [...this.dataSource.data];
+
+    // SEARCH
+    if (this.searchText.trim()) {
+      const s = this.searchText.toLowerCase();
+      data = data.filter(item => {
+        const matchesTag = String(item.tagNumber).toLowerCase().includes(s);
+        const matchesSpecies = String(item.species || '').toLowerCase().includes(s);
+        const matchesBreed = String(item.breed || '').toLowerCase().includes(s);
+        const matchesFarmer = String(item.farmer || '').toLowerCase().includes(s);
+
+        return matchesTag || matchesSpecies || matchesBreed || matchesFarmer;
+      });
+    }
+
+    // SORT
+    data.sort((a, b) => {
+      const valA = String(a[this.sortField as keyof Livestock] || '').toLowerCase();
+      const valB = String(b[this.sortField as keyof Livestock] || '').toLowerCase();
+      return valA.localeCompare(valB);
+    });
+
+    // PAGINATION
+    const start = this.pageIndex * this.pageSize;
+    const end = start + this.pageSize;
+    this.pagedData = data.slice(start, end);
+  }
+
+  private getNestedValue(obj: any, path: string): any {
+    return obj[path];
+  }
+
+  onPageChange(event: any) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.applyFilters();
+  }
+
+  onSearchChange() {
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  onSortChange() {
+    this.applyFilters();
+  }
+
+  isUserDto(farmer: string | UserDto): farmer is UserDto {
+    return typeof farmer !== 'string' && '_id' in farmer;
+  }
+
+  
+  getSpeciesName(species: any): string {
+    return species?.name || species || '—';
+  }
+
+  getBreedName(breed: any): string {
+    return breed?.name || breed || '—';
+  }
+
 }
