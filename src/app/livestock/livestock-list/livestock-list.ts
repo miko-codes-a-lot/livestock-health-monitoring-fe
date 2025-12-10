@@ -57,14 +57,30 @@ export class LivestockList implements OnInit {
   pageSize = 5;
   pageIndex = 0;
 
-  columnDefs: ColumnDef<Livestock>[] = [
-    { key: 'tagNumber', label: 'Tag Number', cell: el => el.tagNumber },
-    { key: 'species', label: 'Species', cell: el => el.species || '—' },
-    { key: 'breed', label: 'Breed', cell: el => el.breed || '—' },
-    { key: 'sex', label: 'Sex', cell: el => el.sex },
-    { key: 'age', label: 'Age', cell: el => el.age },
-    { key: 'farmer', label: 'Farmer', cell: el => el.farmer || '—' },
-    { key: 'status', label: 'Status', cell: el => el.status },
+  // columnDefs: ColumnDef<Livestock>[] = [
+  //   { key: 'tagNumber', label: 'Tag Number', cell: el => el.tagNumber },
+  //   { key: 'species', label: 'Species', cell: el => el.species || '—' },
+  //   { key: 'breed', label: 'Breed', cell: el => el.breed || '—' },
+  //   { key: 'sex', label: 'Sex', cell: el => el.sex },
+  //   { key: 'age', label: 'Age', cell: el => el.age },
+  //   { key: 'farmer', label: 'Farmer', cell: el => el.farmer || '—' },
+  //   { key: 'status', label: 'Status', cell: el => el.status },
+  // ];
+
+  columnDefs = [
+    { key: 'tagNumber', label: 'Tag Number' },
+    { key: 'species', label: 'Species',
+      cell: (element: any) => element.species?.name || '—'},
+    { key: 'breed', label: 'Breed',
+      cell: (element: any) => element.breed?.name || '—'},
+    { key: 'sex', label: 'Sex'},
+    { key: 'age', label: 'Age'},
+    {
+      key: 'farmer.address.barangay',
+      label: 'Barangay',
+      cell: (element: any) => element.farmer?.address.barangay || '—'
+    },
+    { key: 'status', label: 'Status' },
   ];
 
   displayedColumnsKeys = [...this.columnDefs.map(c => c.key), 'actions'];
