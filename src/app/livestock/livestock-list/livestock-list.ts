@@ -77,11 +77,11 @@ export class LivestockList implements OnInit {
       cell: (element: any) => element.breed?.name || '—'},
     { key: 'sex', label: 'Sex'},
     { key: 'age', label: 'Age'},
-    {
-      key: 'farmer.address.barangay',
-      label: 'Barangay',
-      cell: (element: any) => element.farmer?.address.barangay || '—'
-    },
+    // {
+    //   key: 'farmer.address.barangay',
+    //   label: 'Barangay',
+    //   cell: (element: any) => element.farmer?.address?.barangay || '—'
+    // },
     { key: 'status', label: 'Status' },
   ];
 

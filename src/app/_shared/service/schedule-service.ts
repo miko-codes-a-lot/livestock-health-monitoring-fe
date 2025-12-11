@@ -19,6 +19,7 @@ export class ScheduleService {
         healthRecord: '',
         createdBy: '',
         assignedVet: '',
+        farmer: '',
         type: 'vaccination', // default type
         scheduledDate: new Date(), // or '' if you prefer empty
         status: 'pending', // default status

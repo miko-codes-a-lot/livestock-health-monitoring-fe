@@ -1,3 +1,5 @@
+import { UserDto } from "./user-dto";
+
 export interface Livestock {
   _id?: string;
   tagNumber: string;
@@ -13,5 +15,4 @@ export interface Livestock {
   isDeceased: boolean;
   status: 'pending' | 'approved' | 'rejected' | string;
   statusAt?: string;
-  
 }

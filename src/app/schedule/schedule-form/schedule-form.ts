@@ -44,9 +44,11 @@ export class ScheduleForm implements OnInit {
   private _initDoc!: Schedule;
   @Output() onSubmitEvent = new EventEmitter<{ scheduleData: Schedule }>();
 
-  livestocks: { _id: string; name: string; }[] = [];
+  livestocks: { _id: string; name: string; farmer: string }[] = [];
+  filteredLivestocks: { _id: string; name: string; farmer: string }[] = [];
   filteredHealthRecords: { _id: string; name: string }[] = [];
   vets: { _id: string; name: string; }[] = [];
+  farmers: { _id: string; name: string; }[] = [];
   currentUser: UserDto | null = null;
 
   rxform!: FormGroup<RxScheduleForm>;
@@ -91,8 +93,8 @@ export class ScheduleForm implements OnInit {
     //   // this.tryPatchForm();
     // });
 
-    this.livestock();
-    this.loadVets();
+    this.loadLivestock();
+    this.loadVetsAndFarmers();
     this.initializeForm();
   }
 
@@ -110,6 +112,7 @@ export class ScheduleForm implements OnInit {
       animal: this.fb.control('', { validators: Validators.required, nonNullable: true }),
       healthRecord: this.fb.control('', { validators: Validators.required, nonNullable: true }),
       assignedVet: this.fb.control('', { validators: Validators.required, nonNullable: true }),
+      farmer: this.fb.control('', { validators: Validators.required, nonNullable: true }),
       type: this.fb.control('vaccination', { validators: Validators.required, nonNullable: true }),
       scheduledDate: this.fb.control('', { validators: Validators.required, nonNullable: true }),
     });
@@ -117,11 +120,36 @@ export class ScheduleForm implements OnInit {
     this.rxform.get('animal')?.valueChanges.subscribe(value => {
       this.onAnimalChange(value);
     });
+
+    this.rxform.get('farmer')?.valueChanges.subscribe(farmerId => {
+      this.onFarmerChange(farmerId);
+    });
+  }
+
+  onFarmerChange(farmerId: string) {
+    // Reset Animal and Health Record selections
+    this.rxform.get('animal')?.setValue('');
+    this.rxform.get('healthRecord')?.setValue('');
+    this.filteredHealthRecords = []; // Clear health records list
+
+    this.filterLivestocks(farmerId);
+  }
+
+  filterLivestocks(farmerId: string) {
+    if (farmerId && this.livestocks.length > 0) {
+      this.filteredLivestocks = this.livestocks.filter(
+        l => l.farmer === farmerId
+      );
+    } else {
+      this.filteredLivestocks = [];
+    }
   }
 
   // --- Patch helper ---
   private patchFormWithInitDoc(value: Schedule): void {
+    if (!value) return;
     this.rxform.patchValue({
+      farmer: value.farmer, // Ensure farmer is patched
       animal: value.animal,
       healthRecord: value.healthRecord,
       assignedVet: value.assignedVet,
@@ -131,19 +159,30 @@ export class ScheduleForm implements OnInit {
           ? value.scheduledDate
           : value.scheduledDate.toISOString()
         : '',
-    });
-  }
+    }, { emitEvent: false }); 
 
-  private livestock(): void {
+    if (value.farmer) {
+      this.filterLivestocks(value.farmer);
+    }
+    if (value.animal) {
+      this.onAnimalChange(value.animal);
+    }
+  }
+  private loadLivestock(): void {
     this.livestockService.getAll().subscribe(livestocks => {
       this.livestocks = livestocks
-       .filter((l: any) => 
-          l.status === 'verified'
-        )
-        .map(l => ({
+       .filter((l: any) => l.status === 'verified')
+       .map(l => ({
           _id: String(l._id),
-          name: `${l.tagNumber} - ${(l.breed as any).name}`
+          farmer: String(l.farmer), // Ensure string type
+          name: `${l.tagNumber} - ${(l.breed as any).name}`,
       }));
+
+      // If form is already populated (e.g. by initDoc), refresh the filtered list now that data is here
+      const currentFarmer = this.rxform.controls.farmer.value;
+      if (currentFarmer) {
+        this.filterLivestocks(currentFarmer);
+      }
     });
   }
 
@@ -155,19 +194,17 @@ export class ScheduleForm implements OnInit {
     
     this.healthRecordService.getAll().subscribe(healthRecords => {
       this.filteredHealthRecords = healthRecords
-        .filter((hr: any) => 
-          hr.animal._id === livestockId
+        .filter((hr: any) =>
+          hr.animal?._id === livestockId
         )
         .map((hr: any) => ({
           _id: hr._id,
           name: `Tag Number: ${hr.animal.tagNumber} | Body Condition: ${hr.bodyCondition} | Weight(Kg): ${hr.weightKg}`
         }));
-      console.log('this.filteredHealthRecords', this.filteredHealthRecords)
-      this.rxform.get('healthRecord')?.value;
     });
   }
 
-  private loadVets(): void {
+  private loadVetsAndFarmers(): void {
     this.userService.getAll().subscribe(users => {
       this.vets = users
         .filter(u => u.role === 'vet')
@@ -175,6 +212,9 @@ export class ScheduleForm implements OnInit {
           _id: String(u._id),
           name: `${u.firstName} ${u.lastName}` 
       }));
+      this.farmers = users.filter(u => u.role === 'farmer')
+        .filter(u => this.currentUser?.address?.barangay === u.address?.barangay)
+        .map(u => ({ _id: String(u._id), name: `${u.firstName} ${u.lastName}` }));
       // this.tryPatchForm();
     });
   }
@@ -192,6 +232,7 @@ export class ScheduleForm implements OnInit {
       healthRecord: formValue.healthRecord,
       createdBy: this.currentUser?._id,
       assignedVet: formValue.assignedVet,
+      farmer: formValue.farmer,
       type: formValue.type,
       scheduledDate: new Date(formValue.scheduledDate).toISOString(), // <-- convert to ISO string
       status: 'pending'

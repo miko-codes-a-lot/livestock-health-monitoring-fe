@@ -19,7 +19,7 @@
       color="primary"
       (click)="onUpdate(element._id!)"
       *ngIf="user?.role === 'technician'"
-      [disabled]="['pending', 'approved', 'completed', 'declined' ].includes(element.status)"
+      [disabled]="['approved', 'completed', 'declined' ].includes(element.status)"
     >
       <mat-icon>edit</mat-icon>
     </button>

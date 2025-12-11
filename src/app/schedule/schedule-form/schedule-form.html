@@ -6,19 +6,32 @@
       </mat-card-header>
 
       <mat-card-content>
-        <!-- Row 1: Animal Health Record -->
         <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Animal</mat-label>
-            <mat-select formControlName="animal">
-              <mat-option *ngFor="let f of livestocks" [value]="f._id"
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Farmer</mat-label>
+            <mat-select formControlName="farmer">
+              <mat-option *ngFor="let f of farmers" [value]="f._id"
                 >{{ f.name }}</mat-option
               >
             </mat-select>
-            <mat-error *ngIf="rxform.controls.animal.hasError('required')">
-              Animal is required.
+            <mat-error *ngIf="rxform.controls.farmer.hasError('required')">
+              Farmer is required.
             </mat-error>
           </mat-form-field>
+        </div>
+        <!-- Row 1: Animal Health Record -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Animal</mat-label>
+              <mat-select formControlName="animal">
+                <mat-option *ngFor="let l of filteredLivestocks" [value]="l._id"
+                  >{{ l.name }}</mat-option
+                >
+              </mat-select>
+              <mat-error *ngIf="rxform.controls.animal.hasError('required')">
+                Animal is required.
+              </mat-error>
+            </mat-form-field>
 
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Health Record</mat-label>
