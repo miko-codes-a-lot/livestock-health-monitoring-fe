@@ -57,6 +57,8 @@ export class LivestockList implements OnInit {
   pageSize = 5;
   pageIndex = 0;
 
+  filteredData: Livestock[] = [];
+
   // columnDefs: ColumnDef<Livestock>[] = [
   //   { key: 'tagNumber', label: 'Tag Number', cell: el => el.tagNumber },
   //   { key: 'species', label: 'Species', cell: el => el.species || '—' },
@@ -168,6 +170,8 @@ export class LivestockList implements OnInit {
       return valA.localeCompare(valB);
     });
 
+    this.filteredData = data;
+
     // PAGINATION
     const start = this.pageIndex * this.pageSize;
     const end = start + this.pageSize;
@@ -181,6 +185,7 @@ export class LivestockList implements OnInit {
   }
 
   onSearchChange() {
+    console.log('dataSource.data', this.dataSource.data);
     this.pageIndex = 0;
     this.applyFilters();
   }

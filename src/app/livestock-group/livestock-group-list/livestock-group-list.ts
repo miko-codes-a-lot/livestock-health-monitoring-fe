@@ -48,6 +48,8 @@ export class LivestockGroupList implements OnInit {
 
   dataSource = new MatTableDataSource<LivestockGroup>();
 
+  filteredData: LivestockGroup[] = [];
+
   // Table config
   displayedColumns = ['groupName', 'farmer.address.barangay', 'status', 'actions'];
   columnDefs = [
@@ -171,6 +173,8 @@ export class LivestockGroupList implements OnInit {
       const valB = (this.getNestedValue(b, this.sortField) || '').toString().toLowerCase();
       return valA.localeCompare(valB);
     });
+
+    this.filteredData = data;
 
     // PAGINATION
     const start = this.pageIndex * this.pageSize;
