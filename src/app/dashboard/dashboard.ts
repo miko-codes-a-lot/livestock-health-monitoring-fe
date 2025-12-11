@@ -1,13 +1,22 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { AuthService } from '../_shared/service/auth-service';
 import { AnalyticsService } from '../_shared/service/analytics-service';
 import { MortalityCause } from '../_shared/model/mortality-cause';
 import { MortalityCauseService } from '../_shared/service/mortality-cause-service';
+import { Notification, NotificationType } from '../_shared/model/notification';
+import { NotificationService } from '../_shared/service/notification-service';
+
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatBadgeModule } from '@angular/material/badge';
+
+import { Router } from '@angular/router';
 
 interface DashboardStats {
   totalLivestock: number;
@@ -65,6 +74,10 @@ Chart.register(...registerables);
   imports: [
     CommonModule,
     FormsModule,
+    MatCardModule,
+    MatIconModule,
+    MatChipsModule,
+    MatBadgeModule
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
@@ -72,6 +85,9 @@ Chart.register(...registerables);
 export class Dashboard {
   role?: string;
   isLoading = true;
+
+  unreadNotificationsCount$!: Observable<number>;
+  notifications$!: Observable<Notification[]>;
 
   dashboardStats: DashboardStats = {
     totalLivestock: 0,
@@ -95,6 +111,21 @@ export class Dashboard {
     healthCheckups: 0
   };
 
+  dashboardData = {
+    adminDashboard: {
+      weeklyReport: {
+        weekOf: '',
+        totalAppointments: 0,
+        patientRecordsChanged: 0,
+        preferredServices: {} as Record<string, number>
+      },
+      dailyAppointmentQueue: [],
+      notifications: []
+    }
+  };
+
+  showNotifications = false;
+
   private charts: Map<string, Chart> = new Map();
   private analyticsData: AdminAnalyticsData | FarmerAnalyticsData | null = null;
 
@@ -102,6 +133,8 @@ export class Dashboard {
     private readonly authService: AuthService,
     private readonly analyticsService: AnalyticsService,
     private readonly mortalityCauseService: MortalityCauseService,
+    private router: Router,
+    private notificationService: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -562,5 +595,44 @@ export class Dashboard {
     this.createOrUpdateChart('farmerInsurance', canvas, config);
 
     // this.charts.set('farmerInsurance', new Chart(canvas, config));
+  }
+
+  get weeklyReport() {
+    return this.dashboardData.adminDashboard.weeklyReport;
+  }
+
+  toggleNotifications(): void {
+    this.showNotifications = !this.showNotifications;
+  }
+
+  get notifications() {
+    return this.dashboardData.adminDashboard.notifications;
+  }
+  
+  getNotificationTypeClass(type: NotificationType): string {
+    return type === NotificationType.APPOINTMENT_CREATED ? 'booking' : 'cancellation';
+  }
+
+  redirectToDetails(link: string | undefined) {
+    if (link) this.router.navigate([link]);
+  }
+
+  formatNotificationType(type: NotificationType): string {
+    switch (type) {
+      case NotificationType.APPOINTMENT_CREATED: return 'New Booking';
+      case NotificationType.APPOINTMENT_STATUS_UPDATED: return 'Status Update';
+      case NotificationType.APPOINTMENT_REMINDER: return 'Reminder';
+      default: return 'Notification';
+    }
+  }
+
+  formatTimestamp(timestamp: string): string {
+    return new Date(timestamp).toLocaleString();
+  }
+
+  markAsRead(notificationId: string): void {
+    this.notificationService.markAsRead(notificationId).subscribe({
+      error: (err) => console.error(`Failed to mark notification ${notificationId} as read`, err)
+    });
   }
 }

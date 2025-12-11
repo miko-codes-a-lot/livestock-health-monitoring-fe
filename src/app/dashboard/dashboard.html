@@ -1,3 +1,6 @@
+
+
+
 <div *ngIf="isLoading" class="loading-container">
   <div class="loading-spinner">Loading analytics data...</div>
 </div>
@@ -6,22 +9,67 @@
   <div class="dashboard-container">
     <!-- Header -->
     <div class="dashboard-header">
-      <div class="header-content">
-        <div>
-          <h1 class="dashboard-title">
-            Occidental Mindoro San Jose Livestock Watch
-          </h1>
-          <p class="dashboard-subtitle">Dashboard Overview</p>
-        </div>
-        <!-- <div class="role-selector">
-          <label class="role-label">View as:</label>
-          <select [(ngModel)]="role" (change)="onRoleChange()" class="role-select">
-            <option value="farmer">Farmer</option>
-            <option value="technician">Technician</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div> -->
-      </div>
+      <mat-card class="header-card">
+        <mat-card-content>
+          <div class="header-content">
+            <div class="title-section">
+              <h1>Occidental Mindoro San Jose Livestock Watch</h1>
+            </div>
+            <div class="notification-badge">
+              <!-- UPDATED: Using the async pipe for the unread count observable -->
+              <button mat-icon-button (click)="toggleNotifications()" class="notification-btn">
+                <mat-icon 
+                  [matBadge]="unreadNotificationsCount$ | async" 
+                  matBadgeColor="warn" 
+                  [matBadgeHidden]="(unreadNotificationsCount$ | async) === 0">
+                  notifications
+                </mat-icon>
+              </button>
+              
+              <!-- Notification Dropdown -->
+              <div class="notification-dropdown" [class.show]="showNotifications" *ngIf="showNotifications">
+                <div class="notification-header">
+                  <h4>Notifications</h4>
+                  <button mat-icon-button (click)="toggleNotifications()" class="close-btn">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+                <!-- UPDATED: Using async pipe to unwrap the notifications$ observable -->
+                <div class="notification-list" *ngIf="notifications$ | async as notifications">
+                  <!-- UPDATED: Looping over the unwrapped 'notifications' array -->
+                  <div *ngFor="let notification of notifications" class="notification-item" [class.unread]="!notification.read">
+                    <div class="notification-content">
+                      <div class="notification-type">
+                        <!-- UPDATED: Using helper functions for dynamic class and text -->
+                        <mat-chip [class]="'type-chip ' + getNotificationTypeClass(notification.type)"
+                          (click)="redirectToDetails(notification.link)"
+                        >
+                          {{ formatNotificationType(notification.type) }}
+                        </mat-chip>
+                      </div>
+                      <div class="notification-message">{{ notification.message }}</div>
+                      <!-- UPDATED: Using 'createdAt' instead of 'timestamp' -->
+                      <div class="notification-time">{{ formatTimestamp(notification.createdAt) }}</div>
+                    </div>
+                    <div class="notification-actions">
+                      <!-- UPDATED: Checking 'notification.read' and passing 'notification._id' -->
+                      <button *ngIf="!notification.read" mat-button color="primary" (click)="markAsRead(notification._id)" class="mark-read-btn">
+                        Mark as Read
+                      </button>
+                      <mat-icon *ngIf="notification.read" class="read-icon">check_circle</mat-icon>
+                    </div>
+                  </div>
+                  <!-- UPDATED: Checking length of the unwrapped 'notifications' array -->
+                  <div *ngIf="notifications.length === 0" class="no-notifications">
+                    <mat-icon>notifications_none</mat-icon>
+                    <p>No notifications</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
 
     <!-- Stats Cards for Admin/Technician -->
