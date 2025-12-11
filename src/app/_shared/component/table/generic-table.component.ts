@@ -81,10 +81,27 @@ export class GenericTableComponent<T> implements OnInit, AfterViewInit, OnChange
 
     if (this.sort) {
       this.dataSource.sort = this.sort;
+
+      this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+        const value = this.getNestedValue(item, property);
+
+        if (value === null || value === undefined) return '';
+
+        if (typeof value === 'string') return value.toLowerCase();
+
+        if (typeof value === 'number') return value;
+
+        return JSON.stringify(value).toLowerCase();
+      };
+
     }
 
     this.updateMobilePagedData();
     this.dataSource.connect().subscribe(() => this.updateMobilePagedData());
+  }
+
+  private getNestedValue(obj: any, path: string) {
+    return path.split('.').reduce((acc, key) => acc?.[key], obj);
   }
 
   private updateDataSource() {
@@ -137,7 +154,10 @@ export class GenericTableComponent<T> implements OnInit, AfterViewInit, OnChange
   onMarkAsReadClick(el: any) { this.markAsRead.emit(el._id); }
 
   getCellValue(col: any, el: any) {
-    return col.cell ? col.cell(el) : el[col.key];
+    if (col.cell) return col.cell(el);
+
+    const value = this.getNestedValue(el, col.key);
+    return value ?? '';
   }
 
   isCreateDisabled(): boolean {
