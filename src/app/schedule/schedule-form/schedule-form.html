@@ -6,14 +6,14 @@
       </mat-card-header>
 
       <mat-card-content>
-
         <!-- Row 1: Animal Health Record -->
         <div class="form-row">
-
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Animal</mat-label>
             <mat-select formControlName="animal">
-              <mat-option *ngFor="let f of livestocks" [value]="f._id">{{ f.name }}</mat-option>
+              <mat-option *ngFor="let f of livestocks" [value]="f._id"
+                >{{ f.name }}</mat-option
+              >
             </mat-select>
             <mat-error *ngIf="rxform.controls.animal.hasError('required')">
               Animal is required.
@@ -23,11 +23,16 @@
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Health Record</mat-label>
             <mat-select formControlName="healthRecord">
-              <mat-option *ngFor="let hr of filteredHealthRecords" [value]="hr._id">
+              <mat-option
+                *ngFor="let hr of filteredHealthRecords"
+                [value]="hr._id"
+              >
                 {{ hr.name }}
               </mat-option>
             </mat-select>
-            <mat-error *ngIf="rxform.controls.healthRecord.hasError('required')">
+            <mat-error
+              *ngIf="rxform.controls.healthRecord.hasError('required')"
+            >
               Health Record is required.
             </mat-error>
           </mat-form-field>
@@ -35,12 +40,14 @@
 
         <!-- Row 3: Assigned Vet Type -->
         <div class="form-row">
-
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Assigned Vet</mat-label>
             <mat-select formControlName="assignedVet">
-              <mat-option *ngFor="let f of vets" [value]="f._id">{{ f.name }}</mat-option>
-            </mat-select>            <mat-error *ngIf="rxform.controls.assignedVet.hasError('required')">
+              <mat-option *ngFor="let f of vets" [value]="f._id"
+                >{{ f.name }}</mat-option
+              >
+            </mat-select>
+            <mat-error *ngIf="rxform.controls.assignedVet.hasError('required')">
               Assigned Vet is required.
             </mat-error>
           </mat-form-field>
@@ -60,10 +67,19 @@
         <div class="form-row">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Scheduled Date</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="scheduledDate" />
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <input
+              matInput
+              [matDatepicker]="picker"
+              formControlName="scheduledDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
-            <mat-error *ngIf="rxform.controls.scheduledDate.hasError('required')">
+            <mat-error
+              *ngIf="rxform.controls.scheduledDate.hasError('required')"
+            >
               Scheduled Date is required.
             </mat-error>
           </mat-form-field>
@@ -84,11 +100,15 @@
             </mat-error>
           </mat-form-field>
         </div> -->
-
       </mat-card-content>
 
       <mat-card-actions align="end">
-        <button mat-raised-button color="primary" type="submit" [disabled]="rxform.invalid || isLoading">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="rxform.invalid || isLoading"
+        >
           {{ isLoading ? 'Saving...' : 'Submit' }}
         </button>
       </mat-card-actions>
