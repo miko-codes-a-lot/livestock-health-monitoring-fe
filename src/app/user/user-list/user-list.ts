@@ -44,9 +44,12 @@ export class UserList implements OnInit, AfterViewInit {
   user: UserDto | null = null;
   isMobile = false; // add this
 
-  displayedColumns = ['username', 'emailAddress', 'mobileNumber', 'address', 'gender', 'role', 'actions'];
+  displayedColumns = ['username', 'firstName', 'middleName', 'lastName', 'emailAddress', 'mobileNumber', 'address', 'gender', 'role', 'actions'];
   columnDefs = [
     { key: 'username', label: 'Username' },
+    { key: 'firstName', label: 'Firstname' },
+    { key: 'middleName', label: 'Middlename' },
+    { key: 'lastName', label: 'Lastname' },
     { key: 'emailAddress', label: 'Email' },
     { key: 'mobileNumber', label: 'Mobile' },
     { key: 'address', label: 'Address', cell: (e: UserDto) => `${e.address?.municipality || ''}, ${e.address?.barangay || ''}` },
