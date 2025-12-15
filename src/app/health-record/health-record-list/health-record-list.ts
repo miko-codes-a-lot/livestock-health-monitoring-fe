@@ -76,7 +76,7 @@ export class HealthRecordList implements OnInit {
             let recordsData = records
             // console.log('records', records.animal.farmer)
             if(this.user?.role === 'farmer') {
-              recordsData = records.filter((r) => r.animal.farmer === this.user?._id )
+              recordsData = records.filter((r) => r.animal?.farmer === this.user?._id )
             }
             // Add new property to each record
             this.dataSource.data = recordsData.map(r => {
@@ -115,5 +115,4 @@ export class HealthRecordList implements OnInit {
   get canCreate(): boolean {
     return !!this.user && ['technician','admin'].includes(this.user.role);
   }
-
 }
