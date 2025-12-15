@@ -610,7 +610,7 @@ export class Dashboard {
   }
   
   getNotificationTypeClass(type: NotificationType): string {
-    return type === NotificationType.APPOINTMENT_CREATED ? 'booking' : 'cancellation';
+    return type === NotificationType.SCHEDULE_CREATED ? 'booking' : 'cancellation';
   }
 
   redirectToDetails(link: string | undefined) {
@@ -619,9 +619,9 @@ export class Dashboard {
 
   formatNotificationType(type: NotificationType): string {
     switch (type) {
-      case NotificationType.APPOINTMENT_CREATED: return 'New Booking';
-      case NotificationType.APPOINTMENT_STATUS_UPDATED: return 'Status Update';
-      case NotificationType.APPOINTMENT_REMINDER: return 'Reminder';
+      case NotificationType.SCHEDULE_CREATED: return 'New Booking';
+      case NotificationType.SCHEDULE_STATUS_UPDATED: return 'Status Update';
+      case NotificationType.SCHEDULE_REMINDER: return 'Reminder';
       default: return 'Notification';
     }
   }

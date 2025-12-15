@@ -33,8 +33,8 @@ export class MockService {
       recipient: '1', // Corresponds to the recipient user's ID
       message: 'Patient Juan Dela Cruz booked a new appointment.',
       read: false,
-      type: NotificationType.APPOINTMENT_CREATED, // Use the enum for type safety
-      link: '/appointments/507f1f77bcf86cd799439011', // Optional link
+      type: NotificationType.SCHEDULE_CREATED, // Use the enum for type safety
+      link: '/schedule/507f1f77bcf86cd799439011', // Optional link
       triggeredBy: '1', // Corresponds to the old 'createdBy', now a user ID string
       createdAt: now,
       updatedAt: now,

@@ -1,7 +1,7 @@
 export enum NotificationType {
-  APPOINTMENT_CREATED = 'APPOINTMENT_CREATED',
-  APPOINTMENT_STATUS_UPDATED = 'APPOINTMENT_STATUS_UPDATED',
-  APPOINTMENT_REMINDER = 'APPOINTMENT_REMINDER',
+  SCHEDULE_CREATED = 'SCHEDULE_CREATED',
+  SCHEDULE_STATUS_UPDATED = 'SCHEDULE_STATUS_UPDATED',
+  SCHEDULE_REMINDER = 'SCHEDULE_REMINDER',
 }
 
 export interface Notification {
@@ -12,6 +12,6 @@ export interface Notification {
   type: NotificationType;
   link?: string;
   triggeredBy?: string;
-  createdAt: string; // Mongoose timestamps are sent as ISO date strings
+  createdAt: string;
   updatedAt: string;
 }
