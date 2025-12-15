@@ -12,6 +12,7 @@ import { Schedule } from '../../_shared/model/schedule';
 import { ScheduleService } from '../../_shared/service/schedule-service';
 import { UserService } from '../../_shared/service/user-service';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-schedule-details',
@@ -22,7 +23,9 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatDividerModule,
     MatProgressSpinnerModule,
-    MatIconModule
+    MatIconModule,
+    RouterLink,
+    RouterModule
   ],
   templateUrl: './schedule-details.html',
   styleUrl: './schedule-details.css'
@@ -34,6 +37,7 @@ export class ScheduleDetails implements OnInit  {
   farmerName = '';
   livestockGroupName = '';
   healthRecordDetails = '';
+  healthRecordLink = '';
   user: UserDto | null = null;
   vetName = '';
   requestedBy = '';
@@ -67,6 +71,9 @@ export class ScheduleDetails implements OnInit  {
         if (schedule.healthRecord) {
           this.healthRecordService.getOne(schedule.healthRecord).subscribe(hr => {
             this.healthRecordDetails = `Tag Number: ${hr.animal.tagNumber} | Body Condition: ${hr.bodyCondition} | Weight(Kg): ${hr.weightKg}`;
+            // make link use a router
+            this.healthRecordLink = '/health-record/details/'+hr._id;
+            // /health-record/details/691dd12511050d906d06df1e
             this.animal = hr.animal.tagNumber;
           });
         }

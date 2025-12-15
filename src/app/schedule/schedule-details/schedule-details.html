@@ -27,7 +27,7 @@
         <!-- Animal Summary -->
         <div class="detail-item">
           <span class="label">Health Record:</span>
-          <span class="value">{{ healthRecordDetails || '—' }}</span>
+          <span class="value"> <a [routerLink]="healthRecordLink"> {{ healthRecordDetails || '—' }}</a></span>
         </div>
 
         <!-- Assigned Vet -->
