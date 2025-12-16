@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { MatSidenavModule, MatDrawer } from '@angular/material/sidenav';
 import { MatListModule  } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -12,6 +12,8 @@ import { AuthService } from './_shared/service/auth-service';
 import { CommonModule } from '@angular/common';
 import { UserDto } from './_shared/model/user-dto';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { NotificationService } from './_shared/service/notification-service';
+import { Subject } from 'rxjs';
 
 // <-- Put the interface here
 interface MenuItem {
@@ -38,7 +40,9 @@ interface MenuItem {
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
+export class App implements OnDestroy {
+  private destroy$ = new Subject<void>();
+
   isLoading = false
   isLoggedIn = false
   user: UserDto | null = null
@@ -52,6 +56,7 @@ export class App {
 
 
   constructor(
+    private readonly notificationService: NotificationService,
     private readonly authService: AuthService,
     private readonly router: Router,
     private breakpointObserver: BreakpointObserver
@@ -67,31 +72,36 @@ export class App {
   }
 
   ngOnInit() {
-    this.authService.currentUser$.subscribe({
-      next: (user) => {
-          if (user) {
-            this.user = user
-            let exactRole = `/dashboard/${user.role}`
-              if(user.role === 'vet') {
-                exactRole = `/dashboard/veterinarian`
-              }
-              console.log('exactRole', exactRole)
-              this.menuItems = [
-                { label: 'Dashboard', icon: 'dashboard', link: exactRole, roles: ['admin', 'farmer', 'technician', 'vet'] },
-                { label: 'User', icon: 'group', link: '/user', roles: ['admin', 'technician']  },
-                { label: 'Livestock Classification', icon: 'category', link: '/livestock-classification', roles: ['admin', 'technician']  },
-                { label: 'Livestock Breed', icon: 'pets', link: '/livestock-breed', roles: ['admin', 'technician']  },
-                { label: 'Livestock Group', icon: 'groups', link: '/livestock-group', roles: ['admin', 'technician', 'farmer']  },
-                { label: 'Livestock', icon: 'grass', link: '/livestock', roles: ['admin', 'technician', 'farmer']  },
-                { label: 'Health Record', icon: 'medical_services', link: '/health-record', roles: ['admin', 'technician', 'vet', 'farmer']  },
-                { label: 'Schedule', icon: 'event_note', link: '/schedule', roles: ['admin', 'technician', 'vet', 'farmer']  },
-                { label: 'Insurance Policy', icon: 'verified_user', link: '/insurance-policy', roles: ['admin', 'technician', 'farmer']  },
-                { label: 'Claims', icon: 'assignment', link: '/claims', roles: ['admin', 'technician', 'farmer']  },
-              ];
-          }
-          this.isLoggedIn = !!user;
-          this.updateTopNavVisibility();
-      }
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$)).
+      subscribe({
+        next: (user) => {
+            if (user) {
+              this.notificationService.connect();
+              this.user = user
+              let exactRole = `/dashboard/${user.role}`
+                if(user.role === 'vet') {
+                  exactRole = `/dashboard/veterinarian`
+                }
+                console.log('exactRole', exactRole)
+                this.menuItems = [
+                  { label: 'Dashboard', icon: 'dashboard', link: exactRole, roles: ['admin', 'farmer', 'technician', 'vet'] },
+                  { label: 'User', icon: 'group', link: '/user', roles: ['admin', 'technician']  },
+                  { label: 'Livestock Classification', icon: 'category', link: '/livestock-classification', roles: ['admin', 'technician']  },
+                  { label: 'Livestock Breed', icon: 'pets', link: '/livestock-breed', roles: ['admin', 'technician']  },
+                  { label: 'Livestock Group', icon: 'groups', link: '/livestock-group', roles: ['admin', 'technician', 'farmer']  },
+                  { label: 'Livestock', icon: 'grass', link: '/livestock', roles: ['admin', 'technician', 'farmer']  },
+                  { label: 'Health Record', icon: 'medical_services', link: '/health-record', roles: ['admin', 'technician', 'vet', 'farmer']  },
+                  { label: 'Schedule', icon: 'event_note', link: '/schedule', roles: ['admin', 'technician', 'vet', 'farmer']  },
+                  { label: 'Insurance Policy', icon: 'verified_user', link: '/insurance-policy', roles: ['admin', 'technician', 'farmer']  },
+                  { label: 'Claims', icon: 'assignment', link: '/claims', roles: ['admin', 'technician', 'farmer']  },
+                ];
+            } else {
+              this.notificationService.disconnect();
+            }
+            this.isLoggedIn = !!user;
+            this.updateTopNavVisibility();
+        }
     })
 
         // Update activeTitle based on current route
@@ -107,6 +117,11 @@ export class App {
         this.showSideNav = !url.startsWith('/user-settings');
         this.updateTopNavVisibility(event.urlAfterRedirects);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 
   // Utility to decide whether top nav should show

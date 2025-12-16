@@ -305,10 +305,13 @@
 }
 
 /* Actions */
+/* In dashboard.css */
 .notification-actions .mark-read-btn {
   font-size: 0.75rem;
-  padding: 4px 12px;
-  min-width: auto;
+  line-height: 24px;
+  padding: 0 12px;  
+  min-width: unset; 
+  height: 28px;     
 }
 
 .notification-actions .read-icon {

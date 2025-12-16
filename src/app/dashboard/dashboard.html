@@ -42,7 +42,7 @@
                       <div class="notification-type">
                         <!-- UPDATED: Using helper functions for dynamic class and text -->
                         <mat-chip [class]="'type-chip ' + getNotificationTypeClass(notification.type)"
-                          (click)="redirectToDetails(notification.link)"
+                          (click)="redirectToDetails(notification._id, notification.link)"
                         >
                           {{ formatNotificationType(notification.type) }}
                         </mat-chip>
@@ -52,12 +52,16 @@
                       <div class="notification-time">{{ formatTimestamp(notification.createdAt) }}</div>
                     </div>
                     <div class="notification-actions">
-                      <!-- UPDATED: Checking 'notification.read' and passing 'notification._id' -->
-                      <button *ngIf="!notification.read" mat-button color="primary" (click)="markAsRead(notification._id)" class="mark-read-btn">
-                        Mark as Read
-                      </button>
-                      <mat-icon *ngIf="notification.read" class="read-icon">check_circle</mat-icon>
-                    </div>
+                    <button 
+                      *ngIf="!notification.read" 
+                      mat-stroked-button 
+                      color="primary" 
+                      (click)="markAsRead(notification._id)" 
+                      class="mark-read-btn">
+                      Mark as Read
+                    </button>
+                    <mat-icon *ngIf="notification.read" class="read-icon">check_circle</mat-icon>
+                  </div>
                   </div>
                   <!-- UPDATED: Checking length of the unwrapped 'notifications' array -->
                   <div *ngIf="notifications.length === 0" class="no-notifications">

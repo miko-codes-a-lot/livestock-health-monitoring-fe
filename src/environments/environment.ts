@@ -1,4 +1,4 @@
 export const environment = {
   build: 'prod',
-  apiUrl: 'https://livestock-monitoring.cloudants.dev/api'
+  apiUrl: 'https://livestock-monitoring.cloudants.dev'
 };

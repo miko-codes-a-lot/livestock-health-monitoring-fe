@@ -3,7 +3,6 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { MockService } from './mock-service';
 import { io, Socket } from 'socket.io-client';
 import { Notification } from '../model/notification';
-import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -14,23 +13,24 @@ export class NotificationService {
   private notifications$$ = new BehaviorSubject<Notification[]>([])
 
   public notifications$: Observable<Notification[]> = this.notifications$$.asObservable()
+  private audio = new Audio('assets/sounds/notification.wav');
 
-
-  private readonly apiUrl = `${environment.apiUrl}/notifications`;
+  private readonly apiUrl = `/notifications`;
 
   constructor(
     private readonly mockService: MockService,
     private readonly http: HttpClient,
   ) {}
 
-  // call on login
+  // call on login in app.ts ngOnInit
   connect() {
     if (this.socket?.connected) {
       return;
     }
 
-    this.socket = io(`${environment.apiUrl}/notifications`, {
+    this.socket = io(`http://localhost:3000/notifications`, {
       withCredentials: true,
+      // transports: ['websocket'],
     })
 
     this.socket.on('connect', () => {
@@ -47,6 +47,8 @@ export class NotificationService {
       // Get the current list of notifications and add the new one to the top
       const currentNotifications = this.notifications$$.getValue();
       this.notifications$$.next([notification, ...currentNotifications]);
+
+      this.playNotificationSound();
     });
   }
 
@@ -58,12 +60,7 @@ export class NotificationService {
   }
 
   getAll(): Observable<Notification[]> {
-    // should be the body not ID
-    return this.http.get<Notification[]>(this.apiUrl, { withCredentials: true });
-  }
-
-  getAllNotifications(): Observable<Notification[]> {
-    return this.http.get<Notification[]>('/notifications').pipe(
+    return this.http.get<Notification[]>(this.apiUrl).pipe(
       tap(notifications => {
         // Once fetched, update the BehaviorSubject with the full list
         this.notifications$$.next(notifications);
@@ -76,7 +73,7 @@ export class NotificationService {
   }
 
   markAsRead(id: string): Observable<Notification> {
-    return this.http.patch<Notification>(`/notifications/${id}/read`, {}).pipe(
+    return this.http.patch<Notification>(`${this.apiUrl}/${id}/read`, {}).pipe(
       tap(updatedNotification => {
         // For a snappier UI, we update the local state immediately
         // instead of re-fetching the entire list.
@@ -89,14 +86,11 @@ export class NotificationService {
     );
   }
 
-  create(createdBy: string, targetUser: string): Observable<Notification> {
-    return new Observable((s) => {
-      setTimeout(() => {
-        const notification = this.mockService.mockNotification()
-
-        s.next(notification)
-        s.complete()
-      }, 1000);
-    })
+  private playNotificationSound() {
+    this.audio.currentTime = 0; 
+    
+    this.audio.play().catch(err => {
+      console.warn('Could not play notification sound (Autoplay policy):', err);
+    });
   }
 }

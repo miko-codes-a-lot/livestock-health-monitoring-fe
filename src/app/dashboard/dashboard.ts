@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { AuthService } from '../_shared/service/auth-service';
@@ -17,6 +17,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatBadgeModule } from '@angular/material/badge';
 
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 
 interface DashboardStats {
   totalLivestock: number;
@@ -77,7 +78,8 @@ Chart.register(...registerables);
     MatCardModule,
     MatIconModule,
     MatChipsModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatButtonModule
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
@@ -85,9 +87,6 @@ Chart.register(...registerables);
 export class Dashboard {
   role?: string;
   isLoading = true;
-
-  unreadNotificationsCount$!: Observable<number>;
-  notifications$!: Observable<Notification[]>;
 
   dashboardStats: DashboardStats = {
     totalLivestock: 0,
@@ -124,6 +123,8 @@ export class Dashboard {
     }
   };
 
+  unreadNotificationsCount$!: Observable<number>;
+  notifications$!: Observable<Notification[]>;
   showNotifications = false;
 
   private charts: Map<string, Chart> = new Map();
@@ -138,6 +139,19 @@ export class Dashboard {
   ) {}
 
   ngOnInit(): void {
+    this.notifications$ = this.notificationService.notifications$;
+
+    // Calculate unread count dynamically based on the list
+    this.unreadNotificationsCount$ = this.notifications$.pipe(
+      map(notifications => notifications.filter(n => !n.read).length)
+    );
+
+    // We subscribe here to trigger the HTTP call, but we don't need the result
+    // because the service updates the BehaviorSubject automatically.
+    this.notificationService.getAll().subscribe({
+      error: (err) => console.error('Failed to load notifications', err)
+    });
+    
     this.authService.currentUser$.subscribe({
       next: user => {
         if (!user) {
@@ -613,7 +627,8 @@ export class Dashboard {
     return type === NotificationType.SCHEDULE_CREATED ? 'booking' : 'cancellation';
   }
 
-  redirectToDetails(link: string | undefined) {
+  redirectToDetails(id: string, link: string | undefined) {
+    this.markAsRead(id);
     if (link) this.router.navigate([link]);
   }
 
@@ -632,6 +647,9 @@ export class Dashboard {
 
   markAsRead(notificationId: string): void {
     this.notificationService.markAsRead(notificationId).subscribe({
+      next: () => {
+        console.log(`Notification ${notificationId} marked as read`);
+      },
       error: (err) => console.error(`Failed to mark notification ${notificationId} as read`, err)
     });
   }

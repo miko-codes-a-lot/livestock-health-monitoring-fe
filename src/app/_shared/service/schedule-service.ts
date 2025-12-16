@@ -10,7 +10,6 @@ import { HttpClient } from '@angular/common/http';
 // everything is to update
 export class ScheduleService {
     constructor(private readonly http: HttpClient) {}
-    // private readonly baseUrl = '/livestocks';
     private readonly baseUrl = `/schedules`;
     getEmptyOrNullDoc(): Schedule {
       return {
