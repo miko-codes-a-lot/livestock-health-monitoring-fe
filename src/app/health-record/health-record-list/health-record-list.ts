@@ -46,6 +46,8 @@ export class HealthRecordList implements OnInit {
     { key: 'diagnosis', label: 'Diagnosis' },
     { key: 'treatmentGiven', label: 'Treatment' },
     { key: 'technician', label: 'Technician', cell: r => `${r.technician.firstName} ${r.technician.lastName}` },
+    { key: 'createdAt', label: 'Created At' },
+    { key: 'updatedAt', label: 'Updated At' }
   ];
 
   // DO NOT include 'actions' here; GenericTableComponent handles it automatically

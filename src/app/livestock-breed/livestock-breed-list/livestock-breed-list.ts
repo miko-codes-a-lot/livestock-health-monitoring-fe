@@ -18,7 +18,7 @@ export class LivestockBreedList implements OnInit {
   isLoading = false;
   dataSource = new MatTableDataSource<LivestockBreed>();
 
-  displayedColumns = ['name', 'classification', 'actions'];
+  displayedColumns = ['name', 'classification', 'createdAt', 'updatedAt', 'actions'];
   columnDefs = [
     { key: 'name', label: 'Name' },
     { 
@@ -33,7 +33,9 @@ export class LivestockBreedList implements OnInit {
           return 'N/A'; // fallback
         }
       }
-    }
+    },
+    { key: 'createdAt', label: 'Created At' },
+    { key: 'updatedAt', label: 'Updated At' }
   ];
 
   constructor(

@@ -24,7 +24,7 @@ export class ScheduleList implements OnInit {
   dataSource = new MatTableDataSource<Schedule>();
   user: UserDto | null = null;
 
-  displayedColumns = ['animal.tagNumber', 'healthRecord.bodyCondition', 'assignedVet.firstName', 'scheduledDate', 'type', 'status', 'actions'];
+  // displayedColumns = ['animal.tagNumber', 'healthRecord.bodyCondition', 'assignedVet.firstName', 'scheduledDate', 'type', 'status', 'actions'];
   columnDefs = [
     { 
       key:'animal.tagNumber',
@@ -43,7 +43,11 @@ export class ScheduleList implements OnInit {
     { key: 'scheduledDate', label: 'Scheduled Date', cell: (element: any) => new Date(element.scheduledDate).toLocaleString() || '-' },
     { key: 'type', label: 'Type' },
     { key: 'status', label: 'Status' },
+    { key: 'createdAt', label: 'Created At' },
+    { key: 'updatedAt', label: 'Updated At' }
   ];
+
+  displayedColumns = [...this.columnDefs.map(c => c.key), 'actions'];
 
   constructor(
     private readonly scheduleService: ScheduleService,

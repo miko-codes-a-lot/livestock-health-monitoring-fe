@@ -42,9 +42,8 @@ export class UserList implements OnInit, AfterViewInit {
   users: UserDto[] = [];
   isLoading = false;
   user: UserDto | null = null;
-  isMobile = false; // add this
-
-  displayedColumns = ['username', 'firstName', 'middleName', 'lastName', 'emailAddress', 'mobileNumber', 'address', 'gender', 'role', 'actions'];
+  isMobile = false;
+  displayedColumns = ['username', 'firstName', 'middleName', 'lastName', 'emailAddress', 'mobileNumber', 'address', 'gender', 'role', 'createdAt', 'updatedAt', 'actions'];
   columnDefs = [
     { key: 'username', label: 'Username' },
     { key: 'firstName', label: 'Firstname' },
@@ -54,7 +53,9 @@ export class UserList implements OnInit, AfterViewInit {
     { key: 'mobileNumber', label: 'Mobile' },
     { key: 'address', label: 'Address', cell: (e: UserDto) => `${e.address?.municipality || ''}, ${e.address?.barangay || ''}` },
     { key: 'gender', label: 'Gender' },
-    { key: 'role', label: 'Role' }
+    { key: 'role', label: 'Role' },
+    { key: 'createdAt', label: 'Created At' },
+    { key: 'updatedAt', label: 'Updated At' }
   ];
 
   dataSource = new MatTableDataSource<UserDto>();
@@ -176,7 +177,27 @@ export class UserList implements OnInit, AfterViewInit {
   }
 
   getCellValue(u: UserDto, col: any) {
-    return col.cell ? col.cell(u) : (u as any)[col.key]; // safe here
+    const value = col.cell ? col.cell(u) : (u as any)[col.key];
+    if (this.isIsoDate(value)) {
+      return this.formatDate(value);
+    }
+    return value
+  }
+
+  isIsoDate(value: any): boolean {
+    if (typeof value !== 'string') return false;
+    return !isNaN(Date.parse(value));
+  }
+
+  formatDate(value: string): string {
+    const date = new Date(value);
+    return date.toLocaleString('en-PH', {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
 }

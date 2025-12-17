@@ -83,8 +83,10 @@ export class LivestockList implements OnInit {
     //   cell: (element: any) => element.farmer?.address?.barangay || '—'
     // },
     { key: 'status', label: 'Status' },
+    { key: 'createdAt', label: 'Created At' },
+    { key: 'updatedAt', label: 'Updated At' }
   ];
-
+  // use this to everthing (if possible)
   displayedColumnsKeys = [...this.columnDefs.map(c => c.key), 'actions'];
 
   constructor(

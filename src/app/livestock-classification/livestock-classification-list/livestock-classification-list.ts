@@ -17,11 +17,13 @@ export class LivestockClassificationList implements OnInit {
   isLoading = false;
   dataSource = new MatTableDataSource<LivestockClassification>();
 
-  displayedColumns = ['name', 'description', 'icon', 'actions'];
+  displayedColumns = ['name', 'description', 'icon', 'createdAt', 'updatedAt', 'actions'];
   columnDefs = [
     { key: 'name', label: 'Name' },
     { key: 'description', label: 'Description' },
-    { key: 'icon', label: 'Icon', cell: (e: LivestockClassification) => e.icon }
+    { key: 'icon', label: 'Icon', cell: (e: LivestockClassification) => e.icon },
+    { key: 'createdAt', label: 'Created At' },
+    { key: 'updatedAt', label: 'Updated At' }
   ];
 
   constructor(

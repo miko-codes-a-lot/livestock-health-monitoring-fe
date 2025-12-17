@@ -43,7 +43,9 @@ export class InsurancePolicyList implements OnInit {
           ? lp.livestockGroup
           : (lp.livestockGroup as any).groupName || 'N/A';
       }
-    }
+    },
+    { key: 'createdAt', label: 'Created At' },
+    { key: 'updatedAt', label: 'Updated At' }
   ];
 
   displayedColumnsKeys = [...this.columnDefs.map(c => c.key), 'actions'];

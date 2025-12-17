@@ -47,7 +47,9 @@ export class ClaimsList implements OnInit {
     },
     { key: 'causeOfDeath', label: 'Cause of Death' },
     { key: 'dateOfDeath', label: 'Date of Death', cell: c => new Date(c.dateOfDeath).toLocaleDateString() },
-    { key: 'status', label: 'Status' }
+    { key: 'status', label: 'Status' },
+    { key: 'createdAt', label: 'Created At' },
+    { key: 'updatedAt', label: 'Updated At' }
   ];
 
   displayedColumnsKeys = [...this.columnDefs.map(c => c.key), 'actions'];

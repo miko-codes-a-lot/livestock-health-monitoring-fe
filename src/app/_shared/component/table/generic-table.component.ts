@@ -157,11 +157,30 @@ export class GenericTableComponent<T> implements OnInit, AfterViewInit, OnChange
     if (col.cell) return col.cell(el);
 
     const value = this.getNestedValue(el, col.key);
+    if (this.isIsoDate(value)) {
+      return this.formatDate(value);
+    }
     return value ?? '';
   }
 
   isCreateDisabled(): boolean {
     return typeof this.canCreate === "function" ? !this.canCreate() : !this.canCreate;
+  }
+
+  isIsoDate(value: any): boolean {
+    if (typeof value !== 'string') return false;
+    return !isNaN(Date.parse(value));
+  }
+
+  formatDate(value: string): string {
+    const date = new Date(value);
+    return date.toLocaleString('en-PH', {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 }
 

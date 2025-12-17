@@ -51,7 +51,7 @@ export class LivestockGroupList implements OnInit {
   filteredData: LivestockGroup[] = [];
 
   // Table config
-  displayedColumns = ['groupName', 'farmer.address.barangay', 'status', 'actions'];
+  displayedColumns = ['groupName', 'farmer.address.barangay', 'status', 'createdAt', 'updatedAt', 'actions'];
   columnDefs = [
     { key: 'groupName', label: 'Group Name' },
     {
@@ -60,6 +60,8 @@ export class LivestockGroupList implements OnInit {
       cell: (element: any) => element.farmer?.address.barangay || '—'
     },
     { key: 'status', label: 'Status' },
+    { key: 'createdAt', label: 'Created At' },
+    { key: 'updatedAt', label: 'Updated At' }
   ];
 
   searchText = '';
