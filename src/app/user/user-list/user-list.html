@@ -7,6 +7,18 @@
     <h2 class="page-title">Users</h2>
 
     <div class="right">
+      <!-- Dropdown for groupby -->
+      <div class="group-by-wrapper">
+        <mat-form-field appearance="outline" class="barangay-filter" *ngIf="user?.role === 'admin'">
+          <mat-label>Barangay</mat-label>
+          <mat-select (selectionChange)="onBarangayChange($event.value)">
+            <mat-option value="">All Barangays</mat-option>
+            <mat-option *ngFor="let b of barangays" [value]="b">
+              {{ b }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
       <!-- SEARCH -->
       <div class="search-wrapper">
         <mat-form-field appearance="outline" class="search-field">
@@ -24,22 +36,11 @@
   </div>
 
   <!-- Grouped tables/cards per barangay -->
-  <div *ngFor="let group of groupedUsers; let gi = index" class="barangay-group">
-
     <mat-card class="barangay-card">
-
-      <mat-card-title>Barangay: {{ group.barangay }}</mat-card-title>
-
-      <!-- Table search -->
-      <mat-form-field appearance="outline" class="table-search-bar">
-        <mat-label>Search this table</mat-label>
-        <input matInput (keyup)="applyFilterPerTable($event, gi)" placeholder="Search users...">
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
 
       <!-- DESKTOP TABLE -->
       <div class="table-container" *ngIf="!isMobile">
-        <table mat-table [dataSource]="group.dataSource" matSort class="user-table mat-elevation-z2">
+        <table mat-table [dataSource]="dataSource" matSort class="user-table mat-elevation-z2">
 
           <ng-container *ngFor="let col of columnDefs" [matColumnDef]="col.key">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ col.label }}</th>
@@ -49,10 +50,10 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Actions</th>
             <td mat-cell *matCellDef="let u">
-              <button mat-icon-button color="primary" matTooltip="View details" (click)="onDetails(u._id)">
+              <button mat-icon-button color="primary" (click)="onDetails(u._id)">
                 <mat-icon>visibility</mat-icon>
               </button>
-              <button mat-icon-button color="accent" matTooltip="Edit user" (click)="onUpdate(u._id)">
+              <button mat-icon-button color="accent" (click)="onUpdate(u._id)">
                 <mat-icon>edit</mat-icon>
               </button>
             </td>
@@ -62,12 +63,16 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
 
-        <mat-paginator [pageSize]="5" [pageSizeOptions]="[5,10,20]" showFirstLastButtons #paginator></mat-paginator>
+        <mat-paginator
+          [pageSize]="5"
+          [pageSizeOptions]="[5,10,20]"
+          showFirstLastButtons>
+        </mat-paginator>
       </div>
 
       <!-- MOBILE CARDS -->
       <div class="mobile-card-container" *ngIf="isMobile">
-        <div class="mobile-card" *ngFor="let u of group.dataSource.filteredData">
+        <div class="mobile-card" *ngFor="let u of mobilePagedData">
           <div class="mobile-card-header">
             {{ u.firstName }} {{ u.lastName }}
           </div>
@@ -89,6 +94,13 @@
             </div>
           </div>
         </div>
+
+        <mat-paginator
+          *ngIf="isMobile"
+          [pageSize]="5"
+          [pageSizeOptions]="[5,10,20]"
+          showFirstLastButtons>
+        </mat-paginator>
       </div>
 
       <!-- Loading overlay -->
@@ -97,7 +109,6 @@
       </div>
 
     </mat-card>
-  </div>
 </div>
 
 

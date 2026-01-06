@@ -42,7 +42,7 @@
 .search-wrapper {
   display: flex;
   flex: 1 1 auto;
-  max-width: 260px;
+  /* max-width: 260px; */
 }
 
 .search-field {

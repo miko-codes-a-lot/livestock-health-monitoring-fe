@@ -44,14 +44,14 @@
   flex-wrap: wrap;
 }
 
-.search-wrapper {
+.search-wrapper, .group-by-wrapper {
   display: flex;
   flex: 1 1 auto;
-  max-width: 260px;
+  /* max-width: 260px; */
 }
 
 
-.search-field {
+.search-field, .barangay-filter {
   width: 100%;
   height: 60px; /* match create button height */
 }
@@ -226,18 +226,18 @@ mat-paginator {
   }
 
   .search-wrapper,
-  .create-btn {
+  .create-btn, .barangay-filter {
     width: 100%;
   }
 
   .search-wrapper .search-field,
-  .create-btn {
+  .create-btn, .barangay-filter {
     justify-content: center;
     height: 60px;
   }
 
   .search-wrapper .search-field,
-  .create-btn {
+  .create-btn, .barangay-filter {
     justify-content: center;
     height: 60px;
   }
