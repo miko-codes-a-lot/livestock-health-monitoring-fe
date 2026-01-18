@@ -252,8 +252,17 @@ export class UserList implements OnInit, AfterViewInit, OnDestroy {
 
   getCellValue(u: UserDto, col: any) {
     const value = col.cell ? col.cell(u) : (u as any)[col.key];
+    // Guard against misplaced dates
+    if (
+      col.key === 'lastName' &&
+      typeof value === 'string' &&
+      !isNaN(Date.parse(value))
+    ) {
+      return '—';
+    }
+
     if (this.isIsoDate(value)) return this.formatDate(value);
-    return value;
+    return value || '—';
   }
 
   private isIsoDate(value: any): boolean {
