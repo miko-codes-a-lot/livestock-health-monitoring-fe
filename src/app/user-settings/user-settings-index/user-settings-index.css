@@ -382,3 +382,47 @@
     font-size: 1.8rem;
   }
 }
+
+/* === SECURITY SECTION === */
+.security-title {
+  margin-top: 3rem;
+}
+
+.security-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.password-btn {
+  border-radius: 8px;
+  padding: 0.6rem 1.6rem;
+  font-weight: 500;
+  color: #3f51b5;
+  border: 2px solid #3f51b5;
+  transition: all 0.25s ease;
+}
+
+.password-btn:hover {
+  background-color: #3f51b5;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(63, 81, 181, 0.25);
+}
+
+.new-password {
+  margin-bottom: 10px;
+}
+
+.password-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center horizontally */
+  justify-content: center;
+  gap: 16px;
+}
+
+.password-form .mat-form-field {
+  width: 100%;
+  max-width: 400px; /* adjust width as needed */
+}

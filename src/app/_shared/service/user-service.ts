@@ -154,6 +154,14 @@ export class UserService {
     );
   }
 
+  changePassword(id: string, newPassword: string): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/${id}/password`,
+      { password: newPassword },
+      { withCredentials: true }
+    );
+  }
+
   // update(id: string, user: UserDto): Observable<UserDto> {
   //   return new Observable<UserDto>((s) => {
   //     setTimeout(() => {

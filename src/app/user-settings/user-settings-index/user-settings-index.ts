@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, TemplateRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, ValidationErrors, AbstractControl } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
@@ -13,6 +13,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../../_shared/service/auth-service';
 import { UserService } from '../../_shared/service/user-service';
 import { UserDto } from '../../_shared/model/user-dto';
+
+import { MatButtonModule } from '@angular/material/button';
+
+import { SnackbarService } from '../../_shared/component/snackbar/showSnackbar';
+
 
 @Component({
   selector: 'app-user-settings-index',
@@ -28,12 +33,14 @@ import { UserDto } from '../../_shared/model/user-dto';
     MatSelectModule,
     RouterLink,
     MatDialogModule,
+    MatButtonModule,
   ],
   templateUrl: './user-settings-index.html',
   styleUrl: './user-settings-index.css',
 })
 export class UserSettingsIndex implements OnInit {
   @ViewChild('avatarModal') avatarModal!: TemplateRef<any>;
+  @ViewChild('changePasswordModal') changePasswordModal!: TemplateRef<any>;
   user!: UserDto;
   avatarUrl: string | null = null;
   selectedFile: File | null = null;
@@ -44,10 +51,24 @@ export class UserSettingsIndex implements OnInit {
     private readonly userService: UserService,
     private readonly router: Router,
     private readonly dialog: MatDialog,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private fb: FormBuilder,
+    private snackbar: SnackbarService
   ) {}
 
+  changePasswordForm!: FormGroup;
+  showNewPassword = false;
+  showConfirmPassword = false;
+  submitted = false;
+
   ngOnInit(): void {
+
+    this.changePasswordForm = this.fb.group({
+      newPassword: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required],
+    }, { validators: this.passwordMatchValidator });
+
+
     this.authService.currentUser$.subscribe({
       next: (user) => {
         if (user) {
@@ -57,6 +78,69 @@ export class UserSettingsIndex implements OnInit {
       },
     });
   }
+  
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const newPassword = control.get('newPassword')?.value;
+    const confirmPassword = control.get('confirmPassword')?.value;
+
+    if (!newPassword || !confirmPassword) return null;
+
+    return newPassword === confirmPassword ? null : { passwordMismatch: true };
+  }
+
+  openChangePasswordDialog() {
+    this.dialog.open(this.changePasswordModal, {
+      width: '420px',
+      disableClose: true
+    });
+  }
+
+  closeChangePasswordDialog() {
+    this.dialog.closeAll();
+  }
+
+  submitPasswordChange() {
+
+    this.submitted = true;
+
+    if (this.changePasswordForm.invalid) return;
+
+    const { newPassword, confirmPassword } =
+    this.changePasswordForm.value;
+
+    if (newPassword !== confirmPassword) {
+      // show snackbar / error
+      return;
+    }
+
+    const id = this.user._id;
+    const password = this.changePasswordForm.value.newPassword;
+
+    this.userService.changePassword(id || '', password).subscribe({
+      next: () => {
+        this.snackbar.show('Password updated successfully', 'success');
+        this.closeChangePasswordDialog();
+      },
+      error: (err) => {
+        this.snackbar.show('Failed to update password', 'error');
+        console.error(err);
+      }
+    });
+
+    // Call backend API here
+    // this.userService.changePassword(...)
+
+    this.dialog.closeAll();
+  }
+
+  toggleNewPassword() {
+    this.showNewPassword = !this.showNewPassword;
+  }
+
+  toggleConfirmPassword() {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
 
   /** Opens the avatar upload modal */
   openAvatarModal(): void {
@@ -76,7 +160,6 @@ export class UserSettingsIndex implements OnInit {
     this.userService.getProfilePicture(userId).subscribe({
       next: (url) => {
         this.avatarUrl = url;
-        console.log('this.avatarUrl', this.avatarUrl)
         this.cdr.detectChanges();
       },
       error: () => (this.avatarUrl = null),
