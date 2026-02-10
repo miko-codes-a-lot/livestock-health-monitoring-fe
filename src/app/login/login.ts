@@ -1,21 +1,31 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common'; // <-- import CommonModule
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { RxLogin } from '../_shared/model/reactive/rx-login';
 import { AuthService } from '../_shared/service/auth-service';
 import { Router } from '@angular/router';
 
+type AuthView = 'login' | 'forgot' | 'otp' | 'reset';
+
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule],
   standalone: true,
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
+
 export class Login {
   rxform!: FormGroup<RxLogin>
   isLoading = false
   errorMessage = ''; 
+
+  view: AuthView = 'login';
+
+  // forgot flow state
+  forgotUser = '';
+  otpCode = '';
+  newPassword = '';
 
   constructor(
     private readonly authService: AuthService,
@@ -38,6 +48,7 @@ export class Login {
     })
   }
 
+  // ===== LOGIN =====
   onSubmit() {
     this.isLoading = true
     this.errorMessage = ''; // reset error
@@ -47,17 +58,49 @@ export class Login {
           this.router.navigate(['/dashboard'])
       },
       error: (err) => {
-        console.error(err);
+        alert(err.error.message);
         // Display a friendly error message
         this.errorMessage = 'Invalid username or password';
       }    }).add(() => this.isLoading = false)
   }
 
-  get username () {
-    return this.rxform.controls.username
+    // ===== FORGOT FLOW =====
+  sendOtp() {
+    this.isLoading = true
+    this.authService.forgotPassword(this.forgotUser).subscribe({
+      next: (res) => {
+        // API call succeeded
+        this.view = 'otp'; // switch to OTP input view
+        this.isLoading = false;
+      },
+      error: (err) => {
+        // handle error nicely
+        alert(err.error.message);
+        this.isLoading = false;
+      }
+    });
   }
 
-  get password () {
-    return this.rxform.controls.password
+  verifyOtp() {
+    this.authService.verifyOtp(this.forgotUser, this.otpCode).subscribe(() => {
+      this.view = 'reset';
+    });
+  }
+
+  resetPassword() {
+    this.authService.resetPassword(this.forgotUser, this.newPassword)
+      .subscribe(() => {
+        alert('Password updated');
+        this.view = 'login';
+      });
+  }
+
+  get username() { return this.rxform.controls.username; }
+  get password() { return this.rxform.controls.password; }
+  
+
+  onForgotPassword() {
+
+    this.router.navigate(['/auth/forgot-password']);
   }
 }

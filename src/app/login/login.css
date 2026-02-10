@@ -120,3 +120,25 @@ button:disabled {
     padding: 10px;
   }
 }
+
+/* === FORGOT PASSWORD === */
+.forgot-wrapper {
+  text-align: right;
+  margin-top: 8px;
+  margin-bottom: 18px;
+}
+
+.forgot-link {
+  font-size: 13px;
+  color: #55B047;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.forgot-link:hover {
+  color: #4aa43c;
+  text-decoration: underline;
+  transform: translateY(-1px);
+}

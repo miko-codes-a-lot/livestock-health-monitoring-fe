@@ -2,7 +2,8 @@
   <div class="login-card">
     <img src="assets/images/logo.png" alt="logo" class="login-logo">
 
-    <form [formGroup]="rxform" (ngSubmit)="onSubmit()">
+    <!-- LOGIN FORM -->
+    <form *ngIf="view === 'login'" [formGroup]="rxform" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="username">Username</label>
         <input type="text" placeholder="Enter username" formControlName="username">
@@ -13,6 +14,10 @@
         <input type="password" placeholder="Enter password" formControlName="password">
       </div>
 
+      <div class="forgot-wrapper">
+        <a class="forgot-link" (click)="view = 'forgot'">Forgot password?</a>
+      </div>
+
       <div *ngIf="errorMessage" class="error-message">
         {{ errorMessage }}
       </div>
@@ -20,6 +25,42 @@
       <button type="submit" [disabled]="!rxform.valid || isLoading">
         {{ isLoading ? 'Logging in...' : 'Login' }}
       </button>
+    </form>
+
+    <!-- FORGOT PASSWORD -->
+    <form *ngIf="view === 'forgot'" (ngSubmit)="sendOtp()">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" [(ngModel)]="forgotUser" name="forgotUser" placeholder="Enter username">
+      </div>
+
+      <button type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Sending OTP...' : 'Send OTP' }}
+      </button>
+
+      <div class="forgot-wrapper">
+        <a class="forgot-link" (click)="view = 'login'">Back to login</a>
+      </div>
+    </form>
+
+    <!-- OTP VIEW -->
+    <form *ngIf="view === 'otp'" (ngSubmit)="verifyOtp()">
+      <div class="form-group">
+        <label>Enter OTP</label>
+        <input type="text" [(ngModel)]="otpCode" name="otpCode" placeholder="Enter OTP">
+      </div>
+
+      <button type="submit">Verify OTP</button>
+    </form>
+
+    <!-- RESET PASSWORD VIEW -->
+    <form *ngIf="view === 'reset'" (ngSubmit)="resetPassword()">
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" [(ngModel)]="newPassword" name="newPassword" placeholder="Enter new password">
+      </div>
+
+      <button type="submit">Save Password</button>
     </form>
   </div>
 </div>

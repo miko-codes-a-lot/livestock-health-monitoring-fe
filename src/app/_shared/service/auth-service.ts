@@ -60,4 +60,20 @@ export class AuthService {
   get currentUserValue(): UserDto | null {
     return this.currentUserSubject.value
   }
+
+  forgotPassword(username: string): Observable<any> {
+    console.log('user', username);
+    return this.http.post('/auth/forgot-password', { username });
+  }
+
+  verifyOtp(username: string, otp: string): Observable<any> {
+    return this.http.post('/auth/verify-otp', { username, otp });
+  }
+
+  resetPassword(username: string, newPassword: string): Observable<any> {
+    return this.http.post('/auth/reset-password', {
+      username,
+      newPassword,
+    });
+  }
 }
