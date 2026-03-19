@@ -101,3 +101,91 @@ h3 {
     grid-template-columns: 1fr;
   }
 }
+
+.history {
+  padding: 10px 3% 10px 3%;
+}
+
+.history-card {
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-header strong {
+  font-size: 1rem;
+}
+
+.status {
+  margin-left: 10px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+.status.pending { background: #fef3c7; color: #92400e; }
+.status.approved { background: #d1fae5; color: #065f46; }
+.status.declined { background: #fee2e2; color: #7f1d1d; }
+.status.completed { background: #e0e7ff; color: #3730a3; }
+
+.date {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.arrow {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.history-body {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.detail-item {
+  margin-bottom: 8px;
+}
+
+.label {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.value {
+  font-weight: 500;
+  color: #222;
+}
+
+.history-section {
+  max-height: 400px;   /* 👈 adjust depending on your layout */
+  overflow-y: auto;
+  padding-right: 6px;  /* prevents content jump when scrollbar appears */
+}
+
+/* Optional: nicer scrollbar */
+.history-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.history-section::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 6px;
+}

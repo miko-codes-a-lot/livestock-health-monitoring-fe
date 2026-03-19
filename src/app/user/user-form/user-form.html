@@ -128,7 +128,8 @@
 
             <mat-form-field appearance="outline" class="half-width">
               <mat-label>Municipality</mat-label>
-              <mat-select
+              <input matInput formControlName="municipality" type="text" readonly />
+              <!-- <mat-select
                 formControlName="municipality"
                 (selectionChange)="onMunicipalitySelected($event.value)"
               >
@@ -136,15 +137,15 @@
                 @for (address of addresses; track address.name) {
                   <mat-option [value]="address.name">{{ address.name }}</mat-option>
                 }
-              </mat-select>
+              </mat-select> -->
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="third-width" *ngIf="loggedInUserRole === 'technician' && !user; else selectBarangay">
+            <mat-form-field appearance="outline" class="full-width" *ngIf="loggedInUserRole === 'technician' && !user; else selectBarangay">
               <mat-label>Barangay</mat-label>
               <input matInput [disabled]="true" [value]="technicianBarangay" type="text" />
             </mat-form-field>
             <ng-template #selectBarangay>
-              <mat-form-field appearance="outline" class="half-width">
+              <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Barangay</mat-label>
                 <mat-select formControlName="barangay">
                   <mat-option value="">-- Select Barangay --</mat-option>
@@ -180,16 +181,14 @@
             </mat-form-field>
           </div>
 
-          <div>
-             <!-- rsbsaNumber -->
-            <mat-form-field appearance="outline" class="half-width" *ngIf='isRoleFarmer'>
-              <mat-label>RSBSA Number</mat-label>
-              <input matInput formControlName="rsbsaNumber" type="text" />
-              <mat-error *ngIf="rxform.get('rsbsaNumber')?.hasError('required')">
-                RSBSA is required.
-              </mat-error>
-            </mat-form-field>
-          </div>
+            <!-- rsbsaNumber -->
+          <mat-form-field appearance="outline" class="full-width" *ngIf='isRoleFarmer'>
+            <mat-label>RSBSA Number</mat-label>
+            <input matInput formControlName="rsbsaNumber" type="text" />
+            <mat-error *ngIf="rxform.get('rsbsaNumber')?.hasError('required')">
+              RSBSA is required.
+            </mat-error>
+          </mat-form-field>
    
         </mat-card-content>
 

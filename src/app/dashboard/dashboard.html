@@ -175,7 +175,9 @@
             <canvas id="claimsByStatusChart"></canvas>
           </div>
         </div>
+      </div>
 
+      <div class="charts-grid">
         <div class="chart-card">
           <h3 class="chart-title">Health Records Trend</h3>
           <div class="chart-container">
@@ -200,7 +202,7 @@
         </div>
 
         <div class="chart-card">
-          <h3 class="chart-title">Livestock by Municipality</h3>
+          <h3 class="chart-title">Livestock by Barangay</h3>
           <div class="chart-container">
             <canvas id="livestockByLocationChart"></canvas>
           </div>
@@ -213,6 +215,49 @@
           <div class="chart-container">
             <canvas id="claimsTrendChart"></canvas>
           </div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3 class="chart-title">Population Trend</h3>
+          <canvas id="populationTrendChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Mortality Trend</h3>
+          <canvas id="mortalityTrendChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Disease Incidence</h3>
+          <canvas id="diseaseIncidenceChart"></canvas>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <p class="stat-title">Mortality Rate</p>
+          <p class="stat-value">{{ mortalityRate }}%</p>
+        </div>
+
+        <div class="stat-card">
+          <p class="stat-title">Disease Cases</p>
+          <p class="stat-value">{{ diseaseCases }}</p>
+        </div>
+
+        <div class="stat-card">
+          <p class="stat-title">Healthy Animals</p>
+          <p class="stat-value">{{ healthyAnimals }}</p>
+        </div>
+
+        <div class="stat-card">
+          <p class="stat-title">High Risk Animals</p>
+          <p class="stat-value">{{ resourceNeeds.highRiskAnimals }}</p>
+        </div>
+
+        <div class="stat-card">
+          <p class="stat-title">Estimated Vets Needed</p>
+          <p class="stat-value">{{ resourceNeeds.vetsNeeded }}</p>
         </div>
       </div>
     </ng-container>
@@ -247,7 +292,14 @@
             <canvas id="farmerInsuranceChart"></canvas>
           </div>
         </div>
+        <div class="chart-card">
+          <h3 class="chart-title">Body Condition Distribution</h3>
+          <div class="chart-container">
+            <canvas id="farmerBodyConditionChart"></canvas>
+          </div>
+        </div>
       </div>
+
     </ng-container>
   </div>
 </ng-container>

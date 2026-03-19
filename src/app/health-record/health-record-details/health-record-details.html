@@ -63,6 +63,13 @@
         </div>
 
         <div class="detail-item">
+          <span class="label">Next Vaccination:</span>
+          <span class="value">
+            {{ nextVaccinationDate ? nextVaccinationDate : '—' }}
+          </span>
+        </div>
+
+        <div class="detail-item">
           <span class="label">Visit Date:</span>
           <span class="value">{{ healthRecord.visitDate || '—' }}</span>
         </div>
@@ -90,3 +97,71 @@
     }
 
 </div>
+<div class="history">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        Health Record History
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-divider class="divider-space"></mat-divider>
+        <!-- Health Record History -->
+        <div class="history-section" *ngIf="schedules.length > 0">
+          @for(schedule of schedules; track schedule._id; let i = $index) {
+            <div class="history-card" (click)="toggleHistory(i)">
+              
+              <!-- HEADER (always visible) -->
+              <div class="history-header">
+                <div>
+                  <strong>{{ schedule.type | titlecase }}</strong>
+                  <span class="status" [class]="schedule.status">
+                    {{ schedule.status | titlecase }}
+                  </span>
+                </div>
+
+                <div class="date">
+                  {{ schedule.scheduledDate | date:'mediumDate' }}
+                </div>
+
+                <div class="arrow">
+                  {{ expandedIndex === i ? '▲' : '▼' }}
+                </div>
+              </div>
+
+              <!-- EXPANDED CONTENT -->
+              @if (expandedIndex === i) {
+                <div class="history-body">
+
+                  <div class="detail-item">
+                    <span class="label">Scheduled Date:</span>
+                    <span class="value">{{ schedule.scheduledDate | date:'medium' }}</span>
+                  </div>
+
+                  <div class="detail-item">
+                    <span class="label">Assigned Vet:</span>
+                    <span class="value">{{ getVetName(schedule) }}</span>
+                  </div>
+
+                  <div class="detail-item">
+                    <span class="label">Treatment / Notes:</span>
+                    <span class="value">{{ getTreatment(schedule) }}</span>
+                  </div>
+
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div *ngIf="!schedules.length">
+          <p>No previous records found.</p>
+        </div>
+
+        <ng-template #noHistory>
+          <div class="loading-state">No health record history available.</div>
+        </ng-template>
+    </mat-card-content>
+  </mat-card>
+</div>
+

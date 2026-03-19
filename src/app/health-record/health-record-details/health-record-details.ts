@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ScheduleService } from '../../_shared/service/schedule-service';
 import { AuthService } from '../../_shared/service/auth-service';
 import { UserDto } from '../../_shared/model/user-dto';
+import { Schedule } from '../../_shared/model/schedule';
 
 @Component({
   selector: 'app-health-record-details',
@@ -30,6 +31,9 @@ export class HealthRecordDetails implements OnInit {
   technicianName = '';
   isUpdateDisabled = false;
   user: UserDto | null = null;
+  nextVaccinationDate?: string;
+  schedules: Schedule[] = [];
+  expandedIndex: number | null = null;
 
   constructor(
     private readonly healthRecordService: HealthRecordService,
@@ -40,7 +44,7 @@ export class HealthRecordDetails implements OnInit {
     private readonly authService: AuthService,
   ) {}
 
-    ngOnInit(): void {
+  ngOnInit(): void {
     this.isLoading = true;
 
     const id = this.route.snapshot.params['id'];
@@ -50,34 +54,71 @@ export class HealthRecordDetails implements OnInit {
 
     this.healthRecordService.getOne(id).subscribe({
       next: (healthRecord) => {
-        // Fetch farmer name
-
+        this.healthRecord = healthRecord; // set healthRecord first
         if (healthRecord.technician?._id) {
-
-          this.scheduleService.getAll()
-            .subscribe((schedules: any[]) => {
-              // Check if there is any schedule with 'pending' or 'declined' for this health record
-              this.isUpdateDisabled = schedules
-                .some(s => (s.healthRecord._id === healthRecord._id && ['pending', 'declined', 'completed'].includes(s.status)) || this.user?.role === 'farmer');
-
-              this.healthRecord = healthRecord;
-            })
-            .add(() => this.isLoading = false);
-
-        
+          // Fetch technician name
           this.userService.getOne(healthRecord.technician._id).subscribe(f => {
             this.technicianName = `${f.firstName} ${f.lastName}`;
           });
 
+          // Fetch all schedules
+          this.scheduleService.getAll().subscribe((schedules: any[]) => {
+             this.schedules = schedules
+              .filter(s => s.healthRecord._id === this.healthRecord?._id);
+            // 1️⃣ Determine if update button should be disabled
+            this.isUpdateDisabled = schedules
+              .some(s => (s.healthRecord._id === healthRecord._id && ['pending', 'declined', 'completed'].includes(s.status)) 
+                        || this.user?.role === 'farmer');
+
+            // 2️⃣ Compute next vaccination date
+            const nextVaccination = schedules
+              .filter(s => 
+                s.healthRecord._id === healthRecord._id
+                && s.type === 'vaccination' &&
+                s.status === 'approved'
+                && new Date(s.scheduledDate) >= new Date() // only future dates
+              )
+              .sort((a, b) => new Date(a.scheduledDate.$date).getTime() - new Date(b.scheduledDate.$date).getTime());
+
+            this.nextVaccinationDate = nextVaccination.length > 0
+              ? nextVaccination[0].scheduledDate
+              : undefined;
+
+
+          }).add(() => this.isLoading = false);
+        } else {
+          // No technician assigned
+          this.isLoading = false;
         }
       },
-      error: (err) => alert(`Something went wrong: ${err}`),
+      error: (err) => {
+        alert(`Something went wrong: ${err}`);
+        this.isLoading = false;
+      }
     });
   }
 
   onUpdate() {
     if (!this.healthRecord) return;
     this.router.navigate(['/health-record/update', this.healthRecord._id]);
+  }
+
+  getVetName(schedule: any): string {
+    if (!schedule.assignedVet || typeof schedule.assignedVet === 'string') {
+      return '—';
+    }
+    return `${schedule.assignedVet.firstName} ${schedule.assignedVet.lastName}`;
+  }
+
+  getTreatment(schedule: any): string {
+    if (!schedule.treatment || typeof schedule.treatment === 'string') {
+      return '—';
+    }
+    return `${schedule.treatment}`;
+  }
+
+  toggleHistory(index: number) {
+    this.expandedIndex = this.expandedIndex === index ? null : index;
   }
   
 }

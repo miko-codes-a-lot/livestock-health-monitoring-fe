@@ -60,63 +60,83 @@ export class UserForm implements OnInit, OnChanges {
     private readonly cd: ChangeDetectorRef
   ) {}
 
-    u: UserDto = this.user ?? {
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      username: '',
-      emailAddress: '',
-      mobileNumber: '',
-      password: '',
-      address: { province: '', municipality: '', barangay: '' },
-      gender: 'male',
-      role: 'admin',
-      rsbsaNumber: ''
-    };
+  u: UserDto = this.user ?? {
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    username: '',
+    emailAddress: '',
+    mobileNumber: '',
+    password: '',
+    address: { province: '', municipality: '', barangay: '' },
+    gender: 'male',
+    role: 'admin',
+    rsbsaNumber: ''
+  };
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['addresses'] && this.user && this.user.address) {
-      // ✅ Only run when addresses are loaded & user is defined
-      this.autoSelectBarangay(this.user.address.municipality, this.user.address.barangay);
+  ngOnChanges(changes: SimpleChanges) {
+    if (!this.rxform) return;
+    if (changes['addresses'] && this.addresses?.length) {
+      // Find San Jose municipality
+      const sanJose = this.addresses.find(a => a.name === 'San Jose');
+
+      if (!sanJose) return; // not found, skip
+
+      this.barangays = sanJose.children ?? [];
+
+      if (!this.user) {
+        // Create mode: technician
+        this.technicianBarangay = this.barangays[0]?.name || '';
+        this.rxform.get('address.municipality')?.setValue('San Jose', { emitEvent: false });
+        this.rxform.get('address.municipality')?.disable();
+        this.rxform.get('address.barangay')?.setValue(this.technicianBarangay);
+      } else {
+        // Edit mode: existing user
+        this.rxform.get('address.municipality')?.setValue('San Jose', { emitEvent: false });
+        this.rxform.get('address.municipality')?.disable();
+        this.rxform.get('address.barangay')?.setValue(this.user.address.barangay);
+      }
     }
   }
 
   ngOnInit(): void {
     this.initializeForm();
-    // 1. Get the logged-in user's role FIRST
+
+    // Force municipality to "San Jose" and disable it
+    const sanJose = this.addresses.find(a => a.name === 'San Jose');
+    if (sanJose) {
+      this.rxform.get('address.municipality')?.setValue('San Jose', { emitEvent: false });
+      // this.rxform.get('address.municipality')?.disable(); // readonly
+
+      // Populate barangays automatically
+      this.barangays = sanJose.children ?? [];
+
+      // If editing a user, set their barangay
+      if (this.user?.address?.barangay) {
+        this.rxform.get('address.barangay')?.setValue(this.user.address.barangay);
+      } else {
+        // Default to the first barangay if creating new user
+        this.rxform.get('address.barangay')?.setValue(this.barangays[0]?.name || '');
+      }
+    }
+
+    // Existing authService subscriber
     this.authService.currentUser$.subscribe({
       next: (u) => {
         if (u) {
-          // 💡 FIX: Store the role in the new property, NOT this.user
           this.loggedInUserRole = u.role;
-          // Technician restriction
-          if (this.loggedInUserRole === 'technician') {
-            // 1. Set municipality without triggering valueChanges
-            this.rxform.get('address.municipality')?.setValue(u.address.municipality, { emitEvent: false });
-
-            // 2. Populate barangays list
-            const municipality = this.addresses.find(a => a.name === u.address.municipality);
-            this.barangays = municipality?.children ?? [];
-            this.technicianBarangay = u.address.barangay
-            // 3. Set the barangay
-            // this.rxform.get('address.barangay')?.setValue(u.address.barangay);
-
-            // 4. Disable fields
-            this.rxform.get('address.municipality')?.disable();
-            this.rxform.get('address.barangay')?.disable();
-          }
+          this.setAvailableRoles();
         }
-        this.setAvailableRoles();
       }
     });
 
-     // Check if the user being edited is a farmer
-    if (this.user?.role === 'farmer') {
-      this.isRoleFarmer = true;
+    // Patch user data if editing
+    if (this.user) {
+      this.rxform.patchValue(this.user);
+      this.addRsbsaNumber();
     }
 
-    this.setAvailableRoles();
-    this.addRsbsaNumber();
+    // Remove municipality -> barangay subscription since San Jose is fixed
   }
 
   addRsbsaNumber () {
@@ -236,11 +256,11 @@ export class UserForm implements OnInit, OnChanges {
     if (mobileNumber) applyPHMobilePrefix(mobileNumber);
 
     // Municipality (city/town) → update barangays
-    this.rxform.get('address.municipality')?.valueChanges.subscribe(value => {
-      const selectedMunicipality = this.addresses.find(a => a.name === value);
-      this.barangays = selectedMunicipality?.children ?? [];
-      this.rxform.get('address.barangay')?.patchValue('');
-    });
+    // this.rxform.get('address.municipality')?.valueChanges.subscribe(value => {
+    //   const selectedMunicipality = this.addresses.find(a => a.name === value);
+    //   this.barangays = selectedMunicipality?.children ?? [];
+    //   this.rxform.get('address.barangay')?.patchValue('');
+    // });
   }
 
   onMunicipalitySelected(municipalityName: string): void {

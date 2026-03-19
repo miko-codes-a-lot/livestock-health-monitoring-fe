@@ -159,10 +159,12 @@ export class UserList implements OnInit, AfterViewInit, OnDestroy {
       this.barangays = [
         ...new Set(
           filteredUsers
+            .filter(fu => fu.address.municipality === 'San Jose')
             .map(u => u.address?.barangay)
             .filter(Boolean)
         )
       ].sort();
+      console.log('this.barangays', this.barangays);
     }
 
     this.dataSource.data = filteredUsers;

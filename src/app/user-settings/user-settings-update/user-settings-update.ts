@@ -86,10 +86,12 @@ export class UserSettingsUpdate implements OnInit {
       role: ['', Validators.required],
       address: this.fb.group({
         province: ['Occidental Mindoro'],
-        municipality: ['', Validators.required],
+        municipality: [''],
         barangay: ['', Validators.required],
       }),
     });
+
+    this.profileForm.get('address.municipality')?.setValue('San Jose');
 
     // auto-format PH numbers
     const mobileNumber = this.profileForm.get('mobileNumber');

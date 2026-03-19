@@ -69,6 +69,7 @@ export class HealthRecordList implements OnInit {
 
     this.healthRecordService.getAll().subscribe({
       next: (records) => {
+        console.log('records', records);
         this.scheduleService.getAll().subscribe({
           next: (schedules) => {
             // Create a map for fast lookups

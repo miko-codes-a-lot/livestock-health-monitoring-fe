@@ -103,14 +103,14 @@
           <mat-form-field appearance="outline" class="field">
             <mat-label>Municipality</mat-label>
             <mat-select
-              formControlName="municipality"
-              (selectionChange)="onMunicipalitySelected($event.value)"
+              [value]="'San Jose'"     
+              [disabled]="true"       
             >
-              <mat-option value="">-- Select Municipality --</mat-option>
-              @for (address of addresses; track address.name) {
-                <mat-option [value]="address.name">{{ address.name }}</mat-option>
-              }
+              <mat-option value="San Jose">San Jose</mat-option>
             </mat-select>
+
+            <!-- Hidden input to actually save the value -->
+            <input type="hidden" formControlName="municipality" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="field">

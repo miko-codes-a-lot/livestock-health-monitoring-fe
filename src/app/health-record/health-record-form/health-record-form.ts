@@ -182,6 +182,7 @@ export class HealthRecordForm implements OnInit {
       return;
     }
     
+    console.log("test::  ", farmerId);
 
     this.livestockGroupService.getAll().subscribe(groups => {
       this.filteredGroups = groups
@@ -192,7 +193,7 @@ export class HealthRecordForm implements OnInit {
           _id: b._id,
           name: b.groupName
         }));
-      
+        
       this.rxform.get('livestockGroup')?.value;
       // if (!this.filteredGroups.find(b => b._id === currentGroup)) {
       //     this.rxform.get('livestockGroup')?.patchValue('' as any);
